@@ -595,31 +595,33 @@ does not block anything else from happening. The learner sees their score
 immediately — `simulation-runner.tsx:388` renders
 `{evaluation.needsHumanReview && <Callout tone="warning">{dict.feedback.lowConfidence}</Callout>}`
 next to the score itself (dictionary text: *"Low-confidence assessment — sent
-for human review"*), as a disclosure alongside the result rather than a
-block on seeing it. Mastery/skill-level records are also updated immediately
-and unconditionally: both `src/lib/actions/simulation.ts:235-244`
-(`recordSimulationEvidence`) and `src/lib/actions/progress.ts:118-127`
-(`recordEvidenceAndUpdateMastery`) run right after the `evaluations` insert,
-with no check on `verified.needsHumanReview` before doing so. See Gaps.
+for human review"*), as a disclosure alongside the result. The learner's
+*permanent mastery record*, however, does **not** update on a queued
+evaluation: `evaluations` now carries a `pendingMastery` payload (the
+skill(s), target level, and evidence depth this score is evidence for,
+captured at evaluation time) plus a `masteryApplied` flag. `progress.ts` and
+`simulation.ts` call `applyPendingMasteryForEvaluation()`
+(`src/lib/actions/mastery-bridge.ts`) immediately only when
+`!verified.needsHumanReview`; a queued evaluation's mastery application is
+deferred until `decideEvaluationReview()` (`src/lib/actions/admin.ts`) is
+called by a reviewer with `"upheld"` or `"edited"` — an `"overturned"`/
+`"rejected"` decision never applies it. The function is idempotent (checks
+`masteryApplied` first), so a reviewer re-opening a decided item can't
+double-count evidence. See tests in `tests/mastery-bridge.test.ts`.
 
 ## Gaps / TODO
 
 Reported honestly rather than glossed over, per the task's own request:
 
-1. **"Human review mandatory before publish" is not literally enforced.**
-   The task brief states the rule as "human review is mandatory before any
-   AI-touched content publishes." In the actual code, a `needsHumanReview:
-   true` evaluation is (a) shown to the learner immediately, with only a
-   warning callout disclosing that it's under review
-   (`simulation-runner.tsx:388`), and (b) immediately and unconditionally
-   feeds the learner's mastery/skill-level record via
-   `recordEvidenceAndUpdateMastery()` / `recordSimulationEvidence()`
-   (`progress.ts:118-127`, `simulation.ts:235-244`) — there is no branch on
-   `needsHumanReview` before those calls. So the actual behaviour is
-   "queued-for-review evaluations are disclosed and flagged, and a human can
-   later overturn them," not "queued evaluations are held back from the
-   learner's record until a human acts." This is a real gap between the
-   stated policy and the enforced code path, worth flagging to product/eng.
+1. ~~**"Human review mandatory before publish" is not literally enforced.**~~
+   **Fixed.** A `needsHumanReview: true` evaluation is still shown to the
+   learner immediately with a disclosure callout (`simulation-runner.tsx:388`)
+   — that part was always fine — but it no longer updates the learner's
+   permanent mastery record until a reviewer upholds or edits it; see the
+   `pendingMastery`/`masteryApplied`/`applyPendingMasteryForEvaluation()`
+   mechanism described above. An overturned/rejected evaluation's score never
+   counts. Verified by `tests/mastery-bridge.test.ts` (queued evaluations
+   contribute nothing until applied; applying twice doesn't double-count).
 
 2. **`AgentName` includes `"language"`, `"recommendation"`, and `"safety"`**,
    and `schemas.ts` defines `languageFeedbackSchema` and

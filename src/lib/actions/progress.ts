@@ -12,7 +12,7 @@ import { evaluate, verifyEvaluation } from "@/lib/ai/agents/evaluation";
 import { coach } from "@/lib/ai/agents/coaching";
 import { uid } from "@/lib/utils";
 import { track } from "./analytics";
-import { recordEvidenceAndUpdateMastery } from "./mastery-bridge";
+import { applyPendingMasteryForEvaluation, recordEvidenceAndUpdateMastery } from "./mastery-bridge";
 import type { Locale } from "@/lib/i18n/config";
 
 export interface SubmitActivityResult {
@@ -23,6 +23,12 @@ export interface SubmitActivityResult {
   levelChanged?: boolean;
   newLevel?: number;
   evaluationId?: string;
+  /**
+   * True when `verifyEvaluation()` flagged this score for human review — the
+   * learner sees their result immediately, but it has not yet counted toward
+   * their mastery record. The UI should show this as provisional.
+   */
+  pendingReview?: boolean;
 }
 
 /**
@@ -108,6 +114,12 @@ export async function submitActivity(args: {
       confidence: verified.confidence,
       modelRunId: raw.runId,
       humanReviewStatus: verified.needsHumanReview ? "queued" : "not_required",
+      // Always "production": this branch only ever runs for short_written/
+      // email_rewrite (see the guard above), and `depthOf()` maps both to
+      // "production" — never "recognition", which `pendingMastery` doesn't
+      // accept (recognition-level evidence never needs a human review gate).
+      pendingMastery: [{ skillId: activity.skillId, targetLevel: unit.targetLevel, depth: "production" }],
+      masteryApplied: false,
     });
 
     await db.insert(attempts).values({
@@ -123,16 +135,17 @@ export async function submitActivity(args: {
       gradedBy: "ai_rubric",
     });
 
-    const { levelChanged, newLevel } = await recordEvidenceAndUpdateMastery({
-      userId: user.id,
-      skillId: activity.skillId,
-      score: verified.overallScore / verified.maxScore,
-      targetLevel: unit.targetLevel,
-      depth: depthOf(activity.kind),
-      refKind: "evaluation",
-      refId: evaluationId,
-      note: verified.priorityImprovement,
-    });
+    // Evidence a human hasn't confirmed must not silently become a mastery
+    // claim — see `applyPendingMasteryForEvaluation()`'s docstring. The
+    // learner still sees their score immediately either way; only the
+    // permanent mastery record waits.
+    let levelChanged = false;
+    let newLevel: number | undefined;
+    if (!verified.needsHumanReview) {
+      const applied = await applyPendingMasteryForEvaluation(evaluationId);
+      levelChanged = applied[0]?.levelChanged ?? false;
+      newLevel = applied[0]?.newLevel;
+    }
 
     if (verified.passed) await track(user.id, null, "activity_passed", { activityId: activity.id });
 
@@ -143,6 +156,7 @@ export async function submitActivity(args: {
       passed: verified.passed,
       levelChanged,
       newLevel,
+      pendingReview: verified.needsHumanReview,
       evaluationId,
     };
   }

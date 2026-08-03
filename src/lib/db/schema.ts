@@ -529,6 +529,23 @@ export const evaluations = sqliteTable(
     humanReviewStatus: text("human_review_status").notNull().default("not_required").$type<
       "not_required" | "queued" | "in_review" | "upheld" | "overturned"
     >(),
+    /**
+     * The skill(s) this evaluation's score is evidence for, captured at
+     * evaluation time so mastery can be applied later without re-deriving it
+     * from the (possibly since-changed) activity/scenario. One entry for a
+     * written activity, one per scenario skill for a simulation.
+     */
+    pendingMastery: text("pending_mastery", { mode: "json" }).$type<
+      { skillId: string; targetLevel: number; depth: "production" | "simulation" }[]
+    >(),
+    /**
+     * False until `applyPendingMasteryForEvaluation()` has folded this
+     * evaluation's score into the learner's mastery record — immediately for
+     * `not_required`, only after a reviewer upholds/edits a `queued` one. A
+     * `queued` evaluation whose evidence a human never confirmed must never
+     * silently count toward a permanent mastery claim.
+     */
+    masteryApplied: integer("mastery_applied", { mode: "boolean" }).notNull().default(false),
     createdAt: createdAt(),
   },
   (t) => [

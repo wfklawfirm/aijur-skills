@@ -16,6 +16,7 @@ import {
 import { requireUser } from "@/lib/auth/session";
 import { require_ } from "@/lib/auth/rbac";
 import { uid } from "@/lib/utils";
+import { applyPendingMasteryForEvaluation } from "./mastery-bridge";
 
 const GATES = ["sme", "learning_design", "legal_english", "language", "accessibility", "qa"] as const;
 type Gate = (typeof GATES)[number];
@@ -138,6 +139,16 @@ export async function decideEvaluationReview(
     notes,
     decidedAt: Date.now(),
   });
+
+  // Only now — a human has actually looked at it — does this evaluation's
+  // score get to count toward the learner's mastery record. "upheld" and
+  // "edited" both confirm the score is trustworthy enough to use; a rejected
+  // or overturned evaluation never applies (`applyPendingMasteryForEvaluation`
+  // stays a no-op for it forever, which is correct: bad evidence should never
+  // retroactively count).
+  if (status === "upheld") {
+    await applyPendingMasteryForEvaluation(evaluationId);
+  }
 }
 
 export async function listSources() {

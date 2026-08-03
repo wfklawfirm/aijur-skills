@@ -11,7 +11,7 @@ import { coach } from "@/lib/ai/agents/coaching";
 import { uid } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
 import { track } from "./analytics";
-import { recordSimulationEvidence } from "./mastery-bridge";
+import { applyPendingMasteryForEvaluation } from "./mastery-bridge";
 
 async function consentGiven(userId: string): Promise<boolean> {
   const rows = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1);
@@ -233,6 +233,12 @@ export async function finishSimulation(sessionId: string, locale: Locale): Promi
     confidence: verified.confidence,
     modelRunId: raw.runId,
     humanReviewStatus: verified.needsHumanReview ? "queued" : "not_required",
+    pendingMastery: scenario.skillIds.map((skillId) => ({
+      skillId,
+      targetLevel: scenario.stage + 1,
+      depth: "simulation" as const,
+    })),
+    masteryApplied: false,
   });
 
   await db
@@ -240,15 +246,10 @@ export async function finishSimulation(sessionId: string, locale: Locale): Promi
     .set({ state: "completed", completedAt: Date.now() })
     .where(eq(simulationSessions.id, sessionId));
 
-  for (const skillId of scenario.skillIds) {
-    await recordSimulationEvidence({
-      userId: user.id,
-      skillId,
-      score: verified.overallScore / verified.maxScore,
-      targetLevel: scenario.stage + 1,
-      refId: evaluationId,
-      note: verified.priorityImprovement,
-    });
+  // See `applyPendingMasteryForEvaluation()` — a queued (human-review-pending)
+  // evaluation does not fold into mastery until a reviewer confirms it.
+  if (!verified.needsHumanReview) {
+    await applyPendingMasteryForEvaluation(evaluationId);
   }
 
   await track(user.id, null, "simulation_completed", { scenarioId: scenario.id, score: verified.overallScore });

@@ -2,7 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { evidence, masteryRecords, reviewSchedule } from "@/lib/db/schema";
+import { evaluations, evidence, masteryRecords, reviewSchedule } from "@/lib/db/schema";
 import { applyEvidence, emptyMastery, type MasteryState } from "@/lib/learning/mastery";
 import { firstSchedule } from "@/lib/learning/review";
 import { uid } from "@/lib/utils";
@@ -139,13 +139,47 @@ export async function recordEvidenceAndUpdateMastery(args: {
   return { levelChanged, newLevel: next.level };
 }
 
-export async function recordSimulationEvidence(args: {
-  userId: string;
-  skillId: string;
-  score: number;
-  targetLevel: number;
-  refId: string;
-  note: string;
-}): Promise<{ levelChanged: boolean; newLevel: number }> {
-  return recordEvidenceAndUpdateMastery({ ...args, depth: "simulation", refKind: "simulation" });
+/**
+ * Applies an evaluation's stored `pendingMastery` — the deferred half of the
+ * "human review is mandatory before any content publishes" rule as it
+ * applies to AI-graded work.
+ *
+ * An evaluation that did not need review (`humanReviewStatus: "not_required"`)
+ * calls this immediately, at submission time, from `progress.ts`/
+ * `simulation.ts`. An evaluation that *was* queued
+ * (`verifyEvaluation()` found fabricated evidence, low confidence, or thin
+ * rubric coverage) must NOT reach the learner's permanent mastery record on
+ * the strength of an AI score alone — this function is only called for one
+ * later, by `decideEvaluationReview()` in `admin.ts`, and only when a human
+ * reviewer upholds or edits the result. An overturned/rejected evaluation
+ * never calls this, so its score never counts.
+ *
+ * Idempotent: a second call on an already-applied (or never-pending)
+ * evaluation is a no-op, so a reviewer re-opening a decided item, or a retry
+ * after a partial failure, can never double-count evidence.
+ */
+export async function applyPendingMasteryForEvaluation(
+  evaluationId: string,
+): Promise<{ skillId: string; levelChanged: boolean; newLevel: number }[]> {
+  const rows = await db.select().from(evaluations).where(eq(evaluations.id, evaluationId)).limit(1);
+  const row = rows[0];
+  if (!row || row.masteryApplied || !row.pendingMastery?.length) return [];
+
+  const results: { skillId: string; levelChanged: boolean; newLevel: number }[] = [];
+  for (const target of row.pendingMastery) {
+    const { levelChanged, newLevel } = await recordEvidenceAndUpdateMastery({
+      userId: row.userId,
+      skillId: target.skillId,
+      score: row.maxScore > 0 ? row.overallScore / row.maxScore : 0,
+      targetLevel: target.targetLevel,
+      depth: target.depth,
+      refKind: "evaluation",
+      refId: evaluationId,
+      note: row.priorityImprovement,
+    });
+    results.push({ skillId: target.skillId, levelChanged, newLevel });
+  }
+
+  await db.update(evaluations).set({ masteryApplied: true }).where(eq(evaluations.id, evaluationId));
+  return results;
 }
