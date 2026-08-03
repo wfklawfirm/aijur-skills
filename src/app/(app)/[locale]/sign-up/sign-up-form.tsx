@@ -24,9 +24,11 @@ export function SignUpForm({ locale }: { locale: Locale }) {
           ? dict.auth.passwordVariety
           : state.error === "server_error"
             ? dict.errors.serverErrorBody
-            : state.error === "invalid"
-              ? dict.auth.invalid
-              : undefined;
+            : state.error === "rate_limited"
+              ? dict.auth.rateLimited
+              : state.error === "invalid"
+                ? dict.auth.invalid
+                : undefined;
 
   return (
     <form action={formAction} className="space-y-5">

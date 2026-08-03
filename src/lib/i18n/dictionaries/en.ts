@@ -62,6 +62,7 @@ export const en: Dictionary = {
     emailTaken: "That email is already registered.",
     passwordLength: "Use at least 10 characters.",
     passwordVariety: "Mix at least two kinds of character — letters and numbers or symbols.",
+    rateLimited: "Too many attempts. Please wait a bit and try again.",
     demoHint: "Demo accounts are listed in the README.",
   },
   landing: {

@@ -21,7 +21,7 @@ export function SignInForm({ locale }: { locale: Locale }) {
 
       {state.error && (
         <Callout tone="negative" title={dict.common.error}>
-          {dict.auth.invalid}
+          {state.error === "rate_limited" ? dict.auth.rateLimited : dict.auth.invalid}
         </Callout>
       )}
 

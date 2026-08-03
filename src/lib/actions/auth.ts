@@ -8,13 +8,18 @@ import { db } from "@/lib/db";
 import { users, profiles } from "@/lib/db/schema";
 import { hashPassword, verifyPassword, passwordProblems } from "@/lib/auth/password";
 import { createSession, destroySession, getSessionUser } from "@/lib/auth/session";
+import { checkRateLimit, getClientIp } from "@/lib/auth/rate-limit";
 import { uid } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
 
 export interface AuthFormState {
-  error?: "invalid" | "email_taken" | "password_length" | "password_variety" | "server_error";
+  error?: "invalid" | "email_taken" | "password_length" | "password_variety" | "server_error" | "rate_limited";
   fieldErrors?: Record<string, string>;
 }
+
+const LOGIN_EMAIL_LIMIT = { windowMs: 15 * 60 * 1000, max: 5 };
+const LOGIN_IP_LIMIT = { windowMs: 15 * 60 * 1000, max: 20 };
+const SIGNUP_IP_LIMIT = { windowMs: 60 * 60 * 1000, max: 5 };
 
 const signInSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
@@ -33,6 +38,16 @@ export async function signIn(_prev: AuthFormState, formData: FormData): Promise<
   const parsed = signInSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "invalid" };
   const { email, password, locale } = parsed.data;
+
+  // Keyed by both the target email (stops a brute force against one
+  // account regardless of source) and the caller's IP (stops one source
+  // hammering many accounts) — either budget exhausting blocks the attempt.
+  const ip = await getClientIp();
+  const [emailLimit, ipLimit] = await Promise.all([
+    checkRateLimit(`login:email:${email}`, LOGIN_EMAIL_LIMIT),
+    checkRateLimit(`login:ip:${ip}`, LOGIN_IP_LIMIT),
+  ]);
+  if (!emailLimit.allowed || !ipLimit.allowed) return { error: "rate_limited" };
 
   const rows = await db.select().from(users).where(eq(users.email, email)).limit(1);
   const user = rows[0];
@@ -54,6 +69,10 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
   const parsed = signUpSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "invalid" };
   const { name, email, password, locale } = parsed.data;
+
+  const ip = await getClientIp();
+  const ipLimit = await checkRateLimit(`signup:ip:${ip}`, SIGNUP_IP_LIMIT);
+  if (!ipLimit.allowed) return { error: "rate_limited" };
 
   const problems = passwordProblems(password);
   if (problems.includes("length")) return { error: "password_length" };
