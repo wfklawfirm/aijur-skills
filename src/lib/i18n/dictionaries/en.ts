@@ -388,6 +388,9 @@ export const en: Dictionary = {
     analytics: "Analytics",
     reviewQueue: "Review queue",
     ingestion: "Ingest from a source",
+    ingestionExplainer:
+      "Automated ingestion runs through the Assisted Knowledge Ingestion Workflow: upload, then metadata, then AI-generated suggestions, then human review. Results appear in the review queue once ready.",
+    ingestionNotWired: "Automated analysis isn't wired up yet in this build — nothing here is faked.",
     status: {
       draft: "Draft",
       in_review: "In review",

@@ -70,33 +70,40 @@ export function AppHeader({
 }: {
   title: string;
   right?: React.ReactNode;
-  back?: { href: string; label: string };
+  /** A plain link back, or — for flows that must confirm before leaving — a handler. */
+  back?: { href: string; label: string } | { onClick: () => void; label: string };
 }) {
+  const arrow = (
+    <svg
+      width={20}
+      height={20}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="flip-rtl"
+    >
+      <path d="M15 19l-7-7 7-7" />
+    </svg>
+  );
+  const backClass =
+    "-ms-2.5 flex h-11 w-11 items-center justify-center rounded-full text-[var(--foreground-secondary)] hover:bg-[var(--surface-muted)]";
   return (
     <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/92 backdrop-blur safe-top">
       <div className="mx-auto flex max-w-lg items-center gap-2 px-4 py-3">
-        {back && (
-          <Link
-            href={back.href}
-            aria-label={back.label}
-            className="-ms-2.5 flex h-11 w-11 items-center justify-center rounded-full text-[var(--foreground-secondary)] hover:bg-[var(--surface-muted)]"
-          >
-            <svg
-              width={20}
-              height={20}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.75}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="flip-rtl"
-            >
-              <path d="M15 19l-7-7 7-7" />
-            </svg>
-          </Link>
-        )}
+        {back &&
+          ("href" in back ? (
+            <Link href={back.href} aria-label={back.label} className={backClass}>
+              {arrow}
+            </Link>
+          ) : (
+            <button type="button" onClick={back.onClick} aria-label={back.label} className={backClass}>
+              {arrow}
+            </button>
+          ))}
         <h1 dir="auto" className="text-page-title min-w-0 flex-1 truncate">
           {title}
         </h1>

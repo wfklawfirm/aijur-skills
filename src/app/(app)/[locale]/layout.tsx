@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Kufi_Arabic } from "next/font/google";
 import { notFound } from "next/navigation";
-import "../globals.css";
+import "../../globals.css";
 import { LOCALE_META, isLocale, LOCALES } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n";
 import { ConnectivityProvider, I18nProvider } from "@/components/providers";

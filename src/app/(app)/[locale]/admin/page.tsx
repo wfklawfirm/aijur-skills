@@ -1,0 +1,125 @@
+import Link from "next/link";
+import { getDictionary } from "@/lib/i18n";
+import type { Locale } from "@/lib/i18n/config";
+import { db } from "@/lib/db";
+import { sources, skills, units } from "@/lib/db/schema";
+import { listPendingIngestion, listQueuedEvaluations } from "@/lib/actions/admin";
+import type { SkillDef } from "@content/types";
+import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge, type Tone } from "@/components/ui/badge";
+import { SectionTitle } from "@/components/layout/app-shell";
+import { analysisStatusTone, contentStatusTone, humanize, reviewStatusTone } from "./_lib/format";
+
+function groupCount<T>(rows: T[], key: (row: T) => string): { value: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    const k = key(row);
+    counts.set(k, (counts.get(k) ?? 0) + 1);
+  }
+  return [...counts.entries()].map(([value, count]) => ({ value, count }));
+}
+
+function SummaryCard({
+  href,
+  title,
+  total,
+  entries,
+}: {
+  href: string;
+  title: string;
+  total: number;
+  entries: { label: string; count: number; tone: Tone }[];
+}) {
+  return (
+    <Link href={href} className="block">
+      <Card className="transition-colors hover:bg-[var(--surface-muted)]">
+        <CardHeader>
+          <CardTitle level={3}>{title}</CardTitle>
+          <span className="text-kpi-value num shrink-0">{total}</span>
+        </CardHeader>
+        <CardBody className="flex flex-wrap gap-1.5 pt-2">
+          {entries.length === 0 && <span className="text-supporting">0</span>}
+          {entries.map((e) => (
+            <Badge key={e.label} tone={e.tone}>
+              {e.label}
+              <span className="num">{e.count}</span>
+            </Badge>
+          ))}
+        </CardBody>
+      </Card>
+    </Link>
+  );
+}
+
+export default async function AdminOverviewPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const loc = locale as Locale;
+  const dict = getDictionary(loc);
+
+  const [sourceRows, skillRows, unitRows, pendingIngestion, queuedEvaluations] = await Promise.all([
+    db.select().from(sources),
+    db.select().from(skills),
+    db.select().from(units),
+    listPendingIngestion(),
+    listQueuedEvaluations(),
+  ]);
+
+  const sourcesByStatus = groupCount(sourceRows, (r) => r.analysisStatus);
+  const skillsByReview = groupCount(skillRows, (r) => (r.data as SkillDef).reviewStatus);
+  const unitsByStatus = groupCount(unitRows, (r) => r.status);
+
+  return (
+    <div className="space-y-3">
+      <SummaryCard
+        href={`/${loc}/admin/sources`}
+        title={dict.admin.sources}
+        total={sourceRows.length}
+        entries={sourcesByStatus.map((e) => ({
+          label: humanize(e.value),
+          count: e.count,
+          tone: analysisStatusTone(e.value),
+        }))}
+      />
+      <SummaryCard
+        href={`/${loc}/admin/skills`}
+        title={dict.admin.skills}
+        total={skillRows.length}
+        entries={skillsByReview.map((e) => ({
+          label: humanize(e.value),
+          count: e.count,
+          tone: reviewStatusTone(e.value),
+        }))}
+      />
+      <SummaryCard
+        href={`/${loc}/admin/units`}
+        title={dict.admin.units}
+        total={unitRows.length}
+        entries={unitsByStatus.map((e) => ({
+          label: dict.admin.status[e.value as keyof typeof dict.admin.status] ?? humanize(e.value),
+          count: e.count,
+          tone: contentStatusTone(e.value),
+        }))}
+      />
+
+      <SectionTitle>{dict.admin.reviewQueue}</SectionTitle>
+      <div className="grid grid-cols-2 gap-3">
+        <Link href={`/${loc}/admin/review-queue`} className="block">
+          <Card className="transition-colors hover:bg-[var(--surface-muted)]">
+            <CardBody>
+              <p className="text-kpi-value num">{pendingIngestion.length}</p>
+              <p className="text-supporting mt-1">{dict.admin.ingestion}</p>
+            </CardBody>
+          </Card>
+        </Link>
+        <Link href={`/${loc}/admin/review-queue`} className="block">
+          <Card className="transition-colors hover:bg-[var(--surface-muted)]">
+            <CardBody>
+              <p className="text-kpi-value num">{queuedEvaluations.length}</p>
+              <p className="text-supporting mt-1">{dict.admin.evaluationsPending}</p>
+            </CardBody>
+          </Card>
+        </Link>
+      </div>
+    </div>
+  );
+}

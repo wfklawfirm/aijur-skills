@@ -62,8 +62,16 @@ export interface SimulationTurnResult {
   turn: number;
 }
 
+/** Same bound as `textResponse` in responses.ts, kept in sync deliberately. */
+const MAX_MESSAGE_LENGTH = 8000;
+
 export async function sendSimulationMessage(sessionId: string, message: string): Promise<SimulationTurnResult> {
   const user = await requireUser();
+  const trimmed = message.trim();
+  if (trimmed.length === 0 || trimmed.length > MAX_MESSAGE_LENGTH) {
+    throw new Error("Invalid message");
+  }
+  message = trimmed;
   const rows = await db.select().from(simulationSessions).where(eq(simulationSessions.id, sessionId)).limit(1);
   const session = rows[0];
   if (!session || session.userId !== user.id) throw new Error("Session not found");

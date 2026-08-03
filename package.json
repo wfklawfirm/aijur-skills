@@ -4,19 +4,21 @@
   "private": true,
   "type": "module",
   "description": "AIJUR Professional Skills Lab — mobile-first professional skills platform for lawyers and law students",
-  "engines": { "node": ">=20.11" },
+  "engines": {
+    "node": ">=20.11"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx scripts/seed.ts",
     "db:reset": "node -e \"require('fs').rmSync('data/aijur.db',{force:true})\" && npm run db:push && npm run db:seed",
     "setup": "npm run db:push && npm run db:seed",
-    "test": "node --test --experimental-strip-types tests/*.test.ts",
-    "verify": "npm run typecheck && npm run test && npm run build"
+    "test": "tsx --tsconfig tests/tsconfig.json --test tests/*.test.ts",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build"
   },
   "dependencies": {
     "@libsql/client": "^0.15.15",
@@ -24,6 +26,7 @@
     "next": "16.2.12",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
     "zod": "^4.1.13"
   },
   "devDependencies": {

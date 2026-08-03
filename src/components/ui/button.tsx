@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "destructive";
@@ -63,6 +64,37 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
     </button>
   );
 });
+
+/**
+ * Same face as `Button`, but a real `<a>` under the hood. Navigation should
+ * never be a `<button onClick={() => router.push(...)}>` — that loses
+ * prefetching, right-click-to-open-in-new-tab and plain `<a>` semantics for no
+ * benefit, so every "go somewhere" control uses this instead.
+ */
+export function LinkButton({
+  variant = "secondary",
+  size = "md",
+  block,
+  className,
+  children,
+  ...rest
+}: React.ComponentProps<typeof Link> & { variant?: Variant; size?: Size; block?: boolean }) {
+  return (
+    <Link
+      className={cn(
+        "relative inline-flex items-center justify-center rounded-[var(--radius-control)] font-semibold",
+        "transition-colors duration-150 min-h-11",
+        VARIANTS[variant],
+        SIZES[size],
+        block && "w-full",
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </Link>
+  );
+}
 
 export function Spinner({ className }: { className?: string }) {
   return (

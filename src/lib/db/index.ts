@@ -10,13 +10,16 @@ import * as schema from "./schema";
  * sqld) moves the same schema and the same queries to a managed server without
  * a code change. The Postgres migration path is documented in
  * `docs/DATA_MODEL.md`; it is a dialect swap in `schema.ts`, not a rewrite.
+ *
+ * This relative default assumes a project-root cwd, which is true for `next
+ * dev`/`next build`/`next start` and every `npm run` script (including the
+ * test suite, which sets `DATABASE_URL` itself — see `tests/setup/env.ts`).
  */
 
 const url = process.env.DATABASE_URL ?? "file:./data/aijur.db";
 const authToken = process.env.DATABASE_AUTH_TOKEN || undefined;
 
 declare global {
-  // eslint-disable-next-line no-var
   var __aijurDb: ReturnType<typeof buildDb> | undefined;
 }
 

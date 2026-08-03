@@ -41,7 +41,7 @@ export function ActivityPlayer({
   /** Rendered under a written activity once the server has assessed it. */
   aiResult?: React.ReactNode;
 }) {
-  const { dict, t } = useI18n();
+  const { dict, t, locale } = useI18n();
   const L = useLocalized();
 
   const [selected, setSelected] = React.useState<string[]>([]);
@@ -59,10 +59,8 @@ export function ActivityPlayer({
   const [submitted, setSubmitted] = React.useState(false);
 
   const kindLabel = dict.activity[activity.kind];
-  const context = activity.context ? L({ ar: "", en: "" }) : undefined; // placeholder, replaced below
-  void context;
   const contextBlocks = activity.context
-    ? (activity.context as { ar: string[]; en: string[] })[useI18n().locale === "en" ? "en" : "ar"]
+    ? (activity.context as { ar: string[]; en: string[] })[locale === "en" ? "en" : "ar"]
     : undefined;
 
   function buildResponse(): ActivityResponse | null {
@@ -362,7 +360,7 @@ export function ActivityPlayer({
             {draft && (
               <div className="rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--surface-muted)] p-3.5">
                 <p className="text-label mb-1.5">{dict.activity.draft}</p>
-                {(useI18n().locale === "en" ? draft.en : draft.ar).map((line, i) => (
+                {(locale === "en" ? draft.en : draft.ar).map((line, i) => (
                   <p key={i} dir="auto" className="wrap-anywhere text-sm leading-relaxed [&+p]:mt-2">
                     {line}
                   </p>
@@ -578,7 +576,12 @@ function SpeakButton({ text, label, block }: { text: string; label: string; bloc
   const [supported, setSupported] = React.useState(true);
 
   React.useEffect(() => {
-    setSupported(typeof window !== "undefined" && "speechSynthesis" in window);
+    // Feature detection reads a browser API unavailable during SSR. Starting
+    // from `true` and correcting after mount (rather than branching on
+    // `typeof window` in the render body) keeps the server and first client
+    // render identical, avoiding a hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSupported("speechSynthesis" in window);
   }, []);
 
   if (!supported) return <p className="text-supporting">{dict.activity.speechUnsupported}</p>;

@@ -7,7 +7,7 @@ import { requireUser } from "@/lib/auth/session";
 import { getRubric, getUnit } from "@/lib/content/service";
 import { gradeActivity, requiresAiGrading, summariseUnit } from "@/lib/learning/grading";
 import { depthOf } from "@/lib/learning/mastery";
-import type { ActivityResponse } from "@/lib/learning/responses";
+import { activityResponseSchema, type ActivityResponse } from "@/lib/learning/responses";
 import { evaluate, verifyEvaluation } from "@/lib/ai/agents/evaluation";
 import { coach } from "@/lib/ai/agents/coaching";
 import { uid } from "@/lib/utils";
@@ -44,6 +44,14 @@ export async function submitActivity(args: {
   const unit = await getUnit(args.unitId);
   const activity = unit?.activities.find((a) => a.id === args.activityId);
   if (!unit || !activity) throw new Error("Activity not found");
+
+  // A Server Action is a public RPC endpoint, not a type-checked function call
+  // — `args.response` is `ActivityResponse` only from TypeScript's point of
+  // view. Anything reachable from the browser must be validated again here,
+  // the same as a REST body would be.
+  const parsedResponse = activityResponseSchema.safeParse(args.response);
+  if (!parsedResponse.success) throw new Error("Invalid activity response");
+  args = { ...args, response: parsedResponse.data };
 
   await track(user.id, null, "activity_attempted", { activityId: activity.id, kind: activity.kind });
 

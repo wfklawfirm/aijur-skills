@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export function Card({
@@ -64,6 +65,24 @@ export function CardAction({
       type="button"
       className={cn(
         "w-full rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 text-start",
+        "shadow-[var(--shadow-sm)] transition-colors hover:bg-[var(--surface-muted)]",
+        "min-h-11",
+        className,
+      )}
+      {...rest}
+    />
+  );
+}
+
+/** `CardAction`'s shape for a card whose whole surface navigates somewhere. */
+export function CardLinkAction({
+  className,
+  ...rest
+}: React.ComponentProps<typeof Link>) {
+  return (
+    <Link
+      className={cn(
+        "block w-full rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 text-start",
         "shadow-[var(--shadow-sm)] transition-colors hover:bg-[var(--surface-muted)]",
         "min-h-11",
         className,
