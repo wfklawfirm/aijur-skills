@@ -25,6 +25,7 @@ export interface OrgMember {
   name: string;
   email: string;
   role: OrgRole;
+  teamId: string | null;
   joinedAt: number;
 }
 
@@ -39,6 +40,7 @@ export async function listOrgMembersCore(user: SessionUser, organizationId: stri
       name: users.name,
       email: users.email,
       role: memberships.role,
+      teamId: memberships.teamId,
       joinedAt: memberships.createdAt,
     })
     .from(memberships)
