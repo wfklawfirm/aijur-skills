@@ -1,0 +1,402 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   AIJUR design tokens
+   --------------------------------------------------------------------------
+   White-executive discipline, applied to a learning product:
+
+   1. ONE accent — deep burgundy — reserved for identity and the single primary
+      action on a screen. Never decorative. A screen with burgundy in five
+      places is a screen you cannot scan.
+   2. Status colours mean exactly one thing each, everywhere: positive =
+      correct / mastered, negative = incorrect / critical mistake, warning =
+      needs review, info = neutral system information. Never repurposed to mean
+      "new" or "important".
+   3. Background and surface are two visibly different tones. A card must read
+      as raised before you notice its border.
+
+   Dark mode ships from day one so no component ever hard-codes a hex value.
+   ========================================================================== */
+
+:root {
+  /* Backgrounds */
+  --background: #f7f8fa;
+  --surface: #ffffff;
+  --surface-muted: #f8fafc;
+  --surface-soft: #f9fafb;
+
+  /* Text */
+  --foreground: #111827;
+  --foreground-secondary: #475569;
+  --foreground-muted: #64748b;
+
+  /* Borders */
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+
+  /* Brand — identity and primary actions ONLY */
+  --color-brand: #7a1832;
+  --color-brand-dark: #641329;
+  --color-brand-active: #521020;
+  --color-brand-light: #a6415a;
+  --color-brand-tint: #f9eff2;
+  --color-brand-contrast: #ffffff;
+
+  /* Status */
+  --color-positive: #16794b;
+  --color-positive-tint: #ecfdf3;
+  --color-negative: #b42318;
+  --color-negative-tint: #fff1f0;
+  --color-warning: #a15c00;
+  --color-warning-tint: #fff7e6;
+  --color-info: #175cd3;
+  --color-info-tint: #eff6ff;
+
+  /* Elevation — restrained. Heavy shadows read as decoration, not hierarchy. */
+  --shadow-sm: 0 1px 2px 0 rgb(16 24 40 / 0.05);
+  --shadow-md: 0 2px 6px -1px rgb(16 24 40 / 0.07), 0 1px 3px -1px rgb(16 24 40 / 0.05);
+  --shadow-lg: 0 12px 24px -8px rgb(16 24 40 / 0.12), 0 2px 6px -2px rgb(16 24 40 / 0.06);
+
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+  --radius-pill: 999px;
+
+  /* Mobile chrome */
+  --bottom-nav-height: 4.25rem;
+  --header-height: 3.5rem;
+
+  /* Fonts are injected by next/font in layout.tsx and land on these vars. */
+  --font-latin: system-ui, sans-serif;
+  --font-arabic: system-ui, sans-serif;
+}
+
+[data-theme="dark"] {
+  --background: #15130f;
+  --surface: #1f1b16;
+  --surface-muted: #262019;
+  --surface-soft: #201c17;
+
+  --foreground: #f2ede7;
+  --foreground-secondary: #cbc2b8;
+  --foreground-muted: #b8ada2;
+
+  --border: #382f27;
+  --border-strong: #4a4038;
+
+  /* Hover direction inverts on dark: lighter reads as "raised", where darker did on light. */
+  --color-brand: #b2455f;
+  --color-brand-dark: #cc6a80;
+  --color-brand-active: #d98599;
+  --color-brand-light: #cc6a80;
+  --color-brand-tint: #34222a;
+  --color-brand-contrast: #1a1013;
+
+  --color-positive: #4cb684;
+  --color-positive-tint: #16281f;
+  --color-negative: #e0655c;
+  --color-negative-tint: #2e1917;
+  --color-warning: #d99a35;
+  --color-warning-tint: #2e2415;
+  --color-info: #5b9bf0;
+  --color-info-tint: #1a2a3d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-soft: var(--surface-soft);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-brand: var(--color-brand);
+  --color-brand-dark: var(--color-brand-dark);
+  --color-brand-active: var(--color-brand-active);
+  --color-brand-light: var(--color-brand-light);
+  --color-brand-tint: var(--color-brand-tint);
+  --color-brand-contrast: var(--color-brand-contrast);
+
+  --color-positive: var(--color-positive);
+  --color-positive-tint: var(--color-positive-tint);
+  --color-negative: var(--color-negative);
+  --color-negative-tint: var(--color-negative-tint);
+  --color-warning: var(--color-warning);
+  --color-warning-tint: var(--color-warning-tint);
+  --color-info: var(--color-info);
+  --color-info-tint: var(--color-info-tint);
+
+  --radius-card: var(--radius-card);
+  --radius-control: var(--radius-control);
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  /* The browser picks whichever family actually has glyphs for the run. */
+  --font-sans: var(--font-latin), var(--font-arabic), system-ui, sans-serif;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Keeps the bottom nav clear of the iOS home indicator. */
+  scroll-padding-block-end: calc(var(--bottom-nav-height) + 1rem);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+/* Arabic runs slightly larger: the same point size reads smaller than Latin. */
+[dir="rtl"] body,
+[lang="ar"] {
+  font-family: var(--font-arabic), var(--font-latin), system-ui, sans-serif;
+  font-size: 16.5px;
+  line-height: 1.85;
+}
+
+[data-text-size="large"] body {
+  font-size: 18px;
+}
+
+[data-text-size="large"][dir="rtl"] body {
+  font-size: 18.5px;
+}
+
+/* ==========================================================================
+   Typography scale — five sizes cover the whole app
+   ========================================================================== */
+
+.text-page-title {
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 768px) {
+  .text-page-title {
+    font-size: 1.875rem;
+  }
+}
+
+.text-section-title {
+  font-size: 1.1875rem;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.text-kpi-value {
+  font-size: 1.875rem;
+  line-height: 1.15;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 768px) {
+  .text-kpi-value {
+    font-size: 2.125rem;
+  }
+}
+
+.text-supporting {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--foreground-muted);
+}
+
+[dir="rtl"] .text-supporting {
+  font-size: 0.875rem;
+}
+
+.text-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--foreground-muted);
+}
+
+/* Arabic has no case, so uppercasing does nothing but widen tracking oddly. */
+[dir="rtl"] .text-label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.8125rem;
+}
+
+/**
+ * Every number, score, date and count. Forces tabular figures so columns line
+ * up, and isolates direction so a Latin numeral inside an Arabic sentence is
+ * not reordered by the bidi algorithm.
+ */
+.num {
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* ==========================================================================
+   Interaction & accessibility floors
+   ========================================================================== */
+
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
+[data-theme="dark"] :where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline-color: var(--color-brand-light);
+}
+
+/** Minimum comfortable target. Applied by the Button/IconButton primitives. */
+.tap-target {
+  min-block-size: 2.75rem;
+  min-inline-size: 2.75rem;
+}
+
+.safe-bottom {
+  padding-block-end: max(env(safe-area-inset-bottom), 0px);
+}
+
+.safe-top {
+  padding-block-start: max(env(safe-area-inset-top), 0px);
+}
+
+/** The app shell: content never sits under the bottom bar or the notch. */
+.app-scroll {
+  padding-block-end: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 1.5rem);
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  inset-inline-start: 0.5rem;
+  inset-block-start: -4rem;
+  z-index: 100;
+  background: var(--surface);
+  color: var(--foreground);
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-lg);
+  transition: inset-block-start 120ms ease;
+}
+
+.skip-link:focus {
+  inset-block-start: 0.5rem;
+}
+
+/* ==========================================================================
+   Motion — short, purposeful, and fully opt-out
+   ========================================================================== */
+
+@keyframes aijur-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes aijur-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-rise {
+  animation: aijur-rise 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.skeleton {
+  background-image: linear-gradient(
+    90deg,
+    var(--surface-muted) 25%,
+    var(--surface-soft) 37%,
+    var(--surface-muted) 63%
+  );
+  background-size: 400% 100%;
+  animation: aijur-shimmer 1.4s ease infinite;
+  border-radius: 0.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+[data-reduced-motion="true"] *,
+[data-reduced-motion="true"] *::before,
+[data-reduced-motion="true"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* ==========================================================================
+   RTL/LTR-safe helpers
+   ========================================================================== */
+
+/** Mirrors a directional glyph (chevrons, arrows) without a second icon set. */
+[dir="rtl"] .flip-rtl {
+  transform: scaleX(-1);
+}
+
+/** Long unbroken Arabic strings should wrap, not overflow their card. */
+.wrap-anywhere {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* Scrollbars stay out of the way on touch, visible on pointer devices. */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Print: the evidence portfolio is a real deliverable people hand to a partner. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}
