@@ -27,11 +27,15 @@ export default async function AdminLayout({
     redirect(`/${loc}/home`);
   }
 
+  const showOrganization = Boolean(
+    user.organization && (can(user, "org.members.manage") || can(user, "org.reports")),
+  );
+
   return (
     <>
       <AppHeader title={dict.admin.title} />
       <Page>
-        <AdminSubNav />
+        <AdminSubNav showOrganization={showOrganization} />
         {children}
       </Page>
       <BottomNav showStudio />

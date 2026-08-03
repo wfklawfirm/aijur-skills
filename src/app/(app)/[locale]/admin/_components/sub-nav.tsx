@@ -6,11 +6,16 @@ import { cn } from "@/lib/utils";
 import { useI18n } from "@/components/providers";
 
 /**
- * Content Studio's seven work areas. A horizontally scrollable pill row
- * rather than a sidebar — the app has no desktop-only chrome, so the admin
- * section stays in the same shell as everything else, just denser.
+ * Content Studio's work areas. A horizontally scrollable pill row rather
+ * than a sidebar — the app has no desktop-only chrome, so the admin section
+ * stays in the same shell as everything else, just denser.
+ *
+ * `showOrganization` adds an eighth pill for org owners/admins/managers only
+ * — someone with only `content.*` permissions (an author or reviewer with no
+ * organization) never sees a tab for a feature `assertTenant()` would just
+ * reject them from anyway.
  */
-export function AdminSubNav() {
+export function AdminSubNav({ showOrganization }: { showOrganization: boolean }) {
   const { dict, locale } = useI18n();
   const pathname = usePathname();
   const base = `/${locale}/admin`;
@@ -23,6 +28,7 @@ export function AdminSubNav() {
     { href: `${base}/rubrics`, label: dict.admin.rubrics },
     { href: `${base}/review-queue`, label: dict.admin.reviewQueue },
     { href: `${base}/ingestion`, label: dict.admin.ingestion },
+    ...(showOrganization ? [{ href: `${base}/organization`, label: dict.admin.organization.title }] : []),
   ];
 
   return (

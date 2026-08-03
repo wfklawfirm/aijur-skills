@@ -284,23 +284,43 @@ here: even if a learner's client bundle never renders a "Publish" button,
 directly invoking the `publishEntity` Server Action as a learner throws
 `AuthError("forbidden")` before any row is touched.
 
-**Gap found**: `assertTenant()` itself, despite being fully unit-tested,
-has **zero call sites** anywhere under `src/` outside of its own definition
-and its test file — confirmed by
-`grep -rn "assertTenant(" src/` returning only `src/lib/auth/rbac.ts:77`.
-None of `src/lib/actions/{admin,onboarding,profile,progress,simulation,analytics,mastery-bridge}.ts`
-call it. This tracks with the current state of the product: there is no
-org-admin action file yet (no `src/lib/actions/organization.ts` or
-equivalent), and the org-scoped permissions (`org.members.manage`,
-`org.assign`, `org.reports`) are likewise not gated by `require_()` anywhere
-in `src/lib/actions/` today — `grep -rln "org.members.manage\|org.assign\|org.reports" src/`
-matches only the definition in `rbac.ts` itself. In other words: the
-tenant-isolation *primitive* is built and verified correct in isolation,
-but the org-management *surface* that would need to call it (member
-management, assignment, org reporting UIs) has not been built yet. This
-should be tracked as a build-order dependency: **`assertTenant()` must be
-wired into every org-scoped action before that surface ships**, not
-retrofitted after. See §7.
+**Gap closed**: `assertTenant()` previously had zero call sites anywhere
+under `src/` outside of its own definition and its unit test — there was
+no org-admin action surface for it to protect. That surface now exists:
+`src/lib/actions/org-core.ts` (the query logic) and `src/lib/actions/org.ts`
+(the "use server" wrappers that resolve the real session and delegate to
+it) implement member listing/add/role-change/remove and a privacy-respecting
+per-org report at `/admin/organization`. Every one of the five entry points
+calls `require_(user, "org.members.manage" | "org.reports")` *and*
+`assertTenant(user, organizationId)` before touching a row —
+`grep -rn "assertTenant(" src/lib/actions/org-core.ts` now returns five
+matches, one per exported function.
+
+Two isolation properties are enforced, not one: `assertTenant()` checks
+that the *caller's own organization* matches the `organizationId` argument;
+a second, separate check in `updateMemberRoleCore()`/`removeOrgMemberCore()`
+confirms the *target membership row* actually belongs to that same
+`organizationId` (`target.organizationId !== organizationId` throws
+`member_not_found`) — otherwise a caller correctly scoped to their own org
+could still pass a membership id belonging to a different org and mutate
+it, since `assertTenant()` alone only validates the id argument, not what
+the row it names actually points to.
+
+This is now covered by a dedicated integration test,
+`tests/org-tenant-isolation.test.ts` (9 tests, all passing), which seeds two
+real organizations with real memberships and asserts that Organization A's
+owner throws `AuthError` calling `listOrgMembersCore`, `addOrgMemberCore`,
+`updateMemberRoleCore`, `removeOrgMemberCore`, and `getOrgReportCore`
+against Organization B's id — and that the same calls succeed against their
+own org. It also asserts the row-ownership check above independently (an
+org A caller passing org B's *membership id* alongside org A's own
+*organization id* gets `member_not_found`, not a silent cross-org mutation).
+The split between `org-core.ts` (plain module, takes a resolved
+`SessionUser` parameter) and `org.ts` (`"use server"`, resolves the session
+via `requireUser()` and delegates) is what makes this testable without a
+live Next.js request scope — cookies never enter the code path under test,
+but every `require_()`/`assertTenant()` call runs exactly as it does in
+production. See §7.
 
 All of the data-scoping that *does* exist today for individual learners is
 enforced by scoping DB queries to `eq(<table>.userId, user.id)` directly
@@ -436,7 +456,7 @@ the actual code rather than assuming best practice is already in place:
 | **Audit logging of permission denials** | **Schema exists, unused.** An `auditLog` table is defined (`src/lib/db/schema.ts:817-831`, with `actorId`, `organizationId`, `action`, `entityType/Id`, `meta`, `ip`) but nothing in `src/` inserts into it (`grep -rn "auditLog\b" src --include=*.ts` outside `schema.ts` returns nothing). `AuthError` throws (both `unauthenticated` and `forbidden`) are not logged anywhere today. | `src/lib/db/schema.ts:817-831`; `src/lib/auth/rbac.ts:68-70` |
 | **Password reset flow** | **Missing.** No `resetPassword`/`forgotPassword` action, route, or token table exists anywhere in `src/` (`grep -rin "reset.?password\|forgot" src` returns nothing). A user who forgets their password currently has no self-service recovery path in the code. | repo-wide grep, no matches |
 | **Email verification** | **Not enforced — set unconditionally at signup.** `emailVerifiedAt` is a real column (`src/lib/db/schema.ts:73`), but `signUp()` sets it to `now` immediately on account creation (`src/lib/actions/auth.ts:77`) rather than after a verification link is clicked; there is no verification-email send step or verification-token action anywhere in `src/`. The column currently records account-creation time, not verified-email time. | `src/lib/actions/auth.ts:69-79`; `src/lib/db/schema.ts:73` |
-| **Tenant-isolation enforcement (`assertTenant`)** | **Primitive built and unit-tested; not yet wired to any action.** See §4 — zero call sites in `src/lib/actions/` today, because the org-admin action surface (`org.members.manage`/`org.assign`/`org.reports`) has not been built yet. Not a live vulnerability (there is no code path to exploit yet, since the org-scoped mutations don't exist), but a **required pre-ship gate**: every future org-scoped action must call `assertTenant()` before touching org data, or this well-tested control provides no real protection. | `src/lib/auth/rbac.ts:77-82`; repo-wide grep for call sites |
+| **Tenant-isolation enforcement (`assertTenant`)** | **Fixed.** Wired into the new org-admin action surface (`src/lib/actions/org-core.ts`, five call sites) covering `org.members.manage` and `org.reports`. Verified by a dedicated cross-org integration test (`tests/org-tenant-isolation.test.ts`, 9/9 passing), not just the pre-existing mock-user unit test. Remaining scope note: `org.assign` (team/competency-profile assignment) still has no action surface at all, so it is not yet a call site — track it the same way when that feature is built. | `src/lib/actions/org-core.ts`; `tests/org-tenant-isolation.test.ts` |
 | **Learner-response schema validation at the Server Action boundary** | **Fixed.** See §5 — `submitActivity()` now calls `activityResponseSchema.safeParse()` before grading or storage, and `sendSimulationMessage()` bounds/trims the free-text message the same way `textResponse` does. Remaining lower-severity item: response *shape* isn't yet cross-checked against the specific activity *kind* (tracked, not a scoring bypass — see §5 for why). | `src/lib/learning/responses.ts:1-32`; `src/lib/actions/progress.ts`; `src/lib/actions/simulation.ts` |
 | **Session fixation / rotation on privilege change** | Not verified as a gap or a strength in this pass — no code path was found that rotates a session id when `systemRole` or organization membership changes; `getSessionUser()` re-reads current role/org from the DB on every call (`src/lib/auth/session.ts:93-127`), so a role change takes effect on the next request regardless, which limits the practical impact of not rotating the session id itself. | `src/lib/auth/session.ts:86-128` |
 | **Secure cookie handling in non-production environments that are not local dev** (staging/preview) | Flagged as a review item, not a confirmed bug: `secure` is `true` only when `NODE_ENV === "production"` (`session.ts:62`), and `SESSION_SECRET` falls back to the well-known dev value whenever `NODE_ENV !== "production"` (`session.ts:14-19`). Any staging/preview deployment that runs with a non-`"production"` `NODE_ENV` while serving real traffic over HTTPS would send the session cookie without `Secure` and sign it with a public, hardcoded secret. | `src/lib/auth/session.ts:11-20,62` |
