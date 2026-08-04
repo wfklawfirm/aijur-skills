@@ -1,5 +1,6 @@
 import "server-only";
 import { AuthError, type SessionUser } from "./session";
+import { logAccessDenial } from "./audit";
 
 /**
  * Server-side authorisation. The UI hides what a user cannot do, but the UI is
@@ -66,7 +67,10 @@ export function can(user: SessionUser, permission: Permission): boolean {
 }
 
 export function require_(user: SessionUser, permission: Permission): void {
-  if (!can(user, permission)) throw new AuthError("forbidden");
+  if (!can(user, permission)) {
+    void logAccessDenial(user, "forbidden", { permission });
+    throw new AuthError("forbidden");
+  }
 }
 
 /**
@@ -77,6 +81,7 @@ export function require_(user: SessionUser, permission: Permission): void {
 export function assertTenant(user: SessionUser, organizationId: string): void {
   if (user.systemRole === "admin") return;
   if (!user.organization || user.organization.id !== organizationId) {
+    void logAccessDenial(user, "forbidden", { organizationId });
     throw new AuthError("forbidden");
   }
 }

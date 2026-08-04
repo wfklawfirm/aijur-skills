@@ -130,7 +130,11 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 /** Throws if unauthenticated. Use in route handlers and server actions. */
 export async function requireUser(): Promise<SessionUser> {
   const user = await getSessionUser();
-  if (!user) throw new AuthError("unauthenticated");
+  if (!user) {
+    const { logAccessDenial } = await import("./audit");
+    await logAccessDenial(null, "unauthenticated");
+    throw new AuthError("unauthenticated");
+  }
   return user;
 }
 

@@ -2,7 +2,7 @@ import { test, describe, after, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { memberships, organizations, users } from "@/lib/db/schema";
+import { auditLog, memberships, organizations, users } from "@/lib/db/schema";
 import { AuthError, type SessionUser } from "@/lib/auth/session";
 import {
   addOrgMemberCore,
@@ -65,6 +65,12 @@ function noOrgUser(userId: string): SessionUser {
 async function cleanup() {
   await db.delete(memberships).where(eq(memberships.organizationId, ORG_A_ID));
   await db.delete(memberships).where(eq(memberships.organizationId, ORG_B_ID));
+  // require_()/assertTenant() log a fire-and-forget audit_log row (actorId
+  // -> users.id, a real FK) on every forbidden call these tests deliberately
+  // trigger — must be cleared before the users themselves, or the delete
+  // below fails on the foreign key.
+  await db.delete(auditLog).where(eq(auditLog.actorId, USER_A_ID));
+  await db.delete(auditLog).where(eq(auditLog.actorId, USER_B_ID));
   await db.delete(users).where(eq(users.id, USER_A_ID));
   await db.delete(users).where(eq(users.id, USER_B_ID));
   await db.delete(organizations).where(eq(organizations.id, ORG_A_ID));
