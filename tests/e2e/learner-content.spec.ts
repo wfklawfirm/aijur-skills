@@ -117,4 +117,20 @@ test.describe("Authenticated learner content", () => {
       await expect(page.getByRole("button").first()).toBeVisible();
     });
   }
+
+  // Only 2 of 8 paths (cc, da) have their last unit spot-checked above --
+  // the remaining 6 have first and middle covered but not the tenth and
+  // final unit, which is exactly where a chapter-count-off-by-one or a
+  // dangling "next unit" link bug would surface. Closes that gap for every
+  // remaining authored path, completing first+middle+last coverage across
+  // all 8 of the platform's authored paths.
+  for (const unitId of ["unit.le.10", "unit.ni.10", "unit.sm.10", "unit.tl.10", "unit.bd.10", "unit.fo.10"]) {
+    test(`the last unit of every remaining path renders too (${unitId})`, async ({ page }) => {
+      await page.goto(`/en/unit/${unitId}`);
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("404");
+      await expect(page.locator("body")).not.toContainText("500");
+      await expect(page.getByRole("button").first()).toBeVisible();
+    });
+  }
 });

@@ -360,7 +360,12 @@ in production content, just at low volume for some kinds (e.g. only 1
   every remaining authored path** — `unit.cc.05`, `unit.le.05`,
   `unit.sm.05`, `unit.tl.05`, `unit.bd.05`, `unit.da.05` — alongside the
   two already covered (`unit.ni.05`, `unit.fo.05`), so all 8 paths now have
-  their chapter-boundary seam exercised, not just 2 of 8. 42/42 tests
+  their chapter-boundary seam exercised, not just 2 of 8, and (10) **a
+  last-unit spot check for the remaining 6 paths** — `unit.le.10`,
+  `unit.ni.10`, `unit.sm.10`, `unit.tl.10`, `unit.bd.10`, `unit.fo.10` —
+  alongside the two already covered (`unit.cc.10`, `unit.da.10`), so every
+  one of the 8 authored paths now has first, chapter-boundary-seam, and
+  last unit all exercised end to end. 48/48 tests
   passing. This is
   the first repeatable e2e run in the repo — previously only a one-off
   manual Playwright script existed, used to smoke-test the CSRF guard once
@@ -423,8 +428,9 @@ in production content, just at low volume for some kinds (e.g. only 1
   navigation walkthrough, no screen-reader testing (axe catches the
   mechanical subset of a11y issues, not the full WCAG surface), only 8 of
   10 content domains have a unit page exercised (and only 4 of those 8 have
-  more than their first unit checked — 2 at their last unit, all 8 now at
-  their chapter-boundary seam per (9) above), only 8 of 18 scenarios have a
+  more than their first unit checked — all 8 now have their
+  chapter-boundary seam AND their last unit exercised too, per (9) and (10)
+  above — 24 of 80 units total touched), only 8 of 18 scenarios have a
   simulation exercised (though now at least one per authored path — see (8)
   above), and all eight simulation tests end early rather than driving to
   the scenario's natural `maxTurns`.
@@ -500,7 +506,7 @@ usability gap with its own new e2e regression test (§5, `docs/SECURITY.md`
 | Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **141 / 141 passing**, 38 suites, 0 failed, 0 skipped, 0 todo. Runtime ~14s. |
 | Content seed | `npm run db:reset` | **Succeeds.** 10 domains, 61 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 399 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
 | Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** No build errors, all routes generated (mix of static/SSG/dynamic). |
-| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **42 / 42 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths** plus 2 last-unit and 8 middle-unit spot checks (20 tests), **8 full simulation runs covering all 8 authored paths** (8 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
+| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **48 / 48 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths** plus 8 last-unit and 8 middle-unit spot checks — full first+seam+last coverage for every path (26 tests), **8 full simulation runs covering all 8 authored paths** (8 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
 
 `npm run verify` (typecheck → lint → test → build) would pass end to end based on the
 individual results above — all four stages were run and all four are green as of this
