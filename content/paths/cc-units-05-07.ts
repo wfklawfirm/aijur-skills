@@ -1929,7 +1929,7 @@ export const CC_UNITS_05_07: UnitDef[] = [
         },
         prompt: {
           ar: "ما أفضل ردّ؟",
-          en: "What is the best response?",
+          en: "Which reply is most appropriate here?",
         },
         options: [
           {

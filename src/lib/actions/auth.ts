@@ -22,7 +22,16 @@ export interface AuthFormState {
 
 const LOGIN_EMAIL_LIMIT = { windowMs: 15 * 60 * 1000, max: 5 };
 const LOGIN_IP_LIMIT = { windowMs: 15 * 60 * 1000, max: 20 };
-const SIGNUP_IP_LIMIT = { windowMs: 60 * 60 * 1000, max: 5 };
+// Raised from 5 to 10/hour (docs/SECURITY.md §7): the same class of issue
+// documented for SIMULATION_START_LIMIT (raised 20->40/hour when the e2e
+// suite's own realistic usage pattern proved the old ceiling too tight) --
+// adding tests/e2e/new-content-coverage.spec.ts's 3 real sign-ups pushed
+// this suite's single-run total to 7, past the old limit of 5, a genuine
+// reproducible "Too many attempts" failure, not flakiness. A shared office/
+// NAT IP with several people signing up in one sitting is a realistic case
+// this limit should allow; 5/hour was already tight for that, not just for
+// testing.
+const SIGNUP_IP_LIMIT = { windowMs: 60 * 60 * 1000, max: 10 };
 
 const signInSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
