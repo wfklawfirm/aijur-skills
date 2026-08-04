@@ -9,8 +9,26 @@ import { saveOnboarding } from "@/lib/actions/onboarding";
 import { Button } from "@/components/ui/button";
 import { StepDots } from "@/components/ui/progress";
 import { ChoiceGroup, Input, Select, SegmentedControl, Toggle } from "@/components/ui/form";
+import { Callout } from "@/components/ui/feedback";
+import { ScaleIcon, SparkIcon, GrowthIcon } from "@/components/ui/icons";
 import { COUNTRIES } from "@/lib/i18n/countries";
 import { cn } from "@/lib/utils";
+
+/** One value-proposition row on the pre-onboarding welcome screen. A tiny
+ * local component rather than three near-identical inline blocks. */
+function ValueProp({ icon, title, body }: { icon: React.ReactNode; title: string; body: string }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-tint)] text-[var(--color-brand)]">
+        {icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-section-title">{title}</p>
+        <p className="text-supporting mt-0.5">{body}</p>
+      </div>
+    </div>
+  );
+}
 
 type CareerStage = "student" | "trainee" | "junior" | "experienced" | "manager";
 type Modality = "text" | "voice" | "both";
@@ -61,6 +79,12 @@ const JUST_SWITCHED_LANGUAGE_KEY = "aijur:onboarding:justSwitchedLanguage";
 interface Draft {
   step: number;
   form: FormState;
+  /** False while the learner is still on the pre-wizard welcome screen (see
+   * `showWelcome` below) -- lets a language switch made *from* the welcome
+   * screen land back on the (now-translated) welcome screen instead of
+   * skipping straight into the wizard, while a switch made mid-wizard still
+   * resumes exactly where it was. */
+  welcomeDismissed: boolean;
 }
 
 export function OnboardingFlow({ locale, userId }: { locale: Locale; userId: string }) {
@@ -96,6 +120,11 @@ export function OnboardingFlow({ locale, userId }: { locale: Locale; userId: str
   // discard. While this is set, the wizard itself doesn't render -- see the
   // early return below.
   const [resumeDraft, setResumeDraft] = React.useState<Draft | null>(null);
+  // The pre-wizard welcome/hook screen -- true by default so a genuinely
+  // fresh sign-up sees it before any question, not the assessment cold.
+  // Corrected to false post-mount for anyone already past it (see the effect
+  // below), same hydration-safe pattern as the rest of this component.
+  const [showWelcome, setShowWelcome] = React.useState(true);
 
   React.useEffect(() => {
     let draft: Draft | null = null;
@@ -126,8 +155,14 @@ export function OnboardingFlow({ locale, userId }: { locale: Locale; userId: str
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm(draft.form);
       setStep(draft.step);
-    } else if (draft) {
+      setShowWelcome(!draft.welcomeDismissed);
+    } else if (draft && draft.welcomeDismissed) {
+      // A draft that never made it past the welcome screen (e.g. the learner
+      // switched language while still reading it, then came back some other
+      // way) isn't real progress worth a "resume or restart?" prompt -- fall
+      // through and let the fresh defaults show the welcome screen again.
       setResumeDraft(draft);
+      setShowWelcome(false);
     }
     setHydrated(true);
     // Intentionally runs once on mount only -- re-checking on every render
@@ -139,11 +174,18 @@ export function OnboardingFlow({ locale, userId }: { locale: Locale; userId: str
   React.useEffect(() => {
     if (!hydrated || resumeDraft) return;
     try {
-      localStorage.setItem(draftKey(userId), JSON.stringify({ step, form } satisfies Draft));
+      localStorage.setItem(
+        draftKey(userId),
+        JSON.stringify({ step, form, welcomeDismissed: !showWelcome } satisfies Draft),
+      );
     } catch {
       // best-effort -- storage full/unavailable shouldn't block onboarding
     }
-  }, [hydrated, resumeDraft, step, form, userId]);
+  }, [hydrated, resumeDraft, step, form, userId, showWelcome]);
+
+  function dismissWelcome() {
+    setShowWelcome(false);
+  }
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -185,7 +227,11 @@ export function OnboardingFlow({ locale, userId }: { locale: Locale; userId: str
     try {
       localStorage.setItem(
         draftKey(userId),
-        JSON.stringify({ step, form: { ...form, language: newLocale } } satisfies Draft),
+        JSON.stringify({
+          step,
+          form: { ...form, language: newLocale },
+          welcomeDismissed: !showWelcome,
+        } satisfies Draft),
       );
       sessionStorage.setItem(JUST_SWITCHED_LANGUAGE_KEY, "1");
     } catch {
@@ -280,6 +326,53 @@ export function OnboardingFlow({ locale, userId }: { locale: Locale; userId: str
       ))}
     </div>
   );
+
+  // The very first thing a new sign-up sees -- what the app is, why it's
+  // worth their time, and the challenge ahead -- before a single question is
+  // asked. Skipped entirely for anyone already past it (resumed drafts,
+  // language switches mid-flow) via the mount effect above.
+  if (showWelcome) {
+    return (
+      <div className="flex flex-1 flex-col gap-6 py-1">
+        <div className="flex justify-end">{languageSwitcher}</div>
+        <div className="flex-1 space-y-7">
+          <div className="space-y-2 text-center">
+            <p className="text-label font-semibold text-[var(--color-brand)]">{dict.onboarding.welcome.kicker}</p>
+            <h1 className="text-page-title">{dict.onboarding.welcome.title}</h1>
+            <p className="text-supporting mt-1">{dict.onboarding.welcome.subtitle}</p>
+          </div>
+
+          <div className="space-y-5">
+            <ValueProp
+              icon={<ScaleIcon size={20} />}
+              title={dict.onboarding.welcome.value1Title}
+              body={dict.onboarding.welcome.value1Body}
+            />
+            <ValueProp
+              icon={<SparkIcon size={20} />}
+              title={dict.onboarding.welcome.value2Title}
+              body={dict.onboarding.welcome.value2Body}
+            />
+            <ValueProp
+              icon={<GrowthIcon size={20} />}
+              title={dict.onboarding.welcome.value3Title}
+              body={dict.onboarding.welcome.value3Body}
+            />
+          </div>
+
+          <Callout tone="brand" title={dict.onboarding.welcome.challengeTitle}>
+            {dict.onboarding.welcome.challengeBody}
+          </Callout>
+        </div>
+
+        <div className="sticky bottom-0 border-t border-[var(--border)] bg-[var(--background)] pb-2 pt-4 safe-bottom">
+          <Button variant="primary" block onClick={dismissWelcome}>
+            {dict.onboarding.welcome.cta}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // A saved draft exists and hasn't been resolved yet -- offer to resume or
   // start fresh instead of rendering the wizard (and instead of silently

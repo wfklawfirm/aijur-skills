@@ -456,7 +456,44 @@ in production content, just at low volume for some kinds (e.g. only 1
   switches language mid-flow, confirms the step position and answers
   survive the switch, then does a real page reload and confirms the resume
   prompt appears and correctly restores both step and prior answers. 119/119 tests
-  passing. This is
+  passing. (21) **A second live-production request: stronger onboarding
+  "hooks" and a professional progress dashboard.** After the fix above shipped,
+  the user pointed out the onboarding funnel went straight from sign-up into
+  the 9-step wizard and then straight into the diagnostic, with no
+  explanation anywhere of what the app is, why it's worth two minutes, or
+  what a learner gets out of it — and separately asked for a real "what
+  stage am I at, what have I learned" summary shown like a dashboard, not
+  buried in a sub-page. Both were scoped with the user before building (two
+  quick multiple-choice questions, not open-ended back-and-forth) to avoid
+  guessing wrong on placement: welcome screen right after sign-up (not a
+  public pre-signup landing page), dashboard strengthening on both the
+  diagnostic result screen and Home. Shipped: (a) a pre-wizard welcome
+  screen (`onboarding-flow.tsx`) — kicker, headline, three evidence-grounded
+  value props (real scenarios, evidence-based feedback, starts-where-you-are
+  placement), and a "ready for the challenge?" callout framing the
+  diagnostic ahead, with the same language switcher and draft mechanism the
+  rest of onboarding uses (a `welcomeDismissed` flag threaded through the
+  draft so switching language *from* the welcome screen lands back on the
+  translated welcome screen rather than skipping into the wizard — the one
+  genuinely tricky interaction this added); (b) the diagnostic result screen
+  became a real starting-readiness dashboard — `submitDiagnostic()`
+  (`src/lib/actions/onboarding.ts`) now also returns an aggregate readiness
+  percentage plus up to three strength and three growth-area skill ids,
+  recomputed from the exact same per-skill averages that already set mastery
+  levels and the review schedule (no new/invented metric, and the write-side
+  logic that already shipped is untouched), rendered as a `ScoreRing` gauge
+  with explicit "a starting point, not a verdict" framing plus strength/
+  growth-area badges (or an honest empty-state line when a list is empty);
+  (c) a new "Your stage" card at the very top of Home, above "Continue your
+  journey," summarising the learner's real mastery-record evidence (overall
+  level, skills tracked, due-for-review count, top skills) with a link into
+  the full Progress dashboard — an empty-state fallback for the (rare, since
+  the diagnostic seeds mastery records) case of zero assessed skills.
+  Covered by a new e2e test asserting the welcome screen's content and its
+  language-switch interaction, plus new assertions folded into the existing
+  full-onboarding and Home tests for the dashboard content on both screens.
+  120/120 e2e tests passing (was 119/119); typecheck, lint, unit tests
+  (141/141), and build all clean. This is
   the first repeatable e2e run in the repo — previously only a one-off
   manual Playwright script existed, used to smoke-test the CSRF guard once
   (`docs/SECURITY.md` §7) and then discarded. Running this suite found and
@@ -607,7 +644,7 @@ usability gap with its own new e2e regression test (§5, `docs/SECURITY.md`
 | Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **141 / 141 passing**, 38 suites, 0 failed, 0 skipped, 0 todo. Runtime ~14s. |
 | Content seed | `npm run db:reset` | **Succeeds.** 10 domains, 61 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 399 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
 | Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** No build errors, all routes generated (mix of static/SSG/dynamic). |
-| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **119 / 119 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **21 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus three (`scn.guarantee-request`, `scn.flagging-a-quality-issue`, `scn.catching-an-ai-hallucination`, from three different domains) also proven reaching their natural `maxTurns` end** (21 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests), and **a real keyboard-only navigation test** (sign-in driven entirely via `Tab`/keyboard input, no mouse events, 1 test). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
+| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **120 / 120 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **21 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus three (`scn.guarantee-request`, `scn.flagging-a-quality-issue`, `scn.catching-an-ai-hallucination`, from three different domains) also proven reaching their natural `maxTurns` end** (21 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests), and **a real keyboard-only navigation test** (sign-in driven entirely via `Tab`/keyboard input, no mouse events, 1 test). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
 
 `npm run verify` (typecheck → lint → test → build) would pass end to end based on the
 individual results above — all four stages were run and all four are green as of this

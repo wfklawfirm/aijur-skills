@@ -58,9 +58,22 @@ export async function saveOnboarding(input: z.infer<typeof onboardingSchema>): P
  * rather than a slogan: the first thing the home screen shows is grounded in
  * actual performance, not a self-report.
  */
-export async function submitDiagnostic(
-  responses: Record<string, ActivityResponse>,
-): Promise<{ pathId: string; startingSkillIds: string[] }> {
+export async function submitDiagnostic(responses: Record<string, ActivityResponse>): Promise<{
+  pathId: string;
+  startingSkillIds: string[];
+  /** 0-100, rounded — the same per-skill averages that set mastery levels
+   * above, aggregated. Shown on the result screen as a "starting readiness"
+   * gauge; never framed as a final score, per the product's no-judgment rule. */
+  overallReadinessPct: number;
+  totalSkillsAssessed: number;
+  /** Up to 3 skill ids with avg >= 0.75, strongest first — real evidence, not
+   * a generic "great job" message. */
+  strongSkillIds: string[];
+  /** Up to 3 skill ids with avg < 0.7, weakest first — a display-scoped
+   * subset of `startingSkillIds` (which stays unbounded and drives the
+   * review-schedule writes above; this one is presentation-only). */
+  growthSkillIds: string[];
+}> {
   const user = await requireUser();
   const diagnostic = await getDiagnostic("diag.placement.v1");
   if (!diagnostic) throw new Error("Diagnostic not found");
@@ -155,7 +168,38 @@ export async function submitDiagnostic(
   await db.update(profiles).set({ diagnosticCompletedAt: now }).where(eq(profiles.userId, user.id));
   await track(user.id, null, "diagnostic_completed", { skillsSignalled: skillScores.size });
 
-  return { pathId: recommended?.id ?? "", startingSkillIds };
+  // Display-only aggregate for the result screen's "starting readiness"
+  // dashboard -- recomputed from the same skillScores map rather than
+  // threaded through the loop above, so it can never drift from what
+  // actually set the mastery levels/review schedule, and touching it can
+  // never change the write-side behaviour already committed above.
+  const placements = Array.from(skillScores.entries())
+    .filter(([skillId]) => skills.has(skillId))
+    .map(([skillId, scores]) => ({ skillId, avg: scores.reduce((a, b) => a + b, 0) / scores.length }));
+  const totalSkillsAssessed = placements.length;
+  const overallReadinessPct =
+    totalSkillsAssessed > 0
+      ? Math.round((placements.reduce((sum, p) => sum + p.avg, 0) / totalSkillsAssessed) * 100)
+      : 0;
+  const strongSkillIds = placements
+    .filter((p) => p.avg >= 0.75)
+    .sort((a, b) => b.avg - a.avg)
+    .slice(0, 3)
+    .map((p) => p.skillId);
+  const growthSkillIds = placements
+    .filter((p) => p.avg < 0.7)
+    .sort((a, b) => a.avg - b.avg)
+    .slice(0, 3)
+    .map((p) => p.skillId);
+
+  return {
+    pathId: recommended?.id ?? "",
+    startingSkillIds,
+    overallReadinessPct,
+    totalSkillsAssessed,
+    strongSkillIds,
+    growthSkillIds,
+  };
 }
 
 export async function completeOnboardingRedirect(locale: Locale): Promise<never> {

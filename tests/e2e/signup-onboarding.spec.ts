@@ -25,6 +25,11 @@ test.describe("Sign-up and onboarding", () => {
     // signUp() redirects straight to onboarding for a brand-new, un-onboarded user.
     await page.waitForURL(/\/en\/onboarding$/, { timeout: 10_000 });
 
+    // The pre-wizard welcome/hook screen -- what the app is and why it's
+    // worth the next two minutes, shown once before any question.
+    await expect(page.getByRole("heading", { name: "Build the skills that make you sound like senior counsel" })).toBeVisible();
+    await page.getByRole("button", { name: "Let's begin" }).click();
+
     // Step 0 - language: defaults to a valid selection already, no interaction needed.
     await clickNext(page);
 
@@ -83,11 +88,29 @@ test.describe("Sign-up and onboarding", () => {
     // submitDiagnostic() runs, then the result screen renders with a
     // recommended path and a "start the first mission" CTA into /home.
     await expect(page.getByRole("heading", { name: "Here's your map" })).toBeVisible({ timeout: 10_000 });
+
+    // The starting-readiness dashboard -- a real gauge plus strengths/growth
+    // areas derived from actual diagnostic performance (see submitDiagnostic
+    // in src/lib/actions/onboarding.ts), not a generic "nice job" message.
+    // The exact skills flagged depend on this run's randomised-but-seeded
+    // answers, so only the always-present labels are asserted here.
+    await expect(page.getByText("Your current readiness")).toBeVisible();
+    await expect(page.getByText("Where you're already strong")).toBeVisible();
+    await expect(page.getByText("Where to focus first")).toBeVisible();
+
     await page.getByRole("button", { name: "Start the first mission" }).click();
 
     await page.waitForURL(/\/en\/home$/, { timeout: 10_000 });
     await expect(page.locator("main")).toBeVisible();
     await expect(page.locator("body")).not.toContainText("500");
+
+    // The new "Your stage" summary at the top of Home -- real placement
+    // evidence from the diagnostic just taken, condensed to one glance (see
+    // buildSkillMap() in src/lib/learning/dashboard.ts). Renders either the
+    // populated card or the empty-state fallback depending on this run's
+    // diagnostic answers, so only the always-present section title is
+    // asserted -- the branch itself is exercised either way.
+    await expect(page.getByRole("heading", { name: "Your stage" })).toBeVisible();
   });
 
   /**
@@ -109,6 +132,7 @@ test.describe("Sign-up and onboarding", () => {
     await page.locator('input[name="password"]').fill("CorrectHorseBattery9!");
     await page.getByRole("button", { name: "Create my account" }).click();
     await page.waitForURL(/\/en\/onboarding$/, { timeout: 10_000 });
+    await page.getByRole("button", { name: "Let's begin" }).click();
 
     // Advance to step 1 (country) before switching language, so the
     // assertion below proves the step position survives the switch, not
@@ -148,6 +172,47 @@ test.describe("Sign-up and onboarding", () => {
     // index -- proving the draft carries real answers, not just position.
     await page.getByRole("button", { name: "رجوع" }).click();
     await expect(countrySelect).toHaveValue("EG");
+  });
+
+  /**
+   * The welcome/hook screen (what the app is, why it's worth the next two
+   * minutes, and the diagnostic framed as a challenge) is new -- a brand-new
+   * sign-up used to land directly on the step-0 wizard with zero context.
+   * Also covers the one genuinely tricky interaction it introduces:
+   * switching language *from* the welcome screen itself must keep the
+   * learner on the (now-translated) welcome screen, not silently skip them
+   * into the wizard -- see the `welcomeDismissed` field threaded through the
+   * draft in onboarding-flow.tsx.
+   */
+  test("the welcome screen shows once before any question, and survives a language switch", async ({ page }) => {
+    const email = freshEmail("e2e-welcome");
+
+    await page.goto("/en/sign-up");
+    await page.locator('input[name="name"]').fill("E2E Welcome User");
+    await page.locator('input[name="email"]').fill(email);
+    await page.locator('input[name="password"]').fill("CorrectHorseBattery9!");
+    await page.getByRole("button", { name: "Create my account" }).click();
+    await page.waitForURL(/\/en\/onboarding$/, { timeout: 10_000 });
+
+    // Real value content, not a placeholder screen -- and no diagnostic
+    // question in sight yet.
+    await expect(
+      page.getByRole("heading", { name: "Build the skills that make you sound like senior counsel" }),
+    ).toBeVisible();
+    await expect(page.getByText("Ready for the challenge?")).toBeVisible();
+    await expect(page.getByRole("radiogroup")).toHaveCount(0);
+
+    // Switching language while still on the welcome screen must land back on
+    // the welcome screen (translated), not jump into the step-0 wizard.
+    await page.getByRole("button", { name: "العربية" }).click();
+    await page.waitForURL(/\/ar\/onboarding$/, { timeout: 10_000 });
+    await expect(page.getByRole("heading", { name: "ابنِ المهارات التي تجعلك تبدو كمستشار قانوني كبير" })).toBeVisible();
+
+    // Now actually dismiss it -- the real wizard (step 0, language choice)
+    // appears immediately after, in Arabic.
+    await page.getByRole("button", { name: "لنبدأ" }).click();
+    await expect(page.getByRole("heading", { name: "لنضبط التدريب على مقاسك" })).toBeVisible();
+    await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "1");
   });
 });
 

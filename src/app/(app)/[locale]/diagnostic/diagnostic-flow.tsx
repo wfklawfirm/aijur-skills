@@ -9,7 +9,8 @@ import { submitDiagnostic } from "@/lib/actions/onboarding";
 import { ActivityPlayer, type ActivityOutcome } from "@/components/activities/activity-player";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
-import { StepDots } from "@/components/ui/progress";
+import { StepDots, ScoreRing } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { CheckIcon } from "@/components/ui/icons";
 import type { Locale } from "@/lib/i18n/config";
 
@@ -18,6 +19,10 @@ type Phase = "intro" | "items" | "submitting" | "result";
 interface DiagnosticResult {
   pathId: string;
   startingSkillIds: string[];
+  overallReadinessPct: number;
+  totalSkillsAssessed: number;
+  strongSkillIds: string[];
+  growthSkillIds: string[];
 }
 
 /** Average unit length across the seeded content — used only to give the
@@ -28,11 +33,13 @@ export function DiagnosticFlow({
   locale,
   diagnostic,
   pathTitles,
+  skillTitles,
   weeklyMinutesGoal,
 }: {
   locale: Locale;
   diagnostic: DiagnosticDef;
   pathTitles: { id: string; title: Localized }[];
+  skillTitles: { id: string; name: Localized }[];
   weeklyMinutesGoal: number;
 }) {
   const { dict, t } = useI18n();
@@ -111,6 +118,7 @@ export function DiagnosticFlow({
   // phase === "result"
   const recommendedPath = result ? pathTitles.find((p) => p.id === result.pathId) : undefined;
   const units = Math.max(1, Math.round(weeklyMinutesGoal / AVG_UNIT_MINUTES));
+  const skillNameById = new Map(skillTitles.map((s) => [s.id, s.name]));
 
   return (
     <div className="flex flex-1 flex-col gap-6 py-8">
@@ -121,6 +129,61 @@ export function DiagnosticFlow({
         <h1 className="text-page-title">{dict.diagnostic.resultTitle}</h1>
         <p className="text-supporting">{dict.diagnostic.resultBody}</p>
       </div>
+
+      {/* Starting-readiness dashboard -- every number here traces back to the
+          real per-skill averages submitDiagnostic used to set mastery levels,
+          never a generic congratulatory message. */}
+      {result && (
+        <Card>
+          <CardBody className="flex flex-col items-center gap-5">
+            <ScoreRing
+              value={result.overallReadinessPct}
+              max={100}
+              label={dict.diagnostic.readinessLabel}
+              caption={dict.diagnostic.readinessLabel}
+            />
+            <p className="text-supporting -mt-2 text-center">{dict.diagnostic.readinessCaption}</p>
+
+            <div className="grid w-full grid-cols-1 gap-4 border-t border-[var(--border)] pt-4">
+              <div>
+                <p className="text-label mb-2">{dict.diagnostic.strengthsTitle}</p>
+                {result.strongSkillIds.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {result.strongSkillIds.map((skillId) => {
+                      const name = skillNameById.get(skillId);
+                      return name ? (
+                        <Badge key={skillId} tone="positive" dir="auto">
+                          {L(name)}
+                        </Badge>
+                      ) : null;
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-supporting">{dict.diagnostic.noStrengthsYet}</p>
+                )}
+              </div>
+
+              <div>
+                <p className="text-label mb-2">{dict.diagnostic.growthTitle}</p>
+                {result.growthSkillIds.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {result.growthSkillIds.map((skillId) => {
+                      const name = skillNameById.get(skillId);
+                      return name ? (
+                        <Badge key={skillId} tone="warning" dir="auto">
+                          {L(name)}
+                        </Badge>
+                      ) : null;
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-supporting">{dict.diagnostic.noGrowthAreas}</p>
+                )}
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      )}
 
       {recommendedPath && (
         <Card>

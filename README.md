@@ -71,7 +71,7 @@ and the PWA service worker's actual offline behavior (registration, the
 manifest, a previously-visited page staying readable offline, a
 never-visited page falling back to `/offline`) — this last one found and
 fixed two real bugs that meant the service worker had never actually
-worked in this build at all (see `docs/PRODUCT_AUDIT.md` §5). 119/119 tests
+worked in this build at all (see `docs/PRODUCT_AUDIT.md` §5). 120/120 tests
 passing. See `docs/PRODUCT_AUDIT.md` §5 for what it does and doesn't cover
 yet.
 

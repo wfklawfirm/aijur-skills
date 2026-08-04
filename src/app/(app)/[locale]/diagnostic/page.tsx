@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { getSessionUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
-import { DEFAULT_DIAGNOSTIC_ID, getDiagnostic, getPaths } from "@/lib/content/service";
+import { DEFAULT_DIAGNOSTIC_ID, getDiagnostic, getPaths, getSkillMap } from "@/lib/content/service";
 import type { Locale } from "@/lib/i18n/config";
 import { DiagnosticFlow } from "./diagnostic-flow";
 
@@ -14,9 +14,10 @@ export default async function DiagnosticPage({ params }: { params: Promise<{ loc
   const user = await getSessionUser();
   if (!user) redirect(`/${loc}/sign-in`);
 
-  const [diagnostic, paths, profileRows] = await Promise.all([
+  const [diagnostic, paths, skillMap, profileRows] = await Promise.all([
     getDiagnostic(DEFAULT_DIAGNOSTIC_ID),
     getPaths(),
+    getSkillMap(),
     db
       .select({ weeklyMinutesGoal: profiles.weeklyMinutesGoal })
       .from(profiles)
@@ -27,6 +28,9 @@ export default async function DiagnosticPage({ params }: { params: Promise<{ loc
   if (!diagnostic) redirect(`/${loc}/home`);
 
   const pathTitles = paths.map((p) => ({ id: p.id, title: p.title }));
+  // A Map isn't serializable across the Server/Client boundary -- flatten to
+  // the same {id, title/name} array shape pathTitles already uses above.
+  const skillTitles = Array.from(skillMap.entries()).map(([id, skill]) => ({ id, name: skill.name }));
   const weeklyMinutesGoal = profileRows[0]?.weeklyMinutesGoal ?? 60;
 
   return (
@@ -35,6 +39,7 @@ export default async function DiagnosticPage({ params }: { params: Promise<{ loc
         locale={loc}
         diagnostic={diagnostic}
         pathTitles={pathTitles}
+        skillTitles={skillTitles}
         weeklyMinutesGoal={weeklyMinutesGoal}
       />
     </main>

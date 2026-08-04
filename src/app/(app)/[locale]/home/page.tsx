@@ -5,7 +5,7 @@ import { masteryRecords, profiles } from "@/lib/db/schema";
 import { getSessionUser } from "@/lib/auth/session";
 import { getDictionary, fill, pick } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
-import { buildHomeData } from "@/lib/learning/dashboard";
+import { buildHomeData, buildSkillMap } from "@/lib/learning/dashboard";
 import { getPathById, getSkillMap } from "@/lib/content/service";
 import { levelKey } from "@/lib/learning/mastery";
 import { Page, AppHeader, BottomNav, SectionTitle } from "@/components/layout/app-shell";
@@ -31,11 +31,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   if (!profile || !profile.onboardingCompletedAt) redirect(`/${locale}/onboarding`);
   if (!profile.diagnosticCompletedAt) redirect(`/${locale}/diagnostic`);
 
-  const [home, skillMap, legalEnglishPath] = await Promise.all([
+  const [home, skillMap, legalEnglishPath, masteryEntries] = await Promise.all([
     buildHomeData(user.id, profile.weeklyMinutesGoal),
     getSkillMap(),
     getPathById(LEGAL_ENGLISH_PATH_ID),
+    buildSkillMap(user.id),
   ]);
+
+  // "Your stage" summary -- the same real per-skill evidence the full
+  // Progress dashboard is built from (see progress/page.tsx), condensed to
+  // one glance: an overall level, how much is tracked, and the strongest
+  // skills so far. Not a separate/invented metric.
+  const assessedCount = masteryEntries.length;
+  const dueForReviewCount = masteryEntries.filter((e) => e.dueForReview).length;
+  const averageLevel =
+    assessedCount > 0 ? Math.round(masteryEntries.reduce((sum, e) => sum + e.level, 0) / assessedCount) : 0;
+  const topSkills = [...masteryEntries].sort((a, b) => b.level - a.level).slice(0, 3);
 
   let currentSkillLevel = 0;
   if (home.continueUnit) {
@@ -56,6 +67,53 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     <>
       <Page>
         <AppHeader title={fill(dict.home.greeting, { name: user.name }, locale)} />
+
+        {/* 1 — Your stage */}
+        <SectionTitle>{dict.home.yourStage}</SectionTitle>
+        {assessedCount > 0 ? (
+          <Card>
+            <CardBody className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-section-title">{dict.progress.masteryLevels[levelKey(averageLevel)]}</p>
+                <p className="text-supporting num mt-1">
+                  {fill(dict.home.stageSummary, { tracked: assessedCount, due: dueForReviewCount }, locale)}
+                </p>
+              </div>
+              <MasteryMeter
+                level={averageLevel}
+                label={dict.progress.masteryLevels[levelKey(averageLevel)]}
+                a11yLabel={fill(dict.a11y.masteryLabel, { level: averageLevel }, locale)}
+                compact
+              />
+            </CardBody>
+            {topSkills.length > 0 && (
+              <CardBody className="flex flex-wrap gap-2 pt-0">
+                {topSkills.map((entry) => {
+                  const skill = skillMap.get(entry.skillId);
+                  return skill ? (
+                    <Badge key={entry.skillId} tone="positive" dir="auto">
+                      {pick(skill.name, locale)}
+                    </Badge>
+                  ) : null;
+                })}
+              </CardBody>
+            )}
+            <CardFooter>
+              <LinkButton variant="ghost" size="sm" href={`/${locale}/progress`}>
+                {dict.home.seeFullProgress}
+              </LinkButton>
+            </CardFooter>
+          </Card>
+        ) : (
+          <EmptyState
+            title={dict.home.stageEmpty}
+            action={
+              <LinkButton variant="secondary" href={`/${locale}/progress`}>
+                {dict.home.seeFullProgress}
+              </LinkButton>
+            }
+          />
+        )}
 
         {/* 2 — Continue your journey */}
         <SectionTitle>{dict.home.continueJourney}</SectionTitle>
