@@ -195,4 +195,48 @@ test.describe("Authenticated learner content", () => {
       await expect(page.getByRole("button").first()).toBeVisible();
     });
   }
+
+  // Every position sampled so far (1, 2, 3, 5, 8, 9, 10) still leaves units
+  // 4, 6, and 7 of every path unexercised -- the last three positions
+  // needed to close the gap entirely. Unit 4 is the last unit of each
+  // path's first authoring file (right before the seam); units 6 and 7 are
+  // the first two units of each path's second authoring file (right after
+  // the seam). Closing these three gives every one of the 8 authored
+  // paths full, depth-first e2e coverage across all 10 of its units, not
+  // just a sample.
+  for (const unitId of [
+    "unit.cc.04", "unit.le.04", "unit.ni.04", "unit.sm.04", "unit.tl.04", "unit.bd.04", "unit.fo.04", "unit.da.04",
+  ]) {
+    test(`the unit right before the chapter seam of every path renders too (${unitId})`, async ({ page }) => {
+      await page.goto(`/en/unit/${unitId}`);
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("404");
+      await expect(page.locator("body")).not.toContainText("500");
+      await expect(page.getByRole("button").first()).toBeVisible();
+    });
+  }
+
+  for (const unitId of [
+    "unit.cc.06", "unit.le.06", "unit.ni.06", "unit.sm.06", "unit.tl.06", "unit.bd.06", "unit.fo.06", "unit.da.06",
+  ]) {
+    test(`the unit right after the chapter seam of every path renders too (${unitId})`, async ({ page }) => {
+      await page.goto(`/en/unit/${unitId}`);
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("404");
+      await expect(page.locator("body")).not.toContainText("500");
+      await expect(page.getByRole("button").first()).toBeVisible();
+    });
+  }
+
+  for (const unitId of [
+    "unit.cc.07", "unit.le.07", "unit.ni.07", "unit.sm.07", "unit.tl.07", "unit.bd.07", "unit.fo.07", "unit.da.07",
+  ]) {
+    test(`the last of every path's ten units to gain e2e coverage renders too (${unitId})`, async ({ page }) => {
+      await page.goto(`/en/unit/${unitId}`);
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("404");
+      await expect(page.locator("body")).not.toContainText("500");
+      await expect(page.getByRole("button").first()).toBeVisible();
+    });
+  }
 });

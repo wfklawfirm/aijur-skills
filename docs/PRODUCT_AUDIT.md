@@ -406,7 +406,14 @@ in production content, just at low volume for some kinds (e.g. only 1
   `unit.da.02`/`.09`) — 16 more tests, catching an off-by-one at either
   content-file boundary that a check on unit 1/10 alone wouldn't (e.g. a
   units array shifted by one that still happens to render *something* at
-  index 0). 92/92 tests
+  index 0), and (17) **units 4, 6, and 7 of every authored path** —
+  the last three unit positions still unexercised (`unit.*.04`, right
+  before each path's chapter seam; `unit.*.06` and `unit.*.07`, the two
+  units right after it) — 24 more tests, closing the gap entirely: **every
+  one of the 8 authored paths now has all 10 of its units exercised end to
+  end, not a sample** — full depth-first unit coverage across all 80
+  authored units, the first time this has been true for any path. 116/116
+  tests
   passing. This is
   the first repeatable e2e run in the repo — previously only a one-off
   manual Playwright script existed, used to smoke-test the CSRF guard once
@@ -467,12 +474,14 @@ in production content, just at low volume for some kinds (e.g. only 1
   currently logs zero findings of any severity. What this suite still does
   NOT cover: no visual regression/screenshot-diffing, no keyboard-only
   navigation walkthrough, no screen-reader testing (axe catches the
-  mechanical subset of a11y issues, not the full WCAG surface), and only
-  8 of 10 content domains have a unit page exercised (and now all 8 also
-  have their chapter-boundary seam AND their last unit exercised too, per
-  (9) and (10) above, plus an early- and late-interior unit for every path
-  per (14) below, plus unit 2 and unit 9 for every path per (16) below —
-  56 of 80 units total touched). **All 18 of 18
+  mechanical subset of a11y issues, not the full WCAG surface). Content
+  coverage, by contrast, is now complete rather than a sample: 8 of 10
+  content domains carry their own path (two domains are covered via the
+  paired Client Communication/Legal English tracks — see §4), and every
+  one of those 8 paths now has all 10 of its units exercised end to end,
+  not just a first/seam/last sample — **all 80 of 80 authored units now
+  touched** (built up incrementally via (9), (10), (14), (16), and (17)
+  above). **All 18 of 18
   scenarios now have a full simulation run exercised** (per (8), (11), and
   (12) above), and one of those eighteen (`scn.guarantee-request`) is now
   also proven reaching its own natural `maxTurns` end rather than always
@@ -550,7 +559,7 @@ usability gap with its own new e2e regression test (§5, `docs/SECURITY.md`
 | Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **141 / 141 passing**, 38 suites, 0 failed, 0 skipped, 0 todo. Runtime ~14s. |
 | Content seed | `npm run db:reset` | **Succeeds.** 10 domains, 61 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 399 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
 | Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** No build errors, all routes generated (mix of static/SSG/dynamic). |
-| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **92 / 92 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths** with 7 of 10 unit positions now spot-checked per path (units 1, 2, 3, 5, 8, 9, 10 — 56 of 80 units total, 58 tests), **20 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus two (`scn.guarantee-request` and `scn.flagging-a-quality-issue`, from two different domains) also proven reaching their natural `maxTurns` end** (20 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
+| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **116 / 116 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **20 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus two (`scn.guarantee-request` and `scn.flagging-a-quality-issue`, from two different domains) also proven reaching their natural `maxTurns` end** (20 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
 
 `npm run verify` (typecheck → lint → test → build) would pass end to end based on the
 individual results above — all four stages were run and all four are green as of this
