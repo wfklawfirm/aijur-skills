@@ -393,7 +393,12 @@ in production content, just at low volume for some kinds (e.g. only 1
   second authoring file, between "seam" and "last") — 16 more tests, roughly
   bisecting each path's two previously-unexercised halves (units 2-4 and
   6-9) so a chapter-interior bug is no longer only catchable at the three
-  endpoints (first/seam/last) already covered. 75/75 tests
+  endpoints (first/seam/last) already covered, and (15) **a second
+  simulation proven reaching its own natural `maxTurns` end, from a
+  different domain** — `scn.flagging-a-quality-issue` (Firm & Matter
+  Operations, `maxTurns: 10`, tied for shortest) — confirming the
+  auto-finish code path proven by (13) isn't a fluke of one scenario's
+  specific `decisionPoints`/`exitConditions` wiring. 76/76 tests
   passing. This is
   the first repeatable e2e run in the repo — previously only a one-off
   manual Playwright script existed, used to smoke-test the CSRF guard once
@@ -536,7 +541,7 @@ usability gap with its own new e2e regression test (§5, `docs/SECURITY.md`
 | Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **141 / 141 passing**, 38 suites, 0 failed, 0 skipped, 0 todo. Runtime ~14s. |
 | Content seed | `npm run db:reset` | **Succeeds.** 10 domains, 61 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 399 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
 | Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** No build errors, all routes generated (mix of static/SSG/dynamic). |
-| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **75 / 75 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths** plus 8 last-unit, 8 middle-unit, and 16 interior-unit (early + late) spot checks — full first+early-interior+seam+late-interior+last coverage for every path (42 tests), **19 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus one (`scn.guarantee-request`) also proven reaching its natural `maxTurns` end** (19 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
+| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **76 / 76 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths** plus 8 last-unit, 8 middle-unit, and 16 interior-unit (early + late) spot checks — full first+early-interior+seam+late-interior+last coverage for every path (42 tests), **20 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus two (`scn.guarantee-request` and `scn.flagging-a-quality-issue`, from two different domains) also proven reaching their natural `maxTurns` end** (20 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
 
 `npm run verify` (typecheck → lint → test → build) would pass end to end based on the
 individual results above — all four stages were run and all four are green as of this

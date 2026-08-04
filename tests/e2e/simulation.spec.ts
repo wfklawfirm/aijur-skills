@@ -270,4 +270,40 @@ test.describe("Simulation player", () => {
     // confirm no leftover confirmation dialog is stuck open.
     await expect(page.getByRole("dialog")).not.toBeVisible();
   });
+
+  // The maxTurns-natural-end test above proves the auto-finish code path
+  // works, but only for one scenario (scn.guarantee-request, Client
+  // Communication). A second scenario from a completely different domain
+  // -- Firm & Matter Operations, whose own maxTurns (10) is tied for
+  // shortest -- confirms this isn't a fluke of one scenario's specific
+  // decisionPoints/exitConditions wiring. Same try/catch DOM-race handling
+  // as above, extracted into nothing shared since the two tests' only
+  // overlap is the loop shape, not the scenario-specific assertions.
+  test("a second scenario from another domain also reaches its natural end (Firm & Matter Operations)", async ({ page }) => {
+    await page.goto("/en/simulation/scn.flagging-a-quality-issue");
+    await expect(page.getByRole("heading", { name: "Flagging a quality issue before it goes out" })).toBeVisible();
+    await page.getByRole("button", { name: "Start the simulation" }).click();
+    await expect(page.locator("main")).toContainText(/.+/, { timeout: 10_000 });
+    await expect(page.getByPlaceholder("Type your reply…")).toBeVisible();
+
+    for (let i = 0; i < 12; i++) {
+      try {
+        const input = page.getByPlaceholder("Type your reply…");
+        await input.waitFor({ state: "visible", timeout: 3_000 });
+        await input.fill(`Can you walk me through the deadline calculation once more, specifically around turn ${i + 1}?`, { timeout: 5_000 });
+        await page.getByRole("button", { name: "Send" }).click({ timeout: 5_000 });
+      } catch {
+        break;
+      }
+      await Promise.race([
+        expect(page.getByPlaceholder("Type your reply…")).toBeEnabled({ timeout: 15_000 }),
+        expect(page.getByText("Simulation ended")).toBeVisible({ timeout: 15_000 }),
+      ]).catch(() => {});
+      if (await page.getByText("Simulation ended").isVisible().catch(() => false)) break;
+    }
+
+    await expect(page.getByText("Simulation ended")).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator("body")).not.toContainText("500");
+    await expect(page.getByRole("dialog")).not.toBeVisible();
+  });
 });
