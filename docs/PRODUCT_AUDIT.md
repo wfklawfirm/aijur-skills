@@ -28,7 +28,7 @@ product, not a ten-domain curriculum.
 
 | Area | Status | Evidence |
 |---|---|---|
-| **Auth** | Functional | Email/password with scrypt hashing (`src/lib/auth/password.ts`, N=2^15, memory-hard KDF), HMAC-signed session cookies (`src/lib/auth/session.ts`), no OAuth/SSO of any kind. Routes: `sign-in`, `sign-up` under `src/app/(app)/[locale]/`. |
+| **Auth** | Functional | Email/password with scrypt hashing (`src/lib/auth/password.ts`, N=2^15, memory-hard KDF), HMAC-signed session cookies (`src/lib/auth/session.ts`), no OAuth/SSO of any kind. Routes: `sign-in`, `sign-up`, `forgot-password`, `reset-password/[token]` under `src/app/(app)/[locale]/`. Self-service password reset (`src/lib/actions/password-reset{,-core}.ts`) is single-use, hashed, 1-hour-expiring, session-revoking tokens delivered by email — real delivery needs `EMAIL_PROVIDER=resend`+`RESEND_API_KEY` configured (see `docs/SECURITY.md` §7); with no provider set, reset links are logged to the server console instead of emailed. Email verification is still not enforced — `emailVerifiedAt` is set unconditionally at signup. |
 | **RBAC / multi-tenancy** | Functional | `src/lib/auth/rbac.ts` defines 11 permissions, 4 system roles (learner/author/reviewer/admin) and 5 org roles (owner/admin/manager/author/member); `assertTenant()` enforces org isolation on every scoped query. Schema has `organizations`, `memberships`, `teams` tables. `assertTenant()` now has real call sites for all three org permissions: `org.members.manage`/`org.reports` (`src/lib/actions/org-core.ts` — list/add/role-change/remove members, an org report) and `org.assign` (`src/lib/actions/teams-core.ts` — team create/rename/delete, member-team assignment). `memberships.competencyProfileId` remains schema-only with no action surface. Covered by `tests/rbac.test.ts` (the primitive, mock users), `tests/org-tenant-isolation.test.ts` (9 tests), and `tests/teams-tenant-isolation.test.ts` (10 tests) — two seeded organizations each. |
 | **Onboarding** | Functional | `src/app/(app)/[locale]/onboarding/onboarding-flow.tsx` + `src/lib/actions/onboarding.ts`; feeds into a diagnostic (`src/app/(app)/[locale]/diagnostic/page.tsx`, `content/diagnostics.ts` — 1 diagnostic, 8 items). |
 | **Content authoring/framework** | Functional as data model, partially populated | `content/types.ts` defines the full authoring contract (domains, skills w/ 7 mastery levels each, rubrics, scenarios, paths/chapters/units, 17 activity kinds, diagnostics). 10 domains, 42 skills, 6 rubrics all authored (`content/framework/*.ts`, 12,513 lines in `skills.ts` alone). All 42 skills are `reviewStatus: ai_suggested` — none have progressed to `sme_reviewed` or `approved`. |
@@ -170,11 +170,12 @@ in production content, just at low volume for some kinds (e.g. only 1
   admin UI (`review-queue` page, `contentReviews` table) but has not been exercised
   to `approved` for anything yet. Treat all current content as pre-SME-review.
 - **No automated e2e, visual regression, or accessibility test coverage.** The test
-  suite (`tests/*.test.ts`, 106 tests / 31 suites, all unit/integration-level via
+  suite (`tests/*.test.ts`, 114 tests / 32 suites, all unit/integration-level via
   Node's built-in test runner) covers grading logic, mastery math, RBAC, tenant
-  isolation, rate limiting, audit logging, i18n key parity, review scheduling, and
-  evaluation safety — there is no Playwright/Cypress suite, no visual diffing, and
-  no automated a11y audit (e.g. axe) anywhere in the repo.
+  isolation, rate limiting, audit logging, password-reset token lifecycle, i18n
+  key parity, review scheduling, and evaluation safety — there is no
+  Playwright/Cypress suite, no visual diffing, and no automated a11y audit
+  (e.g. axe) anywhere in the repo.
 - **AI-graded scores now visibly flag pending review, but "degraded" mode still
   doesn't.** `unit-player.tsx`'s `aiResultNode` shows a dedicated callout
   (`dict.unit.pendingReview`) whenever `SubmitActivityResult.pendingReview` is true,

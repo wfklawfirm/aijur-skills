@@ -33,6 +33,15 @@ export function SignInForm({ locale }: { locale: Locale }) {
         {(p) => <Input type="password" name="password" autoComplete="current-password" required {...p} />}
       </Field>
 
+      <p className="text-end">
+        <Link
+          href={`/${locale}/forgot-password`}
+          className="text-sm font-semibold text-[var(--color-brand)] underline underline-offset-4"
+        >
+          {dict.auth.forgotPassword}
+        </Link>
+      </p>
+
       <Button type="submit" variant="primary" block loading={pending}>
         {dict.auth.signInCta}
       </Button>

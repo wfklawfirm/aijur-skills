@@ -128,6 +128,27 @@ export const sessions = sqliteTable(
   (t) => [index("sessions_user_idx").on(t.userId)],
 );
 
+export const passwordResetTokens = sqliteTable(
+  "password_reset_tokens",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    /**
+     * SHA-256 hex digest of the raw token — the raw token itself (the part
+     * that actually appears in the emailed link) is never persisted, so a
+     * database read alone can't be used to reset someone's password.
+     */
+    tokenHash: text("token_hash").notNull(),
+    expiresAt: integer("expires_at").notNull(),
+    usedAt: integer("used_at"),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    uniqueIndex("password_reset_tokens_hash_idx").on(t.tokenHash),
+    index("password_reset_tokens_user_idx").on(t.userId),
+  ],
+);
+
 export const profiles = sqliteTable("profiles", {
   userId: text("user_id")
     .primaryKey()
