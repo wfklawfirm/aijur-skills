@@ -103,7 +103,12 @@ Legal English: `unit.le.01` … `unit.le.10`
 `src.legal-project-management`, `src.governance-raci`,
 `src.how-to-argue-and-win`, `src.making-your-case`, `src.tools-of-argument`,
 `src.thinking-like-a-lawyer`, `src.legal-analyst`, `src.maccarthy-cross-exam`,
-`src.rule-of-law`, `src.ultimate-associate-marketing`, `src.ali-rise`
+`src.rule-of-law`, `src.ultimate-associate-marketing`, `src.ali-rise`,
+`src.to-kill-a-mockingbird`, `src.a-civil-action`, `src.anatomy-of-a-murder`,
+`src.bleak-house`, `src.the-innocent-man`, `src.ultimate-punishment` (these
+six are `kind: "narrative"` — illustrative texture/themes, not frameworks;
+never mine them for extractable checklists the way the professional sources
+above are used)
 
 ## Unit shape
 

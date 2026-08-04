@@ -668,4 +668,106 @@ export const SOURCES: SourceRecord[] = [
       "The richest single source for AIJUR's teamwork and leadership domain: psychological safety as the precondition for a junior raising a problem early, managing up as a named skill, and feedback as a continuous habit rather than an annual event. Its project-management and autonomy material shaped our delegation levels.",
     kind: "professional",
   },
+
+  // ---------------------------------------------------------------------
+  // Narrative works. These inform AIJUR through illustrative texture and
+  // professional-conduct themes -- moral courage, case-acceptance judgment,
+  // the cost of an unresolved matter, the line between coaching a witness
+  // and educating a client -- never through frameworks or checklists the
+  // way the professional/operations sources above do. Historical/doctrinal
+  // specifics (a novel's setting, a era's procedure) are not reusable
+  // training content; only the underlying professional pattern is. As with
+  // every other source, no scene, passage or dialogue is reproduced --
+  // themes only, in AIJUR's own words.
+  // ---------------------------------------------------------------------
+  {
+    id: "src.to-kill-a-mockingbird",
+    title: "To Kill a Mockingbird",
+    author: "Harper Lee",
+    year: 1960,
+    language: "en",
+    publisher: "J. B. Lippincott & Co.",
+    domains: ["dom.professional-judgment", "dom.communication", "dom.self-management"],
+    usageRights: "reference_only",
+    analysisStatus: "extracted",
+    reviewStatus: "ai_suggested",
+    notes:
+      "Kept in the library as the reference case for the cost of professional integrity when a lawyer takes on an unpopular but correct position: a small-town defense lawyer represents an unjustly accused client against his own community's hostility, examines witnesses with patient fairness rather than aggression even while opposing counsel does the opposite, and absorbs public insult without retaliating because de-escalation serves the matter better than being right in the moment. Used for scenario texture and hook material on moral courage, composure under social pressure, and how to explain a losing case honestly to people who trust you -- not for competency extraction, since it contains no frameworks or techniques to mine, and its historical racial-injustice setting is not itself reusable training content.",
+    kind: "narrative",
+  },
+  {
+    id: "src.a-civil-action",
+    title: "A Civil Action",
+    author: "Jonathan Harr",
+    year: 1995,
+    language: "en",
+    publisher: "Random House",
+    domains: ["dom.professional-judgment", "dom.self-management", "dom.firm-operations"],
+    usageRights: "reference_only",
+    analysisStatus: "extracted",
+    reviewStatus: "ai_suggested",
+    notes:
+      "Kept in the library as a documented account of what happens when a firm's ambition for one case outgrows what the firm can actually sustain: a plaintiffs' lawyer's early high-risk win teaches him the wrong lesson, and he carries that overconfidence into a matter that eventually costs him his firm's solvency, his home, and a long relationship, before a credible, unglamorous rebuilding period years later. Its value to AIJUR is not the toxic-tort law, which is jurisdiction-specific and dated, but the documented decision points -- the case-acceptance judgment, the discovery lapse never escalated, the expert-witness theory commissioned before it was tested, the refusal to recalibrate once a judge turned hostile -- that make concrete what workload boundaries, evidentiary honesty, and professional resilience look like when they fail and when they eventually recover.",
+    kind: "narrative",
+  },
+  {
+    id: "src.anatomy-of-a-murder",
+    title: "Anatomy of a Murder",
+    author: "Robert Traver",
+    year: 1958,
+    language: "en",
+    publisher: "St. Martin's Press",
+    domains: ["dom.professional-judgment", "dom.communication", "dom.client-relations"],
+    usageRights: "reference_only",
+    analysisStatus: "extracted",
+    reviewStatus: "ai_suggested",
+    notes:
+      "Kept in the library as fiction's sharpest treatment of a line AIJUR teaches directly: where client education ends and coaching a story begins. A former-prosecutor lawyer-narrator walks his client through every legal category of defense before asking what happened, then privately questions how much that sequencing shaped the account he got back -- and later gives a witness instructions that coach demeanor and process, never content. Read for its client-interview and witness-preparation mechanics and its courtroom examination discipline, not for the U.S. criminal procedure and 1950s Michigan setting that surround them, which this platform does not teach.",
+    kind: "narrative",
+  },
+  {
+    id: "src.bleak-house",
+    title: "Bleak House",
+    author: "Charles Dickens",
+    year: 1853,
+    language: "en",
+    publisher: "Bradbury and Evans",
+    domains: ["dom.client-relations", "dom.professional-judgment", "dom.firm-operations"],
+    usageRights: "public_domain",
+    analysisStatus: "extracted",
+    reviewStatus: "ai_suggested",
+    notes:
+      "Kept in the library as the canonical portrait of a matter that never closes: a case whose costs exist to justify its own continuation, decided at last only because the estate it was fought over has been entirely consumed by the fighting. We drew from it the case that being busy on a file is not the same as moving it toward an end, that a professional owes a client a real, timely answer about when to stop rather than managed hope, and that a matter with no designed endpoint will, left alone, design one for itself -- usually at the client's expense.",
+    kind: "narrative",
+  },
+  {
+    id: "src.the-innocent-man",
+    title: "The Innocent Man: Murder and Injustice in a Small Town",
+    author: "John Grisham",
+    year: 2006,
+    language: "en",
+    publisher: "Doubleday",
+    domains: ["dom.professional-judgment", "dom.client-relations", "dom.digital-ai"],
+    usageRights: "reference_only",
+    analysisStatus: "extracted",
+    reviewStatus: "ai_suggested",
+    notes:
+      "Kept in the library as the one narrative source built entirely from documented fact rather than invention: a real wrongful conviction in which coerced confessions, an unreliable jailhouse informant, forensic testimony that overstated what its methods could show, and a defense that skipped foundational procedural steps compounded across multiple professionals rather than any single actor's failure. We draw from it not the US capital-procedure specifics, which don't transfer, but the pattern itself -- how a working theory hardens into unexamined certainty as it passes from investigator to prosecutor to expert to defense counsel to judge, and what baseline diligence (testing an expert's claim, raising a known competency issue, disclosing what you already hold) would have interrupted it at any one point. Handled here as a case study in professional judgment under pressure, not as entertainment.",
+    kind: "narrative",
+  },
+  {
+    id: "src.ultimate-punishment",
+    title: "Ultimate Punishment: A Lawyer's Reflections on Dealing with the Death Penalty",
+    author: "Scott Turow",
+    year: 2003,
+    language: "en",
+    publisher: "Farrar, Straus and Giroux",
+    domains: ["dom.professional-judgment", "dom.communication", "dom.self-management"],
+    usageRights: "reference_only",
+    analysisStatus: "extracted",
+    reviewStatus: "ai_suggested",
+    notes:
+      "Kept in the library for a single reason: it is a rare first-person, verifiable account of a lawyer publicly reversing a long-held professional position under the weight of accumulated case evidence, not a single dramatic reveal. We draw on it for the discipline of separating a personal vote from an institutional recommendation, the method of testing an intuition against a body of case files rather than resting on one memorable example, and the rhetorical structure of arguing an unpopular reversed position -- concede the strongest counter-argument, show the evidence trail, be honest about what still troubles you. The book's subject matter, US capital punishment policy, is out of scope for this app and is not the reason it is here.",
+    kind: "narrative",
+  },
 ];

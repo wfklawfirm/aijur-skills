@@ -223,7 +223,7 @@ export const SELF_MANAGEMENT_SKILLS: SkillDef[] = [
         ],
       },
     ],
-    sourceIds: ["src.four-thousand-weeks", "src.fire-proof", "src.your-brain-at-work"],
+    sourceIds: ["src.four-thousand-weeks", "src.fire-proof", "src.your-brain-at-work", "src.a-civil-action"],
     confidence: 0.82,
     reviewStatus: "ai_suggested",
     prerequisiteSkillIds: ["skill.time-priority-management"],
