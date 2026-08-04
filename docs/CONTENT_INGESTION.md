@@ -55,12 +55,28 @@ original expression out.
 ## 2. Source registry
 
 `content/sources/registry.ts` exports `SOURCES: SourceRecord[]`, a hard-coded
-TypeScript array. Verified counts (33 entries total):
+TypeScript array. Verified counts (39 entries total):
 
 | `analysisStatus` | count | meaning |
 |---|---|---|
-| `extracted` | 33 (all) | The source has been read and mined for competency concepts; its `notes` field records what was drawn from it. The original 16 also have populated `sections` (chapter/TOC) arrays; the 17 sources extracted most recently (the business-development/marketing cluster and the argumentation/legal-reasoning cluster) were mined for their `notes` field only — each was read via a dedicated agent pass over the actual PDF, with concrete "what this book contributes" findings, but `sections` (a structural chapter map) was not separately populated for those 17. That's a real, honest gap, not an oversight to hide: the competency-relevant work (what to draw from the book, in original words) is done; the chapter-map metadata is not. |
+| `extracted` | 39 (all) | The source has been read and mined for competency concepts; its `notes` field records what was drawn from it. The original 16 also have populated `sections` (chapter/TOC) arrays; the 17 sources extracted in a later pass (the business-development/marketing cluster and the argumentation/legal-reasoning cluster) were mined for their `notes` field only — each was read via a dedicated agent pass over the actual PDF, with concrete "what this book contributes" findings, but `sections` (a structural chapter map) was not separately populated for those 17. The 6 most recently added — literary/narrative works (`kind: "narrative"`) — follow the same `notes`-only pattern, under a stricter extraction discipline (see below). That's a real, honest gap, not an oversight to hide: the competency-relevant work (what to draw from the book, in original words) is done; the chapter-map metadata is not, for 23 of the 39 sources. |
 | `pending`, `in_progress`, `normalised` | 0 | No source currently sits in any of these states — every registered source has been read and extracted. |
+
+**A distinct category: narrative sources.** 6 of the 39 sources are literary
+or narrative-nonfiction works (`kind: "narrative"`) — *To Kill a Mockingbird*,
+*A Civil Action*, *Anatomy of a Murder*, *Bleak House*, *The Innocent Man*,
+*Ultimate Punishment*. These are handled differently from the 33 professional/
+operations sources: they inform AIJUR through illustrative texture and
+professional-conduct themes (moral courage, case-acceptance judgment, the
+cost of an unresolved matter, the client-education/witness-coaching line) —
+never through extractable frameworks or checklists. Their extraction agents
+worked under a stricter copyright-safe discipline than the professional
+sources: no scene, passage, or dialogue reconstruction in sequential detail,
+themes only in AIJUR's own words, and decades-old/culturally-known plot
+events referenced only at a high summary level (never as if quoting or
+retelling the work). `src.bleak-house` is `usageRights: "public_domain"`
+(published 1853); the other 5 are `reference_only` like the professional
+sources.
 
 **Two data-integrity corrections surfaced during this extraction pass**, both
 caught by the extraction agent actually reading the PDF rather than trusting
@@ -75,10 +91,12 @@ the full original text — the registry `notes` now say so explicitly rather
 than implying the full book was read.
 
 Other breakdowns found by inspection:
-- `usageRights`: 32 × `reference_only`, 1 × `owned` (`src.governance-raci`, AIJUR's
-  own Arabic-language RACI governance document).
-- `kind`: 17 × `professional`, 9 × `operations`, 6 × `advocacy`, 1 × `framework`.
-- `reviewStatus`: all 33 are currently `ai_suggested` (see the review-status
+- `usageRights`: 37 × `reference_only`, 1 × `owned` (`src.governance-raci`, AIJUR's
+  own Arabic-language RACI governance document), 1 × `public_domain`
+  (`src.bleak-house`).
+- `kind`: 17 × `professional`, 9 × `operations`, 6 × `advocacy`, 6 ×
+  `narrative`, 1 × `framework`.
+- `reviewStatus`: all 39 are currently `ai_suggested` (see the review-status
   lifecycle in §4 — no source record has been promoted past that state yet).
 
 ### `SourceRecord` shape (`content/types.ts:42-64`)
@@ -107,11 +125,12 @@ never body text. That distinction is load-bearing for the never-verbatim rule:
 even the one field that looks like it could carry source content is
 constrained to chapter/section titles.
 
-The 33-source, one-Arabic-owned-document library spans business development,
-firm operations, self-management, teamwork/leadership, negotiation/advocacy
-and one framework document — matching the ten domains declared in
-`content/AUTHORING_BRIEF.md` (`dom.client-relations` through
-`dom.legal-english`).
+The 39-source library — 33 professional/operations sources (including one
+Arabic-owned document) plus 6 narrative works — spans business development,
+firm operations, self-management, teamwork/leadership, negotiation/advocacy,
+one framework document, and illustrative literary texture — matching the ten
+domains declared in `content/AUTHORING_BRIEF.md` (`dom.client-relations`
+through `dom.legal-english`).
 
 ## 3. Authoring contract
 
@@ -160,7 +179,7 @@ to be used together, not separately:
   scenario ids, path/chapter ids, and the `unit.<track>.NN` /
   `act.<unitid-suffix>.<n>` / `card.<unitid-suffix>` id schemes. It also spells
   out the unit's fixed step sequence (see §4) and the exact list of
-  `sourceIds` values available for citation — the 33 ids in the registry.
+  `sourceIds` values available for citation — the 39 ids in the registry.
 
 **Why both together matter:** `types.ts` is what the compiler enforces —
 any content file that doesn't typecheck fails the build, full stop, so
@@ -284,7 +303,7 @@ published → archived` status lives on the database row and is what
   an honest placeholder: it shows which registered sources are waiting to be
   analysed and explains the intended workflow, but the 'Start analysis'
   action is inert — it must never look like it did something it didn't."* The
-  "Start analysis" button is rendered `disabled`. As of this checkout all 33
+  "Start analysis" button is rendered `disabled`. As of this checkout all 39
   registered sources now sit at `analysisStatus: "extracted"` (0 `"pending"`),
   so the `admin/ingestion` page currently renders an empty list — but that
   status transition has so far only happened by a human/author (or an
@@ -299,11 +318,11 @@ published → archived` status lives on the database row and is what
   populates from an actual source PDF; the review-queue UI works, but the
   step upstream of it (parse a PDF, propose a skill/skill-edit) does not
   exist yet.
-- **No `narrative` or `licensed`/`public_domain` sources yet.** Both are valid
-  enum values (`SourceRecord.kind`, `SourceRecord.usageRights`) but no
-  current registry entry uses them — the library is presently all
-  `reference_only` professional/operations/advocacy/framework works plus one
-  `owned` internal document.
+- **No `licensed` sources yet.** `SourceRecord.usageRights` has a `licensed`
+  enum value but no current registry entry uses it — the library is
+  `reference_only` (37), `owned` (1, `src.governance-raci`), or
+  `public_domain` (1, `src.bleak-house`). `kind: "narrative"` is now in use
+  (6 entries — see §2) after having sat unused since the type was defined.
 
 ## 5. Admin tooling
 
@@ -312,7 +331,7 @@ review management; a fifth (`admin/units`, and equivalently
 `admin/skills`/`admin/scenarios`) is where the actual publish gate is
 exercised. All server-side mutations live in `src/lib/actions/admin.ts`.
 
-- **`admin/sources`** (`page.tsx`) — read-only listing of all 33
+- **`admin/sources`** (`page.tsx`) — read-only listing of all 39
   `SourceRecord`s via `listSources()`, each rendered with its `kind`,
   `analysisStatus` and `reviewStatus` as badges. Purely informational; no
   mutation actions on this page.
@@ -376,7 +395,7 @@ it. Because ingestion analysis (moving `pending → extracted`) currently has no
 tooling (§4 limitations), this step today means a human (or an AI extraction
 agent working directly from the source PDF, under human direction) reading
 the source and hand-editing `notes`/`analysisStatus` (and, ideally,
-`sections`) in the registry — the same way all 33 `extracted` entries were
+`sections`) in the registry — the same way all 39 `extracted` entries were
 produced.
 
 **Add a new skill.** Add a `SkillDef` to `content/framework/skills.ts`,

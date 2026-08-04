@@ -99,7 +99,7 @@ Counts pulled by loading `content/index.ts`'s `CONTENT` bundle directly:
 | Skills | 70 (all `reviewStatus: ai_suggested`) |
 | Rubrics | 18 |
 | Scenarios (simulations) | 18 |
-| Source records | 33 |
+| Source records | 39 (33 professional/operations + 6 narrative) |
 | Paths | 8 |
 | Diagnostics | 1 (8 items) |
 | Units (total, across all paths) | 80 |
@@ -707,7 +707,7 @@ in production content, just at low volume for some kinds (e.g. only 1
   open item, not something this change built.
 - **Billing is schema-only.** The `subscriptions` table has no integration behind it;
   building a real paywall/seat-management flow is greenfield work, not a wire-up.
-- **Ingestion is human-curated, not automated.** `content/sources/registry.ts` (33
+- **Ingestion is human-curated, not automated.** `content/sources/registry.ts` (39
   sources) and the `ingestion` admin page assume a human decides what to extract from
   a source; there's no document-parsing/LLM-extraction pipeline wired up yet, despite
   the schema (`ingestionSuggestions`) being ready for one.

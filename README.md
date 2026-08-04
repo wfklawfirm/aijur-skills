@@ -87,7 +87,7 @@ does and doesn't cover yet.
 
 ```
 content/        Authored curriculum — the source of truth for skills, units,
-                 activities, scenarios, rubrics, and the 33-source reference
+                 activities, scenarios, rubrics, and the 39-source reference
                  library. See content/AUTHORING_BRIEF.md before adding content.
 src/app/        Next.js App Router routes. (app)/[locale]/ is the real app;
                  (offline)/ is the minimal PWA offline-fallback shell.
