@@ -329,24 +329,27 @@ in production content, just at low volume for some kinds (e.g. only 1
   `unit.tl.01`, `unit.bd.01`, `unit.fo.01`, `unit.da.01` — previously only
   three of eight), plus a last-unit spot check on two of those paths
   (`unit.cc.10` and `unit.da.10` — the platform's first-ever and
-  last-ever authored content batches) as a cheap proxy for "the whole
-  path holds together, not just its first step," (3) **two full
-  simulation runs from separate domains** — start a real session, send a
-  message through the real offline agent, end early, and reach a real
-  rendered evaluation, for both `scn.first-client-meeting` (Client
-  Communication) and `scn.negotiation-settlement-offer` (Negotiation &
-  Influence) — previously untested entirely, (4) **the admin
-  human review queue** — sign in as the seeded admin account, drive a real
-  simulation to completion (deterministically producing a queued,
-  low-confidence offline evaluation), then confirm the review queue renders
-  the full AI payload and queue reason, not just a score badge (added
-  alongside the Milestone 4 fix — see §5), (5) RTL/LTR `dir` and `lang`
-  attribute checks for both locales, (6) axe-core scans
+  last-ever authored content batches) and a middle-unit spot check on two
+  more (`unit.ni.05`, `unit.fo.05` — the seam between each path's own
+  `-units-01-05.ts`/`-units-06-10.ts` files) as a cheap proxy for "the
+  whole path holds together, not just its first and last step," (3) **four
+  full simulation runs from separate domains** — start a real session, send
+  a message through the real offline agent, end early, and reach a real
+  rendered evaluation, for `scn.first-client-meeting` (Client
+  Communication), `scn.negotiation-settlement-offer` (Negotiation &
+  Influence), `scn.catching-an-ai-hallucination` (Digital Tools & AI), and
+  `scn.le-intro-call` (Legal English) — previously untested entirely, (4)
+  **the admin human review queue** — sign in as the seeded admin account,
+  drive a real simulation to completion (deterministically producing a
+  queued, low-confidence offline evaluation), then confirm the review queue
+  renders the full AI payload and queue reason, not just a score badge
+  (added alongside the Milestone 4 fix — see §5), (5) RTL/LTR `dir` and
+  `lang` attribute checks for both locales, (6) axe-core scans
   (critical/serious severity gate) across 5 anonymous and authenticated
   pages, and (7) **the PWA service worker's actual offline behaviour**
   (`tests/e2e/pwa-offline.spec.ts`) — registration/control, the manifest,
   a previously-visited page staying readable offline, and a never-visited
-  page falling back to the `/offline` screen. 28/28 tests passing. This is
+  page falling back to the `/offline` screen. 32/32 tests passing. This is
   the first repeatable e2e run in the repo — previously only a one-off
   manual Playwright script existed, used to smoke-test the CSRF guard once
   (`docs/SECURITY.md` §7) and then discarded. Running this suite found and
@@ -407,10 +410,11 @@ in production content, just at low volume for some kinds (e.g. only 1
   NOT cover: no visual regression/screenshot-diffing, no keyboard-only
   navigation walkthrough, no screen-reader testing (axe catches the
   mechanical subset of a11y issues, not the full WCAG surface), only 8 of
-  10 content domains have a unit page exercised (and only 2 of those 8 have
-  more than their first unit checked), only 2 of 18 scenarios have a
-  simulation exercised, and both simulation tests end early rather than
-  driving to the scenario's natural `maxTurns`.
+  10 content domains have a unit page exercised (and only 4 of those 8 have
+  more than their first unit checked — 2 at their last unit, 2 more at the
+  `-01-05`/`-06-10` file seam), only 4 of 18 scenarios have a simulation
+  exercised, and all four simulation tests end early rather than driving to
+  the scenario's natural `maxTurns`.
 
   Running the expanded suite also found and fixed two more real bugs, this
   time in the test code itself rather than the app: (a) the shared

@@ -52,19 +52,20 @@ executable path this sandboxed environment expects) against a real
 race with the very first cold navigation under headless automation. Covers:
 a full sign-up → onboarding → all 8 diagnostic items → `/home`, an
 authenticated learner reaching real content across all 8 authored paths
-(plus a last-unit spot check on two of them, to catch chapter-boundary bugs
-a first-unit-only check would miss), two full simulation runs from separate
-domains (start → message → early-end → evaluation), the admin human review
-queue (a real queued evaluation's full AI payload and queue reason render,
-not just a score badge), RTL/LTR layout direction for both locales,
-axe-core accessibility scans (critical/serious severity gate, plus two
-structural rules — `page-has-heading-one` and `region`/`skip-link` — pinned
-to always-blocking after the real bugs they found were fixed), and the PWA
-service worker's actual offline behavior (registration, the manifest, a
-previously-visited page staying readable offline, a never-visited page
-falling back to `/offline`) — this last one found and fixed two real bugs
-that meant the service worker had never actually worked in this build at
-all (see `docs/PRODUCT_AUDIT.md` §5). 28/28 tests passing. See
+(plus a last-unit spot check on two of them and a middle-unit spot check on
+two more, to catch chapter-boundary bugs a first-unit-only check would
+miss), four full simulation runs from separate domains (start → message →
+early-end → evaluation), the admin human review queue (a real queued
+evaluation's full AI payload and queue reason render, not just a score
+badge), RTL/LTR layout direction for both locales, axe-core accessibility
+scans (critical/serious severity gate, plus two structural rules —
+`page-has-heading-one` and `region`/`skip-link` — pinned to always-blocking
+after the real bugs they found were fixed), and the PWA service worker's
+actual offline behavior (registration, the manifest, a previously-visited
+page staying readable offline, a never-visited page falling back to
+`/offline`) — this last one found and fixed two real bugs that meant the
+service worker had never actually worked in this build at all (see
+`docs/PRODUCT_AUDIT.md` §5). 32/32 tests passing. See
 `docs/PRODUCT_AUDIT.md` §5 for what it does and doesn't cover
 yet.
 

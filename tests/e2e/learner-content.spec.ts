@@ -78,4 +78,24 @@ test.describe("Authenticated learner content", () => {
       await expect(page.getByRole("button").first()).toBeVisible();
     });
   }
+
+  // First and last units only prove the two ends of a path hold together --
+  // a chapter-boundary bug (e.g. an id mismatch between a path's own
+  // `-units-01-05.ts` and `-units-06-10.ts` files, or a mid-path chapter
+  // that references the wrong skill/rubric) could still sit in the middle
+  // and go uncaught. Spot-check unit 5 -- the seam between those two
+  // authoring files -- for two more paths not already covered above:
+  // Negotiation & Influence (also exercised by a simulation test, so this
+  // catches unit-player-specific issues that scenario coverage wouldn't)
+  // and Firm & Matter Operations (the one domain whose own independent QA
+  // pass came back completely clean, worth double-checking here too).
+  for (const unitId of ["unit.ni.05", "unit.fo.05"]) {
+    test(`a middle unit of a path renders too (${unitId})`, async ({ page }) => {
+      await page.goto(`/en/unit/${unitId}`);
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("404");
+      await expect(page.locator("body")).not.toContainText("500");
+      await expect(page.getByRole("button").first()).toBeVisible();
+    });
+  }
 });

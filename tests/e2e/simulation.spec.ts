@@ -45,4 +45,27 @@ test.describe("Simulation player", () => {
       "Before we discuss numbers, can you walk me through exactly which parts of the work your client believes fell short of spec?",
     );
   });
+
+  // Two of 18 scenarios still isn't much coverage against 10 domains' worth
+  // of separately-authored rubrics and character content. These two add the
+  // Digital Tools & AI domain (the platform's newest, least-proven content
+  // batch) and Legal English (a structurally different rubric -- graded on
+  // English proficiency markers, not just professional judgment).
+  test("a third scenario completes (Digital Tools & AI)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.catching-an-ai-hallucination",
+      "Catching an AI hallucination",
+      "Hossam, I need to flag something serious before this goes out -- I just found that the key case our limitation-period argument leans on doesn't actually exist. I want to walk you through exactly what I found and how we fix the memo before tomorrow morning.",
+    );
+  });
+
+  test("a fourth scenario completes (Legal English)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.le-intro-call",
+      "First call with a foreign client",
+      "Good afternoon, thank you for taking the call. My name is Youssef, I'm calling from the firm regarding your distributor's outstanding payments -- could you walk me through what's happened from your side so far?",
+    );
+  });
 });
