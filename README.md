@@ -52,10 +52,11 @@ executable path this sandboxed environment expects) against a real
 race with the very first cold navigation under headless automation. Covers:
 a full sign-up → onboarding → all 8 diagnostic items → `/home`, an
 authenticated learner reaching real content across all 8 authored paths
-(plus a first-unit, early-interior-unit, chapter-boundary-seam,
-late-interior-unit, and last-unit spot check on every one of the 8, to
-catch chapter-boundary and mid-chapter bugs a first-unit-only check would
-miss), full simulation runs for **all 18 of 18 authored scenarios**
+(plus 7 of each path's 10 unit positions spot-checked — first, the unit
+right after it, an early-interior unit, the chapter-boundary seam, a
+late-interior unit, the unit right before the last, and the last unit —
+on every one of the 8, to catch chapter-boundary and mid-chapter bugs a
+first-unit-only check would miss), full simulation runs for **all 18 of 18 authored scenarios**
 (start → message → early-end → evaluation), plus one scenario also driven
 to its own natural end (`scenario.maxTurns`) rather than the "End now"
 early-exit path every other simulation test uses (proven for two scenarios
@@ -69,7 +70,7 @@ the PWA service worker's actual offline behavior (registration, the
 manifest, a previously-visited page staying readable offline, a
 never-visited page falling back to `/offline`) — this last one found and
 fixed two real bugs that meant the service worker had never actually
-worked in this build at all (see `docs/PRODUCT_AUDIT.md` §5). 76/76 tests
+worked in this build at all (see `docs/PRODUCT_AUDIT.md` §5). 92/92 tests
 passing. See `docs/PRODUCT_AUDIT.md` §5 for what it does and doesn't cover
 yet.
 

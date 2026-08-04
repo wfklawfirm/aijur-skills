@@ -164,4 +164,35 @@ test.describe("Authenticated learner content", () => {
       await expect(page.getByRole("button").first()).toBeVisible();
     });
   }
+
+  // Units 3 and 8 above still leave units 2, 4, 6, 7, and 9 of every path
+  // unexercised. These close the two positions immediately adjacent to the
+  // already-proven endpoints -- unit 2 (right after "first") and unit 9
+  // (right before "last") -- for all 8 paths, catching an off-by-one in
+  // the very first or very last content-file boundary that a check on unit
+  // 1/10 themselves wouldn't (e.g. a unit array that's shifted by one but
+  // still happens to render *something* at index 0).
+  for (const unitId of [
+    "unit.cc.02", "unit.le.02", "unit.ni.02", "unit.sm.02", "unit.tl.02", "unit.bd.02", "unit.fo.02", "unit.da.02",
+  ]) {
+    test(`the unit right after the first unit of every path renders too (${unitId})`, async ({ page }) => {
+      await page.goto(`/en/unit/${unitId}`);
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("404");
+      await expect(page.locator("body")).not.toContainText("500");
+      await expect(page.getByRole("button").first()).toBeVisible();
+    });
+  }
+
+  for (const unitId of [
+    "unit.cc.09", "unit.le.09", "unit.ni.09", "unit.sm.09", "unit.tl.09", "unit.bd.09", "unit.fo.09", "unit.da.09",
+  ]) {
+    test(`the unit right before the last unit of every path renders too (${unitId})`, async ({ page }) => {
+      await page.goto(`/en/unit/${unitId}`);
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("404");
+      await expect(page.locator("body")).not.toContainText("500");
+      await expect(page.getByRole("button").first()).toBeVisible();
+    });
+  }
 });
