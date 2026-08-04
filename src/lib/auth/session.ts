@@ -113,6 +113,17 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   if (row.session.expiresAt < Date.now()) return null;
   if (row.user.deletedAt) return null;
 
+  // A platform-owner suspension or an expired access window must take effect
+  // immediately, not just block the next sign-in -- someone already signed
+  // in when the owner suspends them should be kicked out on their very next
+  // request. Revoking here (rather than only in the mutating action) also
+  // catches the pure-time-passing case: a session that was fine yesterday
+  // but whose `accessExpiresAt` has since passed with no admin action at all.
+  if (row.user.accountStatus === "suspended" || (row.user.accessExpiresAt && row.user.accessExpiresAt < Date.now())) {
+    await db.update(sessions).set({ revokedAt: Date.now() }).where(eq(sessions.id, row.session.id));
+    return null;
+  }
+
   return {
     id: row.user.id,
     email: row.user.email,

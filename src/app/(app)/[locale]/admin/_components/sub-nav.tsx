@@ -13,9 +13,17 @@ import { useI18n } from "@/components/providers";
  * `showOrganization` adds an eighth pill for org owners/admins/managers only
  * — someone with only `content.*` permissions (an author or reviewer with no
  * organization) never sees a tab for a feature `assertTenant()` would just
- * reject them from anyway.
+ * reject them from anyway. `showAccounts` is the same idea for the one
+ * platform-owner-only pill (`isPlatformOwner()`, not a permission at all —
+ * see `rbac.ts`).
  */
-export function AdminSubNav({ showOrganization }: { showOrganization: boolean }) {
+export function AdminSubNav({
+  showOrganization,
+  showAccounts,
+}: {
+  showOrganization: boolean;
+  showAccounts: boolean;
+}) {
   const { dict, locale } = useI18n();
   const pathname = usePathname();
   const base = `/${locale}/admin`;
@@ -29,6 +37,7 @@ export function AdminSubNav({ showOrganization }: { showOrganization: boolean })
     { href: `${base}/review-queue`, label: dict.admin.reviewQueue },
     { href: `${base}/ingestion`, label: dict.admin.ingestion },
     ...(showOrganization ? [{ href: `${base}/organization`, label: dict.admin.organization.title }] : []),
+    ...(showAccounts ? [{ href: `${base}/accounts`, label: dict.admin.accounts.title }] : []),
   ];
 
   return (

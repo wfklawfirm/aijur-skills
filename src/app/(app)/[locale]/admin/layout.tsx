@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
 import { getSessionUser } from "@/lib/auth/session";
-import { can } from "@/lib/auth/rbac";
+import { can, isPlatformOwner } from "@/lib/auth/rbac";
 import { AppHeader, BottomNav, Page } from "@/components/layout/app-shell";
 import { AdminSubNav } from "./_components/sub-nav";
 
@@ -34,19 +34,23 @@ export default async function AdminLayout({
   const dict = getDictionary(loc);
 
   const user = await getSessionUser();
-  if (!user || !(can(user, "content.author") || can(user, "org.members.manage") || can(user, "org.reports"))) {
+  if (
+    !user ||
+    !(can(user, "content.author") || can(user, "org.members.manage") || can(user, "org.reports") || isPlatformOwner(user))
+  ) {
     redirect(`/${loc}/home`);
   }
 
   const showOrganization = Boolean(
     user.organization && (can(user, "org.members.manage") || can(user, "org.reports")),
   );
+  const showAccounts = isPlatformOwner(user);
 
   return (
     <>
       <AppHeader title={dict.admin.title} showStudio />
       <Page>
-        <AdminSubNav showOrganization={showOrganization} />
+        <AdminSubNav showOrganization={showOrganization} showAccounts={showAccounts} />
         {children}
       </Page>
       <BottomNav showStudio />

@@ -21,7 +21,13 @@ export function SignInForm({ locale }: { locale: Locale }) {
 
       {state.error && (
         <Callout tone="negative" title={dict.common.error}>
-          {state.error === "rate_limited" ? dict.auth.rateLimited : dict.auth.invalid}
+          {state.error === "rate_limited"
+            ? dict.auth.rateLimited
+            : state.error === "suspended"
+              ? dict.auth.accountSuspended
+              : state.error === "access_expired"
+                ? dict.auth.accessExpired
+                : dict.auth.invalid}
         </Callout>
       )}
 

@@ -16,7 +16,15 @@ import { uid } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
 
 export interface AuthFormState {
-  error?: "invalid" | "email_taken" | "password_length" | "password_variety" | "server_error" | "rate_limited";
+  error?:
+    | "invalid"
+    | "email_taken"
+    | "password_length"
+    | "password_variety"
+    | "server_error"
+    | "rate_limited"
+    | "suspended"
+    | "access_expired";
   fieldErrors?: Record<string, string>;
 }
 
@@ -67,6 +75,13 @@ export async function signIn(_prev: AuthFormState, formData: FormData): Promise<
 
   const valid = await verifyPassword(password, user.passwordHash);
   if (!valid) return { error: "invalid" };
+
+  // Checked here, before a session is even created -- not just relied on
+  // via getSessionUser()'s lazy revocation, so a suspended/expired account
+  // gets a clear, honest reason at the sign-in form instead of a session
+  // that's silently created and then immediately dead on the next request.
+  if (user.accountStatus === "suspended") return { error: "suspended" };
+  if (user.accessExpiresAt && user.accessExpiresAt < Date.now()) return { error: "access_expired" };
 
   const ua = (await headers()).get("user-agent") ?? undefined;
   await createSession(user.id, null, ua);

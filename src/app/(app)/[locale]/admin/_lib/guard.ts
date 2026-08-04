@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSessionUser, type SessionUser } from "@/lib/auth/session";
-import { can } from "@/lib/auth/rbac";
+import { can, isPlatformOwner } from "@/lib/auth/rbac";
 import type { Locale } from "@/lib/i18n/config";
 
 /**
@@ -27,6 +27,22 @@ export async function requireContentAuthorOrRedirect(loc: Locale): Promise<Sessi
   const user = await getSessionUser();
   if (!user || !can(user, "content.author")) {
     redirect(`/${loc}/admin/organization`);
+  }
+  return user;
+}
+
+/**
+ * `/admin/accounts` is not a content or org permission at all — it's the
+ * one platform-wide surface gated on `isPlatformOwner()` alone (see
+ * `rbac.ts`'s doc comment on why that's deliberately not a `systemRole` or a
+ * `Permission`). Same pattern as `requireContentAuthorOrRedirect`: a clean
+ * redirect for anyone else, not the real security boundary — every action
+ * in `platform-accounts-core.ts` calls `requirePlatformOwner()` itself.
+ */
+export async function requirePlatformOwnerOrRedirect(loc: Locale): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (!user || !isPlatformOwner(user)) {
+    redirect(`/${loc}/admin`);
   }
   return user;
 }

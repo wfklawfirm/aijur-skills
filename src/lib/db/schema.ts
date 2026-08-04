@@ -72,6 +72,17 @@ export const users = sqliteTable(
     >(),
     emailVerifiedAt: integer("email_verified_at"),
     mfaEnabled: integer("mfa_enabled", { mode: "boolean" }).notNull().default(false),
+    /**
+     * Platform-owner-managed account lifecycle (`src/lib/actions/platform-
+     * accounts-core.ts`), separate from `systemRole`/org membership. A
+     * suspended account is blocked at sign-in and has every existing session
+     * revoked immediately (see `setAccountStatusCore`) -- not merely hidden
+     * from future logins.
+     */
+    accountStatus: text("account_status").notNull().default("active").$type<"active" | "suspended">(),
+    /** Null = no expiration. Past this timestamp, sign-in is blocked and any
+     *  live session is revoked the next time it's checked (`getSessionUser`). */
+    accessExpiresAt: integer("access_expires_at"),
     lastSeenAt: integer("last_seen_at"),
     deletedAt: integer("deleted_at"),
     createdAt: createdAt(),

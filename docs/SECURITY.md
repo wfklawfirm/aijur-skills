@@ -219,6 +219,55 @@ role adds `content.author`/`org.members.manage` but never grants
 `content.publish`, because publishing is "never granted by an org role
 alone" (`rbac.test.ts:56-66`, assertion at line 65).
 
+### 3.1 Platform ownership (`isPlatformOwner()`, `rbac.ts`) — outside the permission matrix on purpose
+
+`/admin/accounts` (create/suspend/reactivate/extend-access for *any* account
+on the platform, across every organization) is gated on
+`isPlatformOwner(user)`, not a `Permission` and not the `admin` `systemRole`.
+The reason: every entry in the permission matrix above is something an org
+or the content team could reasonably grant to more than one person by
+assigning a role — `isPlatformOwner()` checks a hardcoded, single-entry
+allowlist (`PLATFORM_OWNER_EMAILS`, currently `["wfklawfirm@gmail.com"]`)
+compared case-insensitively against `user.email`, so this specific
+capability can never be handed out by anyone assigning the `admin`
+`systemRole` to a Content Studio teammate for an unrelated reason.
+
+Enforced twice, same pattern as every other permission in this document:
+`admin/_lib/guard.ts`'s `requirePlatformOwnerOrRedirect()` is the clean-
+redirect UX check at the page level, and `platform-accounts-core.ts`'s
+`requirePlatformOwner()` (called by every one of `listAccountsCore`,
+`createAccountCore`, `setAccountStatusCore`, `setAccessExpiresAtCore`) is
+the real security boundary — a request that bypassed the page entirely (a
+direct Server Action call) still gets rejected, and the denial is logged via
+`logAccessDenial()` the same as any other `AuthError`.
+
+**Account lifecycle this unlocks**, all enforced in `users.accountStatus`
+(`"active" | "suspended"`) and `users.accessExpiresAt` (nullable epoch ms):
+
+- **Create**: `createAccountCore` never sets a password the owner chose or
+  saw — it hashes a random, discarded placeholder so the account exists
+  immediately but cannot be signed into, then reuses the *existing*
+  password-reset token flow (`createResetTokenCore` / `/reset-password/
+  [token]`, §2) to email the new owner a link to set their own password.
+  `emailVerifiedAt` is set immediately (the platform owner is vouching for
+  the address by typing it in; clicking the emailed link is itself proof of
+  inbox control) — no separate verification email.
+- **Suspend**: sets `accountStatus = "suspended"` and calls
+  `revokeAllSessions()` in the same action — immediate, not "blocked from
+  signing in next time." Reactivating clears the status but does not
+  restore old sessions; the account signs in fresh.
+- **Extend / expire**: `accessExpiresAt` is either `null` (no expiration,
+  the default) or a future timestamp the owner sets via a quick "+30/90/365
+  days" button or a specific date. Two independent enforcement points, both
+  real: `signIn()` in `auth.ts` checks it before ever creating a session
+  (`error: "access_expired"`), and `getSessionUser()` in `session.ts`
+  re-checks `accountStatus`/`accessExpiresAt` on **every** request against a
+  live session and revokes it on the spot if either check now fails — so an
+  already-signed-in tab is cut off on its very next request after a
+  suspension, and an expiration that arrives purely from time passing (no
+  admin action that day) is caught the same way, not just at the next login
+  attempt.
+
 ## 4. Tenant isolation
 
 `assertTenant()` (`rbac.ts:77-82`), quoted in full:
