@@ -133,4 +133,35 @@ test.describe("Authenticated learner content", () => {
       await expect(page.getByRole("button").first()).toBeVisible();
     });
   }
+
+  // First/seam/last coverage (units 1, 5, 10) still leaves every path's
+  // units 2-4 and 6-9 completely unexercised -- 6 of every path's 10
+  // units. These add unit 3 (inside the first authoring file, between
+  // "first" and "seam") and unit 8 (inside the second authoring file,
+  // between "seam" and "last") for all 8 paths, roughly bisecting each
+  // previously-unexercised half so a bug isolated to one interior unit is
+  // more likely to be caught than by endpoint sampling alone.
+  for (const unitId of [
+    "unit.cc.03", "unit.le.03", "unit.ni.03", "unit.sm.03", "unit.tl.03", "unit.bd.03", "unit.fo.03", "unit.da.03",
+  ]) {
+    test(`an early-interior unit of every path renders too (${unitId})`, async ({ page }) => {
+      await page.goto(`/en/unit/${unitId}`);
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("404");
+      await expect(page.locator("body")).not.toContainText("500");
+      await expect(page.getByRole("button").first()).toBeVisible();
+    });
+  }
+
+  for (const unitId of [
+    "unit.cc.08", "unit.le.08", "unit.ni.08", "unit.sm.08", "unit.tl.08", "unit.bd.08", "unit.fo.08", "unit.da.08",
+  ]) {
+    test(`a late-interior unit of every path renders too (${unitId})`, async ({ page }) => {
+      await page.goto(`/en/unit/${unitId}`);
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("404");
+      await expect(page.locator("body")).not.toContainText("500");
+      await expect(page.getByRole("button").first()).toBeVisible();
+    });
+  }
 });
