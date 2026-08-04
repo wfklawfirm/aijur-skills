@@ -66,6 +66,11 @@
   --radius-card: 1rem;
   --radius-control: 0.75rem;
   --radius-pill: 999px;
+  /* A larger, "premium" card radius for the new Home dashboard components
+     (Design overhaul, Phase 1 -- Home only). Deliberately a new token, not a
+     change to --radius-card: every other screen's cards keep their existing
+     1rem radius until/unless a later phase extends this app-wide. */
+  --radius-card-lg: 1.5rem;
 
   /* Mobile chrome */
   --bottom-nav-height: 4.25rem;
@@ -135,6 +140,7 @@
   --color-info-tint: var(--color-info-tint);
 
   --radius-card: var(--radius-card);
+  --radius-card-lg: var(--radius-card-lg);
   --radius-control: var(--radius-control);
 
   --shadow-sm: var(--shadow-sm);

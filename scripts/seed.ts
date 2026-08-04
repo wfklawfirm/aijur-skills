@@ -567,7 +567,7 @@ for (const u of demoUsers) {
       id: `ach.${u.id}.first-unit`,
       userId: u.id,
       kind: "milestone",
-      label: "first_unit_completed",
+      label: "First unit completed",
       earnedAt: now - u.unitsDone * 2 * DAY_MS,
     })
     .onConflictDoNothing();

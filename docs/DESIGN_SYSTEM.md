@@ -14,7 +14,11 @@ Primary sources:
   library.
 - `src/components/layout/app-shell.tsx` — `Page`, `AppHeader`, `BottomNav`,
   `SectionTitle`, `OfflineBanner`, the shell every screen is built inside.
-- `package.json` — Tailwind `^4.3.3`, `@tailwindcss/postcss ^4.3.3`.
+- `src/components/home/*.tsx` — the Home-only dashboard components from the
+  design overhaul (§4.2): `HeroMark`, `DashboardCard`, `ProgressRing`,
+  `ContinueCard`, `SkillChip`.
+- `package.json` — Tailwind `^4.3.3`, `@tailwindcss/postcss ^4.3.3`,
+  `framer-motion`, `lucide-react` (the latter two added for §4.2).
 
 For the bilingual/RTL system this doc's tokens support, see
 `MOBILE_UX_ARCHITECTURE.md` — this doc covers the primitives (`.num`,
@@ -191,6 +195,7 @@ hierarchy."
 | Token | Value | Use |
 |---|---|---|
 | `--radius-card` | `1rem` | Card, Sheet, EmptyState/ErrorState containers |
+| `--radius-card-lg` | `1.5rem` | The Home dashboard/continue cards only (§4.2) — a new, additive token, not a change to `--radius-card`, so every other screen's cards are untouched |
 | `--radius-control` | `0.75rem` | Button, Input, Select, Callout |
 | `--radius-pill` | `999px` | Badge, ProgressBar track/fill, SegmentedControl, Toggle track |
 
@@ -396,8 +401,82 @@ ellipsis by default — correct for long unit/scenario/path titles that would
 otherwise crowd the header. The Home page's greeting
 (`fill(dict.home.greeting, { name: user.name }, locale)`) is the one title
 built from data the app cannot bound the length of, so it opts out via the
-new `wrap` prop, which swaps `truncate` for `wrap-anywhere` and lets the
-`<h1>` grow to a second line instead of cutting the learner's own name.
+`wrap` prop, which swaps `truncate` for `wrap-anywhere`. Follow-up polish
+(design overhaul, Phase 1): `wrap` now also applies `line-clamp-2` — a name
+long enough to wrap still gets a second line instead of being cut, but the
+header no longer grows indefinitely for an extreme case. The header's own
+vertical padding tightened (`py-3` → `py-2.5`) and the `BrandMark` shrank
+(28px → 20px) at the same time, both app-wide since `AppHeader` is shared —
+low-risk visual tightening, not the Home-only redesign in §4.2 below.
+
+### 4.2 Home dashboard redesign (design overhaul, Phase 1 — Home only)
+
+A full-app UI/UX rebuild was requested (new design system, Lucide icons
+app-wide, Framer Motion throughout, a redesigned bottom nav, etc.). Given the
+scope, it was deliberately split: **Phase 1 covers the Home screen only**,
+confirmed with the user before starting. Two new dependencies were added and
+approved for this and future phases: `framer-motion` (animation) and
+`lucide-react` (icons) — used only in the new components below for now, not
+retrofitted onto the other 25+ existing screens or the pre-existing hand-
+rolled icon set in `icons.tsx`.
+
+**New components, `src/components/home/`:**
+
+- `HeroMark` — a small, abstract, brand-colored SVG identity mark at the top
+  of Home. Deliberately not a literal illustration/stock image — this is a
+  professional legal-skills tool, and the design system already treats
+  decoration with restraint (§1).
+- `DashboardCard` — the "premium dashboard" card. Consolidates the three
+  previously-separate Your stage / Weekly goal / Recent achievement sections
+  into one glance, per the request to surface only what matters within 3
+  seconds and push detail to `/progress`. Contains a `ProgressRing`, a real
+  streak (`computeStreak()`, extracted from the Progress page into
+  `lib/learning/dashboard.ts` so both screens use one calculation), the
+  existing `ProgressBar` for the weekly goal, and the most recent achievement
+  if one exists.
+- `ProgressRing` — a percent-based circular progress ring, the same SVG math
+  as `ScoreRing` (`ui/progress.tsx`) but animated in on mount with Framer
+  Motion (`useReducedMotion`-aware — instant, no animation, when the user has
+  reduced motion set).
+- `ContinueCard` — the redesigned "Continue learning" CTA. The button sizes
+  to its content instead of stretching full-width, with a Lucide `Play` icon
+  and an `ArrowRight` that nudges on a loop (again reduced-motion-aware) and
+  mirrors via the existing `.flip-rtl` helper under RTL, plus a Framer Motion
+  press-scale. Replaces the old "Continue your journey" + "Today's mission"
+  sections, which showed the same unit twice.
+- `SkillChip` — replaces the plain green `Badge` pills the "strongest
+  skills" list used to render with; each skill is now its own small card
+  with a Lucide `Award` icon.
+
+**A deliberate scope decision, not an oversight — no XP:** the design brief
+describes an XP/points system (XP badges, "XP counting" animations, XP shown
+on the continue CTA). This app has no XP or points concept anywhere in its
+data model (grep-verified against `schema.ts`) — every number the new
+components show is real: mastery level, a real percent of the skill map
+assessed, the real consecutive-day streak, real weekly minutes, and real
+achievement records. Achievements themselves have a further, pre-existing
+gap worth flagging: nothing in the app's real (non-seed) code path ever
+inserts an `achievements` row — only `scripts/seed.ts` does, for demo
+accounts. The "recent achievement" banner is correctly wired and will
+display real data the moment something grants an achievement, but no such
+feature exists yet — building one is out of scope for a UI redesign.
+
+**Additive-only tokens:** `--radius-card-lg` (§2.5) and the tighter
+`SectionTitle` spacing (`compact` prop — `mt-4`/`mb-2` instead of
+`mt-6`/`mb-2.5`, ~35% less inter-section whitespace, opted into on Home
+only) are both new, non-breaking additions — every other screen's cards and
+section spacing are unchanged.
+
+Verified: full verify loop clean (typecheck, lint, 177/177 unit tests, a
+real production build, 127/127 e2e tests including the accessibility scans
+and the existing signup-onboarding test's "Your stage" heading assertion —
+kept as a real `<h2>` landmark above the new card, not removed, so screen-
+reader navigation to that section still works even though its visual chrome
+consolidated). Manually screenshotted in English and Arabic — RTL mirrors
+correctly (header mark at the trailing/right edge, continue button's arrow
+flips and sits at the visual left, skill chips and progress bar direction-
+aware via existing logical-property helpers, no new RTL-specific code
+needed).
 
 ---
 

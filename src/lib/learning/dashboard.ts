@@ -189,6 +189,35 @@ export async function buildSkillMap(userId: string): Promise<SkillMapEntry[]> {
     .filter((x): x is SkillMapEntry => x !== null);
 }
 
+const STREAK_WINDOW_DAYS = 35;
+
+/**
+ * Real, consecutive-day streak, counting back from today. Gaps simply stop
+ * the count -- there is no penalty view, only "days in a row right now".
+ * Originally computed inline on the Progress page; extracted here so Home's
+ * new dashboard card (design overhaul, Phase 1) shows the exact same number
+ * rather than a second, potentially-drifting implementation.
+ */
+export async function computeStreak(userId: string, now: number = Date.now()): Promise<number> {
+  const rows = await db
+    .select({ completedAt: unitProgress.completedAt })
+    .from(unitProgress)
+    .where(and(eq(unitProgress.userId, userId), gte(unitProgress.completedAt, now - STREAK_WINDOW_DAYS * DAY_MS)));
+
+  const activeDays = new Set(
+    rows
+      .map((r) => r.completedAt)
+      .filter((ts): ts is number => ts != null)
+      .map((ts) => new Date(ts).toDateString()),
+  );
+  let streak = 0;
+  for (let i = 0; i < STREAK_WINDOW_DAYS; i++) {
+    if (activeDays.has(new Date(now - i * DAY_MS).toDateString())) streak++;
+    else break;
+  }
+  return streak;
+}
+
 export interface WeeklyStats {
   minutesPracticed: number;
   unitsCompleted: number;

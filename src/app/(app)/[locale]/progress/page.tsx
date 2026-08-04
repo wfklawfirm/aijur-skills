@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { and, desc, eq, gte } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { achievements, evaluations, savedSummaries, unitProgress } from "@/lib/db/schema";
+import { achievements, evaluations, savedSummaries } from "@/lib/db/schema";
 import { getSessionUser } from "@/lib/auth/session";
-import { buildSkillMap, buildWeeklyStats, type SkillMapEntry } from "@/lib/learning/dashboard";
+import { buildSkillMap, buildWeeklyStats, computeStreak, type SkillMapEntry } from "@/lib/learning/dashboard";
 import { getDomains, getSkill, getUnit } from "@/lib/content/service";
 import { levelKey } from "@/lib/learning/mastery";
-import { DAY_MS } from "@/lib/utils";
 import { fill, getDictionary, pick } from "@/lib/i18n";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { AppHeader, BottomNav, Page, SectionTitle } from "@/components/layout/app-shell";
@@ -19,8 +18,6 @@ import { ChevronIcon, DomainIcon } from "@/components/ui/icons";
 
 const LINK_CARD =
   "flex w-full min-h-11 items-center gap-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4 text-start shadow-[var(--shadow-sm)] transition-colors hover:bg-[var(--surface-muted)]";
-
-const STREAK_WINDOW_DAYS = 35;
 
 // A plain helper, not a component — the React "components must be pure" lint
 // rule flags direct `Date.now()` calls inside component bodies, but this page
@@ -50,32 +47,15 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
 
   const now = currentTimestamp();
 
-  const [stats, skillMap, domains, streakRows, savedRows, achievementRows, evalRows] = await Promise.all([
+  const [stats, skillMap, domains, streak, savedRows, achievementRows, evalRows] = await Promise.all([
     buildWeeklyStats(user.id),
     buildSkillMap(user.id),
     getDomains(),
-    db
-      .select({ completedAt: unitProgress.completedAt })
-      .from(unitProgress)
-      .where(and(eq(unitProgress.userId, user.id), gte(unitProgress.completedAt, now - STREAK_WINDOW_DAYS * DAY_MS))),
+    computeStreak(user.id, now),
     db.select().from(savedSummaries).where(eq(savedSummaries.userId, user.id)).orderBy(desc(savedSummaries.createdAt)),
     db.select().from(achievements).where(eq(achievements.userId, user.id)).orderBy(desc(achievements.earnedAt)),
     db.select().from(evaluations).where(eq(evaluations.userId, user.id)),
   ]);
-
-  // Rough consecutive-day streak, counting back from today. Gaps simply stop
-  // the count — there is no penalty view, only "days in a row right now".
-  const activeDays = new Set(
-    streakRows
-      .map((r) => r.completedAt)
-      .filter((ts): ts is number => ts != null)
-      .map((ts) => new Date(ts).toDateString()),
-  );
-  let streak = 0;
-  for (let i = 0; i < STREAK_WINDOW_DAYS; i++) {
-    if (activeDays.has(new Date(now - i * DAY_MS).toDateString())) streak++;
-    else break;
-  }
 
   const skillsByEntry = await Promise.all(skillMap.map((entry) => getSkill(entry.skillId)));
   const skillNameById = new Map(skillMap.map((entry, i) => [entry.skillId, skillsByEntry[i]]));

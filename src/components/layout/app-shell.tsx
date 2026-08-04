@@ -140,7 +140,7 @@ export function AppHeader({
         screenshotting it, not by reading the JSX).
       */}
       <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/92 backdrop-blur safe-top">
-        <div className="mx-auto flex max-w-lg items-center gap-2 px-4 py-3">
+        <div className="mx-auto flex max-w-lg items-center gap-2.5 px-4 py-2.5">
           {back &&
             ("href" in back ? (
               <Link href={back.href} aria-label={back.label} className={backClass}>
@@ -152,11 +152,22 @@ export function AppHeader({
               </button>
             ))}
           {/* The mark only fits comfortably on top-level screens -- a back
-              button already occupies that space on detail/task screens. */}
-          {!back && <BrandMark size={28} className="shrink-0 rounded-[0.4rem]" />}
+              button already occupies that space on detail/task screens.
+              Sits at the row's start edge -- the far *right* in the app's
+              primary RTL layout, which is where "أقصى اليمين" (design
+              overhaul follow-up notes) asked for it; shrunk from 28px to
+              20px per the same notes ("صغّرها أكثر"). */}
+          {!back && <BrandMark size={20} className="shrink-0 rounded-[0.35rem]" />}
           <h1
             dir="auto"
-            className={cn("text-page-title min-w-0 flex-1", wrap ? "wrap-anywhere" : "truncate")}
+            className={cn(
+              "text-page-title min-w-0 flex-1",
+              // A name too long for one line wraps instead of truncating
+              // (the real bug this fixed originally), but bounded to 2
+              // lines instead of growing the header indefinitely -- the
+              // "shorten the header" follow-up note.
+              wrap ? "wrap-anywhere line-clamp-2 leading-snug" : "truncate",
+            )}
           >
             {title}
           </h1>
@@ -247,9 +258,28 @@ export function Page({ children, className }: { children: React.ReactNode; class
   );
 }
 
-export function SectionTitle({ children, action }: { children: React.ReactNode; action?: React.ReactNode }) {
+export function SectionTitle({
+  children,
+  action,
+  compact = false,
+}: {
+  children: React.ReactNode;
+  action?: React.ReactNode;
+  /**
+   * A ~35% tighter top/bottom margin (mt-4/mb-2 instead of mt-6/mb-2.5) —
+   * default stays untouched everywhere except Home, which opted in as part
+   * of the design overhaul's "reduce inter-section whitespace by 30-40%"
+   * request (Phase 1, Home only).
+   */
+  compact?: boolean;
+}) {
   return (
-    <div className="mb-2.5 mt-6 flex items-baseline justify-between gap-3 first:mt-0">
+    <div
+      className={cn(
+        "flex items-baseline justify-between gap-3 first:mt-0",
+        compact ? "mb-2 mt-4" : "mb-2.5 mt-6",
+      )}
+    >
       <h2 className="text-label">{children}</h2>
       {action}
     </div>
