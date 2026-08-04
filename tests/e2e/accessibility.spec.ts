@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { DEMO_STORAGE_STATE } from "./global-setup";
+import { DEMO_EMAIL, DEMO_PASSWORD } from "./helpers";
 
 /**
  * Automated accessibility coverage via axe-core, targeting the platform's
@@ -92,5 +93,45 @@ test.describe("Accessibility (axe-core, WCAG 2.2 AA target) — authenticated pa
   test("a real unit page (English)", async ({ page }) => {
     await page.goto("/en/unit/unit.cc.01");
     await assertNoBlockingViolations(page, "unit-cc01-en");
+  });
+});
+
+/**
+ * axe-core (above) is static analysis -- it checks that elements are
+ * correctly labelled/structured, but never actually drives the page with a
+ * keyboard the way a real keyboard-only user would. It would happily pass
+ * a page where every element is technically reachable but the tab order is
+ * scrambled, or where a form quietly requires a mouse click to submit. This
+ * closes that specific gap for the one flow every anonymous visitor must
+ * complete: signing in. Uses `page.keyboard` exclusively -- no `.click()`,
+ * no `.fill()` -- so a regression that makes the form mouse-only (e.g. a
+ * submit handler wired to `onClick` instead of the form's real `action`, or
+ * a focus trap) would be caught here even though axe-core wouldn't see it.
+ */
+test.describe("Accessibility — real keyboard-only navigation (no mouse)", () => {
+  test("sign-in is fully operable via keyboard alone, in real tab order", async ({ page }) => {
+    await page.goto("/en/sign-in");
+
+    // The very first Tab from a fresh page should reach the skip link
+    // (`layout.tsx`'s `<a href="#main">`) -- confirms it's actually
+    // keyboard-reachable, not just present in the DOM ahead of everything
+    // else that would make it moot.
+    await page.keyboard.press("Tab");
+    await expect(page.locator(".skip-link")).toBeFocused();
+
+    await page.keyboard.press("Tab");
+    await expect(page.locator('input[name="email"]')).toBeFocused();
+    await page.keyboard.type(DEMO_EMAIL);
+
+    await page.keyboard.press("Tab");
+    await expect(page.locator('input[name="password"]')).toBeFocused();
+    await page.keyboard.type(DEMO_PASSWORD);
+
+    // Enter inside a text input nested in a <form> triggers a real browser
+    // form submission -- not a Playwright `.click()` on the submit button,
+    // proving the form doesn't secretly depend on a pointer event to work.
+    await page.keyboard.press("Enter");
+    await page.waitForURL((url) => !url.pathname.endsWith("/sign-in"), { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/en\/home$/);
   });
 });

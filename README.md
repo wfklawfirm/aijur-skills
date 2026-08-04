@@ -63,12 +63,15 @@ queue (a real queued evaluation's full AI payload and queue reason render,
 not just a score badge), RTL/LTR layout direction for both locales,
 axe-core accessibility scans (critical/serious severity gate, plus two
 structural rules — `page-has-heading-one` and `region`/`skip-link` —
-pinned to always-blocking after the real bugs they found were fixed), and
-the PWA service worker's actual offline behavior (registration, the
+pinned to always-blocking after the real bugs they found were fixed), a
+real keyboard-only navigation test (sign-in driven entirely via `Tab` and
+keyboard input, no mouse events, catching a class of bug static a11y
+analysis can't — a scrambled tab order or a mouse-only submit handler),
+and the PWA service worker's actual offline behavior (registration, the
 manifest, a previously-visited page staying readable offline, a
 never-visited page falling back to `/offline`) — this last one found and
 fixed two real bugs that meant the service worker had never actually
-worked in this build at all (see `docs/PRODUCT_AUDIT.md` §5). 117/117 tests
+worked in this build at all (see `docs/PRODUCT_AUDIT.md` §5). 118/118 tests
 passing. See `docs/PRODUCT_AUDIT.md` §5 for what it does and doesn't cover
 yet.
 

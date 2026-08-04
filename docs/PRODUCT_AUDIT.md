@@ -426,7 +426,18 @@ in production content, just at low volume for some kinds (e.g. only 1
   `docs/SECURITY.md` §7 for the full reasoning) rather than removing
   coverage to stay under the old ceiling — 40/hour still closes off an
   unthrottled cost loop while giving real headroom above the platform's
-  18-scenario catalog. 117/117 tests
+  18-scenario catalog, and (19) **a real keyboard-only navigation test**
+  (`tests/e2e/accessibility.spec.ts`) — the sign-in form driven entirely
+  via `page.keyboard` (`Tab`/`type`/`Enter`), never `.click()` or
+  `.fill()`, asserting the real DOM tab order (skip link → email →
+  password) and that pressing Enter inside the password field submits
+  the form and reaches `/home`. This is a genuinely new coverage
+  dimension, not a deepening of an existing one: axe-core (the existing
+  a11y suite, described below) is static analysis — it checks that
+  elements are labelled and structured correctly but never actually
+  drives the page with a keyboard, so it would pass a page whose tab
+  order is scrambled or whose submit button is wired to a mouse-only
+  `onClick`. This test would catch either. 118/118 tests
   passing. This is
   the first repeatable e2e run in the repo — previously only a one-off
   manual Playwright script existed, used to smoke-test the CSRF guard once
@@ -484,10 +495,16 @@ in production content, just at low volume for some kinds (e.g. only 1
   `accessibility.spec.ts` now promotes `page-has-heading-one`, `region`,
   and `skip-link` to always-blocking (regardless of impact level) so a
   regression on any of them is caught, not just logged — the suite
-  currently logs zero findings of any severity. What this suite still does
-  NOT cover: no visual regression/screenshot-diffing, no keyboard-only
-  navigation walkthrough, no screen-reader testing (axe catches the
-  mechanical subset of a11y issues, not the full WCAG surface). Content
+  currently logs zero findings of any severity. A real keyboard-only
+  navigation test now exists too (per (19) above) — sign-in driven
+  entirely via `Tab`/`type`/`Enter`, no mouse events at all — but it's a
+  first single-flow proof, not a full walkthrough. What this suite still
+  does NOT cover: no visual regression/screenshot-diffing, no
+  keyboard-only walkthrough of any flow beyond sign-in (the unit player,
+  the simulation chat, and the admin Content Studio are all still
+  unverified for keyboard operability), no screen-reader testing (axe
+  catches the mechanical subset of a11y issues, not the full WCAG
+  surface). Content
   coverage, by contrast, is now complete rather than a sample: 8 of 10
   content domains carry their own path (two domains are covered via the
   paired Client Communication/Legal English tracks — see §4), and every
@@ -572,7 +589,7 @@ usability gap with its own new e2e regression test (§5, `docs/SECURITY.md`
 | Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **141 / 141 passing**, 38 suites, 0 failed, 0 skipped, 0 todo. Runtime ~14s. |
 | Content seed | `npm run db:reset` | **Succeeds.** 10 domains, 61 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 399 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
 | Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** No build errors, all routes generated (mix of static/SSG/dynamic). |
-| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **117 / 117 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **21 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus three (`scn.guarantee-request`, `scn.flagging-a-quality-issue`, `scn.catching-an-ai-hallucination`, from three different domains) also proven reaching their natural `maxTurns` end** (21 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
+| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **118 / 118 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **21 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus three (`scn.guarantee-request`, `scn.flagging-a-quality-issue`, `scn.catching-an-ai-hallucination`, from three different domains) also proven reaching their natural `maxTurns` end** (21 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests), and **a real keyboard-only navigation test** (sign-in driven entirely via `Tab`/keyboard input, no mouse events, 1 test). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
 
 `npm run verify` (typecheck → lint → test → build) would pass end to end based on the
 individual results above — all four stages were run and all four are green as of this
