@@ -6,10 +6,12 @@ communication skills — through original, scenario-based exercises and
 AI-assisted (and fully offline-capable) simulation and feedback, not
 recycled textbook chapters.
 
-This is a working MVP: real auth, a real learning engine with an
-evidence-based mastery algorithm, a real AI evaluation pipeline with a
-non-model-dependent verification layer, and a real admin Content Studio —
-all documented in [`docs/`](./docs) and grounded in a 73-test unit suite.
+This is a working MVP: real auth (with password reset and email
+verification), a real learning engine with an evidence-based mastery
+algorithm, a real AI evaluation pipeline with a non-model-dependent
+verification layer, an application-level CSRF guard, and a real admin
+Content Studio — all documented in [`docs/`](./docs) and grounded in a
+130-test unit suite.
 
 ## Quick start
 
@@ -62,11 +64,12 @@ scripts/seed.ts  Idempotent content + demo-account seeder.
 
 Read [`docs/PRODUCT_AUDIT.md`](./docs/PRODUCT_AUDIT.md) first — it states
 plainly what's built, what's deferred, and what the real content coverage is
-(7 of the 10 domains have real unit content across five paths — Client
+(8 of the 10 domains have real unit content across six paths — Client
 Relations, Communication, Professional Judgment & Ethics, Legal English,
-Negotiation & Influence, Self-Management, and Teamwork & Leadership; the
-other 3 are framework-only: skills and mastery levels are defined, but no
-units have been written against them yet). Then:
+Negotiation & Influence, Self-Management, Teamwork & Leadership, and Business
+Development; the other 2 (Firm & Matter Operations, Digital Tools & AI) are
+framework-only: skills and mastery levels are defined, but no units have been
+written against them yet). Then:
 
 | Doc | Covers |
 |---|---|

@@ -5,14 +5,17 @@ import { SKILLS as CORE_SKILLS } from "./framework/skills";
 import { NEGOTIATION_INFLUENCE_SKILLS } from "./framework/skills-negotiation-influence";
 import { SELF_MANAGEMENT_SKILLS } from "./framework/skills-self-management";
 import { TEAMWORK_LEADERSHIP_SKILLS } from "./framework/skills-teamwork-leadership";
+import { BUSINESS_DEVELOPMENT_SKILLS } from "./framework/skills-business-development";
 import { RUBRICS as CORE_RUBRICS } from "./framework/rubrics";
 import { NEGOTIATION_INFLUENCE_RUBRICS } from "./framework/rubrics-negotiation-influence";
 import { SELF_MANAGEMENT_RUBRICS } from "./framework/rubrics-self-management";
 import { TEAMWORK_LEADERSHIP_RUBRICS } from "./framework/rubrics-teamwork-leadership";
+import { BUSINESS_DEVELOPMENT_RUBRICS } from "./framework/rubrics-business-development";
 import { SCENARIOS as CORE_SCENARIOS } from "./scenarios";
 import { NEGOTIATION_INFLUENCE_SCENARIOS } from "./scenarios-negotiation-influence";
 import { SELF_MANAGEMENT_SCENARIOS } from "./scenarios-self-management";
 import { TEAMWORK_LEADERSHIP_SCENARIOS } from "./scenarios-teamwork-leadership";
+import { BUSINESS_DEVELOPMENT_SCENARIOS } from "./scenarios-business-development";
 import { PATHS } from "./paths";
 import { DIAGNOSTICS } from "./diagnostics";
 
@@ -27,18 +30,21 @@ export const SKILLS = [
   ...NEGOTIATION_INFLUENCE_SKILLS,
   ...SELF_MANAGEMENT_SKILLS,
   ...TEAMWORK_LEADERSHIP_SKILLS,
+  ...BUSINESS_DEVELOPMENT_SKILLS,
 ];
 export const RUBRICS = [
   ...CORE_RUBRICS,
   ...NEGOTIATION_INFLUENCE_RUBRICS,
   ...SELF_MANAGEMENT_RUBRICS,
   ...TEAMWORK_LEADERSHIP_RUBRICS,
+  ...BUSINESS_DEVELOPMENT_RUBRICS,
 ];
 export const SCENARIOS = [
   ...CORE_SCENARIOS,
   ...NEGOTIATION_INFLUENCE_SCENARIOS,
   ...SELF_MANAGEMENT_SCENARIOS,
   ...TEAMWORK_LEADERSHIP_SCENARIOS,
+  ...BUSINESS_DEVELOPMENT_SCENARIOS,
 ];
 
 export const CONTENT: ContentBundle = {

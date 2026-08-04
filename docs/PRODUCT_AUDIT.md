@@ -1,28 +1,34 @@
 # Product Audit
 
 Honest, evidence-based snapshot of what is actually built in this repository as of
-2026-08-03, one commit into the codebase (`dbbf800 foundation: schema, content, design
-system, AI layer`). This is an internal engineering audit, not marketing copy — every
-claim below is backed by a file path, a count pulled from the code, or a command run
-against this checkout. See `docs/PRODUCT_ARCHITECTURE.md` for how the system is put
-together; this document is about how much of it exists and how far the content goes.
+2026-08-04, several commits into the codebase (most recently, content domains for
+Self-Management, Teamwork & Leadership, and Business Development, plus a self-service
+password reset flow, real email verification, and an application-level CSRF guard —
+see `git log --oneline` for the full sequence). This is an internal engineering audit,
+not marketing copy — every claim below is backed by a file path, a count pulled from
+the code, or a command run against this checkout. See `docs/PRODUCT_ARCHITECTURE.md`
+for how the system is put together; this document is about how much of it exists and
+how far the content goes.
 
 ## 1. Scope of this build
 
-"MVP" here means: one complete, working vertical slice of the product — auth,
-onboarding, a diagnostic, two full learning paths (10 units each) with graded
-activities, six AI-coached simulations, spaced-review and mastery tracking, and an
-admin Content Studio for managing the framework — all running against a real
-Drizzle/libSQL schema with no REST layer (Server Actions only), fully bilingual
-(Arabic-first), and functional **with zero AI provider keys configured** because every
-AI agent ships a deterministic offline fallback. It is genuinely functional end to end
-for the two paths that have been authored (Client Communication Foundations, and its
-paired Legal English track) across all 10 competency domains at the *framework* level
-(domains, skills, rubrics all exist for all 10), but only 2 of those 10 domains have
-actual unit/lesson content written. Nothing in the shipped product is a visual mockup
-or a "coming soon" screen for the parts that exist — but 8 of the 10 domains have no
-learning content yet, so the product as it stands is a fully working single-path
-product, not a ten-domain curriculum.
+"MVP" here means: a complete, working vertical slice of the product — auth (including
+password reset and email verification), onboarding, a diagnostic, six full learning
+paths (10 units each) with graded activities, AI-coached simulations, spaced-review and
+mastery tracking, an application-level CSRF guard, and an admin Content Studio for
+managing the framework — all running against a real Drizzle/libSQL schema with no REST
+layer (Server Actions only), fully bilingual (Arabic-first), and functional **with zero
+AI provider keys configured** because every AI agent ships a deterministic offline
+fallback. It is genuinely functional end to end for the six paths that have been
+authored (Client Communication Foundations and its paired Legal English track,
+Negotiation & Influence, Self-Management, Teamwork & Leadership, and Business
+Development) across all 10 competency domains at the *framework* level (domains,
+skills, rubrics all exist for all 10), and 8 of those 10 domains now have actual
+unit/lesson content written. Nothing in the shipped product is a visual mockup or a
+"coming soon" screen for the parts that exist — 2 of the 10 domains (Firm & Matter
+Operations, Digital Tools & AI) still have no learning content, so those two remain
+framework-only, but the product as it stands is a working eight-domain curriculum
+across six paths, not a single-path product.
 
 ## 2. What's built
 
@@ -31,7 +37,7 @@ product, not a ten-domain curriculum.
 | **Auth** | Functional | Email/password with scrypt hashing (`src/lib/auth/password.ts`, N=2^15, memory-hard KDF), HMAC-signed session cookies (`src/lib/auth/session.ts`), no OAuth/SSO of any kind. Routes: `sign-in`, `sign-up`, `forgot-password`, `reset-password/[token]`, `verify-email/[token]` under `src/app/(app)/[locale]/`. Self-service password reset (`src/lib/actions/password-reset{,-core}.ts`) is single-use, hashed, 1-hour-expiring, session-revoking tokens delivered by email. Email verification (`src/lib/actions/email-verification{,-core}.ts`) is real now — a link is sent at signup and resendable from the profile page — but deliberately doesn't gate anything (see `docs/SECURITY.md` §7 for why); `emailVerifiedAt` is only ever set by an actual confirmed click. Real email delivery for both flows needs `EMAIL_PROVIDER=resend`+`RESEND_API_KEY` configured; with no provider set, links are logged to the server console instead of emailed. |
 | **RBAC / multi-tenancy** | Functional | `src/lib/auth/rbac.ts` defines 11 permissions, 4 system roles (learner/author/reviewer/admin) and 5 org roles (owner/admin/manager/author/member); `assertTenant()` enforces org isolation on every scoped query. Schema has `organizations`, `memberships`, `teams` tables. `assertTenant()` now has real call sites for all three org permissions: `org.members.manage`/`org.reports` (`src/lib/actions/org-core.ts` — list/add/role-change/remove members, an org report) and `org.assign` (`src/lib/actions/teams-core.ts` — team create/rename/delete, member-team assignment). `memberships.competencyProfileId` remains schema-only with no action surface. Covered by `tests/rbac.test.ts` (the primitive, mock users), `tests/org-tenant-isolation.test.ts` (9 tests), and `tests/teams-tenant-isolation.test.ts` (10 tests) — two seeded organizations each. |
 | **Onboarding** | Functional | `src/app/(app)/[locale]/onboarding/onboarding-flow.tsx` + `src/lib/actions/onboarding.ts`; feeds into a diagnostic (`src/app/(app)/[locale]/diagnostic/page.tsx`, `content/diagnostics.ts` — 1 diagnostic, 8 items). |
-| **Content authoring/framework** | Functional as data model, partially populated | `content/types.ts` defines the full authoring contract (domains, skills w/ 7 mastery levels each, rubrics, scenarios, paths/chapters/units, 17 activity kinds, diagnostics). 10 domains, 42 skills, 6 rubrics all authored (`content/framework/*.ts`, 12,513 lines in `skills.ts` alone). All 42 skills are `reviewStatus: ai_suggested` — none have progressed to `sme_reviewed` or `approved`. |
+| **Content authoring/framework** | Functional as data model, partially populated | `content/types.ts` defines the full authoring contract (domains, skills w/ 7 mastery levels each, rubrics, scenarios, paths/chapters/units, 17 activity kinds, diagnostics). 10 domains, 55 skills, 14 rubrics all authored (`content/framework/*.ts` plus domain companion files — see §4). All 55 skills are `reviewStatus: ai_suggested` — none have progressed to `sme_reviewed` or `approved`. |
 | **Learning engine** | Functional | `src/lib/learning/{mastery,progression,grading,review,responses,dashboard}.ts` — deterministic grading for choice/ordering/matching/fill-blank activities, AI-rubric grading for written work, a mastery ledger (0–6 levels) backed by `masteryRecords`/`evidence` tables, and a spaced-review scheduler (`reviewSchedule` table, tested in `tests/mastery.test.ts` and the review-selection suite). |
 | **AI layer + offline fallback** | Functional | `src/lib/ai/provider.ts`: single `runAgent()` entry point, provider chain (anthropic → openai → offline, configurable via env), every call recorded to `aiModelRuns` (provider, model, prompt/rubric version, input hash, tokens, cost, latency, confidence) for audit/reproducibility. **Every agent (`simulation.ts`, `evaluation.ts`, `coaching.ts`) ships a rule-based `offline` implementation with the same Zod output schema**, so the app runs with zero API keys — confirmed by `.env.example` defaulting `AI_PRIMARY_PROVIDER=offline`. Prompt-injection defence via `asData()` wraps untrusted learner/client text in a fenced block. |
 | **Admin Content Studio** | Functional | 7 admin screens under `src/app/(app)/[locale]/admin/`: dashboard, sources, skills, rubrics, scenarios, units, review-queue, ingestion. `ingestion` page is explicitly a monitoring view over `ingestionSuggestions`/`humanReviews` tables, not an automated pipeline (see comment at `admin/ingestion/page.tsx:12`). An 8th screen, `admin/organization`, is shown only to users with an org role holding `org.members.manage` or `org.reports` (owner/admin/manager) — member list/add/role-change/remove plus a per-org report that respects `organizations.privacyPolicy.managersSeeScores`, and (for callers additionally holding `org.assign`) team create/rename/delete and member-to-team assignment. |
@@ -64,13 +70,13 @@ Checked directly rather than assumed:
 - **Automated content ingestion pipeline**: the admin `ingestion` page is a review
   queue over pre-seeded `ingestionSuggestions`, not a live document-to-content
   pipeline; the comment in the source file calls it a "placeholder" for that reason.
-- **Content review workflow completion**: all 52 skills sit at `reviewStatus:
+- **Content review workflow completion**: all 55 skills sit at `reviewStatus:
   "ai_suggested"` — the SME review → approved pipeline that `content/types.ts` models
   (`draft → ai_suggested → sme_reviewed → approved → archived`) has not been exercised
   past the first stage for any skill.
-- **3 of 10 domains have no unit content** (see §4) — Business Development,
-  Firm & Matter Operations, and Digital Tools & AI have skills and
-  mastery-level definitions but zero authored units, activities, or scenarios.
+- **2 of 10 domains have no unit content** (see §4) — Firm & Matter Operations and
+  Digital Tools & AI have skills and mastery-level definitions but zero authored
+  units, activities, or scenarios.
 
 ## 4. Content coverage
 
@@ -79,25 +85,26 @@ Counts pulled by loading `content/index.ts`'s `CONTENT` bundle directly:
 | Object | Count |
 |---|---|
 | Domains | 10 |
-| Skills | 52 (all `reviewStatus: ai_suggested`) |
-| Rubrics | 12 |
-| Scenarios (simulations) | 12 |
+| Skills | 55 (all `reviewStatus: ai_suggested`) |
+| Rubrics | 14 |
+| Scenarios (simulations) | 14 |
 | Source records | 33 |
-| Paths | 5 |
+| Paths | 6 |
 | Diagnostics | 1 (8 items) |
-| Units (total, across all paths) | 50 |
-| Activities (total) | 255 |
+| Units (total, across all paths) | 60 |
+| Activities (total) | 303 |
 | Legal-English phrase-bank entries | 96 |
 
 **Path-level detail:**
 
-| Path | Track | Domains covered | Chapters | Units | Activities |
-|---|---|---|---|---|---|
-| `path.client-communication-foundations` | professional | client-relations, communication, professional-judgment | 4 | 10 | 50 |
-| `path.legal-english-client-communication` | legal_english | legal-english, client-relations, communication | 4 | 10 | 59 |
-| `path.negotiation-influence` | professional | negotiation-influence | 4 | 10 | 49 |
-| `path.self-management` | professional | self-management | 4 | 10 | 49 |
-| `path.teamwork-leadership` | professional | teamwork-leadership | 4 | 10 | 48 |
+| Path | Track | Domains covered | Chapters | Units |
+|---|---|---|---|---|
+| `path.client-communication-foundations` | professional | client-relations, communication, professional-judgment | 4 | 10 |
+| `path.legal-english-client-communication` | legal_english | legal-english, client-relations, communication | 4 | 10 |
+| `path.negotiation-influence` | professional | negotiation-influence | 4 | 10 |
+| `path.self-management` | professional | self-management | 4 | 10 |
+| `path.teamwork-leadership` | professional | teamwork-leadership | 4 | 10 |
+| `path.business-development` | professional | business-development | 4 | 10 |
 
 **Skills-per-domain vs. units-per-domain** (framework-only domains have skills defined
 but zero units written):
@@ -111,18 +118,19 @@ but zero units written):
 | Negotiation & Influence | 6 | 10 |
 | Self-Management | 6 | 10 |
 | Teamwork & Leadership | 6 | 10 |
-| Business Development | 3 | **0** |
+| Business Development | 6 | 10 |
 | Firm & Matter Operations | 4 | **0** |
 | Digital Tools & AI | 1 | **0** |
 
-So: **7 of 10 domains have real unit content** (two of them only via the
-cross-listed paths above); **3 of 10 domains are framework-only** — skill
+So: **8 of 10 domains have real unit content** (two of them only via the
+cross-listed paths above); **2 of 10 domains are framework-only** — skill
 definitions and mastery-level descriptors exist, but no lessons, activities,
 scenarios, or rubrics have been written against them yet.
 
 Negotiation & Influence (`path.negotiation-influence`, `content/paths/ni-units-*.ts`),
-Self-Management (`path.self-management`, `content/paths/sm-units-*.ts`) and
-Teamwork & Leadership (`path.teamwork-leadership`, `content/paths/tl-units-*.ts`)
+Self-Management (`path.self-management`, `content/paths/sm-units-*.ts`),
+Teamwork & Leadership (`path.teamwork-leadership`, `content/paths/tl-units-*.ts`) and
+Business Development (`path.business-development`, `content/paths/bd-units-*.ts`)
 were all authored in this build session, following the identical process: parallel
 subagents each write one companion file (skills/rubrics/scenarios/one unit batch)
 against `content/AUTHORING_BRIEF.md`'s non-negotiables and a fixed id contract to
@@ -137,18 +145,29 @@ that ran well over the mobile-first length guideline (split into two shorter
 blocks). For Teamwork & Leadership, the QA pass found one real issue: the two
 authoring agents independently invented unrelated clients both named "Al-Nakheel"
 — one collided with a client already shipped in Self-Management — fixed by
-renaming the newer one (Al-Ajyal Contracting). For both Self-Management and
-Teamwork & Leadership, the QA pass also flagged that only 2 of each domain's 4
-chapters carry a `simulation` step, against the brief's "exactly one per chapter"
-guideline — **deliberately not changed**: the already-shipped Negotiation &
-Influence domain has the exact same 2-of-4 pattern (no simulation in its
-"preparing" or "closing" chapters), and in both newer domains the chapters
-without one either don't naturally fit a live-dialogue simulation (weekly
-planning; delegating a task) or already get equivalent practice through a
+renaming the newer one (Al-Ajyal Contracting). For Business Development, the QA
+pass found one real issue: a networking-contact character in the units-01-05 file
+reused the full name "Fadi Barakat" from an unrelated senior-partner character
+already shipped in Teamwork & Leadership — fixed by renaming to "Karim Saab" (and
+verified against every other shipped path's cast list). The Business Development
+QA pass paid particular attention to non-negotiable #8 (never guarantee legal
+outcomes) since the domain is inherently about winning business — every scenario,
+worked example, and rubric criterion that models an outcome-guarantee mistake was
+confirmed to be clearly wrong-scored (both rubrics' `criticalMistakes` cap that
+mistake at 0, and both simulations force-close if the learner holds the guarantee
+under challenge), never accidentally validated as a correct or strong answer. For
+Self-Management, Teamwork & Leadership, and Business Development alike, the QA
+pass also flagged that only 2 of each domain's 4 chapters carry a `simulation`
+step, against the brief's "exactly one per chapter" guideline — **deliberately not
+changed**: the already-shipped Negotiation & Influence domain has the exact same
+2-of-4 pattern (no simulation in its "preparing" or "closing" chapters), and in
+each newer domain the chapters without one either don't naturally fit a
+live-dialogue simulation (weekly planning; delegating a task; researching a
+client's business) or already get equivalent practice through a
 branching-decision activity. Forcing in more scenarios just to satisfy the
 guideline literally would mean redundant simulation coverage for real quality
-cost, not gain — this is now the established house pattern across all three
-newly-authored domains, not a one-off exception. All three new domains are
+cost, not gain — this is now the established house pattern across all four
+newly-authored domains, not a one-off exception. All four new domains are
 `reviewStatus: "ai_suggested"` and do not count toward a learner's mastery
 record as human-reviewed until a person reviews them — the platform's
 mandatory-human-review rule applies exactly as it does to every other domain.
@@ -160,7 +179,7 @@ against the live dev database (a stronger signal than typechecking alone, since
 `rubricId`/`scenarioId`/`skillId`) — every new domain seeded cleanly with the
 counts shown above.
 
-Activity-kind distribution across the 255 authored activities skews toward the
+Activity-kind distribution across the 303 authored activities skews toward the
 same kinds as the earlier paths, plus each new path's own mix of `short_written`
 (reflective/planning writing), `branching_decision` (in-session decision points),
 and `simulation` units. Exact counts were not recomputed field-by-field for this
@@ -179,12 +198,13 @@ in production content, just at low volume for some kinds (e.g. only 1
 
 ## 5. Known risks / rough edges
 
-- **Content breadth is still a gap, though narrower than before.** The product is
-  architected for 10 domains and multiple paths per audience
-  (student/trainee/junior/experienced/manager per `PathDef.audience`), but only 5
-  paths and 50 units exist (Client Communication, Legal English, Negotiation &
-  Influence, Self-Management, Teamwork & Leadership). Anyone piloting this beyond
-  those five tracks will hit an empty domain immediately.
+- **Content breadth is narrower than the architecture, though most domains are now
+  covered.** The product is architected for 10 domains and multiple paths per
+  audience (student/trainee/junior/experienced/manager per `PathDef.audience`), and
+  6 paths / 60 units now exist (Client Communication, Legal English, Negotiation &
+  Influence, Self-Management, Teamwork & Leadership, Business Development). Firm &
+  Matter Operations and Digital Tools & AI remain framework-only — anyone piloting
+  those two domains specifically will hit an empty domain immediately.
 - **Offline AI is meaningfully lower-fidelity than a real model.** The
   `offline`-provider implementations in `src/lib/ai/agents/{simulation,evaluation,
   coaching}.ts` are deterministic, rule-based stand-ins with the same output schema
@@ -192,7 +212,7 @@ in production content, just at low volume for some kinds (e.g. only 1
   not a substitute for LLM-quality simulation dialogue or nuanced rubric scoring.
   `AgentResult.degraded` flags this distinction but nothing downstream currently
   surfaces "degraded" to the learner in a way this audit verified.
-- **All content is unreviewed by a human SME.** Every one of the 50 skills is stuck
+- **All content is unreviewed by a human SME.** Every one of the 55 skills is stuck
   at `reviewStatus: "ai_suggested"` — the review pipeline exists in the schema and
   admin UI (`review-queue` page, `contentReviews` table) but has not been exercised
   to `approved` for anything yet. Treat all current content as pre-SME-review.
@@ -232,14 +252,16 @@ in production content, just at low volume for some kinds (e.g. only 1
 
 ## 6. Validation status
 
-Commands run directly against this checkout on 2026-08-03:
+Commands run directly against this checkout on 2026-08-04, after integrating the
+Business Development domain:
 
 | Check | Command | Result |
 |---|---|---|
 | Typecheck | `npx tsc --noEmit` | **Clean.** Exit 0, no output. |
 | Lint | `npm run lint` (`eslint .`) | **Clean.** No errors or warnings reported. |
-| Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **73 / 73 passing**, 25 suites, 0 failed, 0 skipped, 0 todo. Suites: `evaluation-safety`, `grading`, `i18n-parity`, `mastery`, `rbac`, `review`. Total runtime ~5.2s. |
-| Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** Compiled in ~27s, 39 routes generated (mix of static/SSG/dynamic), no build errors. |
+| Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **130 / 130 passing**, 35 suites, 0 failed, 0 skipped, 0 todo. Runtime ~18s. |
+| Content seed | `npm run db:seed` | **Succeeds.** 10 domains, 55 skills, 14 rubrics, 14 scenarios, 6 paths, 60 units, 303 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
+| Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** No build errors, all routes generated (mix of static/SSG/dynamic). |
 
 `npm run verify` (typecheck → lint → test → build) would pass end to end based on the
 individual results above — all four stages were run and all four are green as of this

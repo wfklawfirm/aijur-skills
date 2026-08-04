@@ -10,6 +10,8 @@ import { SM_UNITS_01_05 } from "./sm-units-01-05";
 import { SM_UNITS_06_10 } from "./sm-units-06-10";
 import { TL_UNITS_01_05 } from "./tl-units-01-05";
 import { TL_UNITS_06_10 } from "./tl-units-06-10";
+import { BD_UNITS_01_05 } from "./bd-units-01-05";
+import { BD_UNITS_06_10 } from "./bd-units-06-10";
 
 export const CLIENT_COMMUNICATION_PATH: PathDef = {
   id: "path.client-communication-foundations",
@@ -333,10 +335,75 @@ export const TEAMWORK_LEADERSHIP_PATH: PathDef = {
   units: [...TL_UNITS_01_05, ...TL_UNITS_06_10],
 };
 
+export const BUSINESS_DEVELOPMENT_PATH: PathDef = {
+  id: "path.business-development",
+  slug: "business-development",
+  title: {
+    ar: "تطوير الأعمال",
+    en: "Business Development",
+  },
+  tagline: {
+    ar: "الثقة تُبنى قبل أن يُطلب الملف.",
+    en: "Trust is built before the file is ever asked for.",
+  },
+  description: {
+    ar: "عشر وحدات تنقلك من بناء شبكة علاقات حقيقية إلى تحويل اهتمام عابر إلى تكليف فعلي: كيف تبقى حاضرًا في ذهن معارفك دون إلحاح، وتفهم أعمال عميلك لا مجرد ملفه القانوني، وتطلب إحالة دون إحراج، وتحوّل تواصلاً غير رسميًا إلى فرصة عمل حقيقية — دون أن تعد يومًا بنتيجة قانونية مضمونة.",
+    en: "Ten units that take you from building a real network to converting a passing moment of interest into an actual instruction: staying present in your contacts' minds without being pushy, understanding your client's business rather than just their legal file, asking for a referral without awkwardness, and converting an informal contact into real work — without ever promising a guaranteed legal outcome.",
+  },
+  track: "professional",
+  audience: ["trainee", "junior", "experienced"],
+  estimatedWeeks: 4,
+  domainIds: ["dom.business-development"],
+  chapters: [
+    {
+      id: "ch.bd.building-the-network",
+      pathId: "path.business-development",
+      order: 1,
+      title: { ar: "بناء الشبكة", en: "Building the network" },
+      description: {
+        ar: "التعارف بهدف واضح، والمتابعة التي لا تبدو مصلحية.",
+        en: "Purposeful introductions, and follow-up that doesn't read as self-interested.",
+      },
+    },
+    {
+      id: "ch.bd.understanding-the-business",
+      pathId: "path.business-development",
+      order: 2,
+      title: { ar: "فهم أعمال العميل", en: "Understanding the business" },
+      description: {
+        ar: "أسئلة تكشف أولويات العميل التجارية، لا فقط سؤاله القانوني.",
+        en: "Questions that surface the client's commercial priorities, not just their legal question.",
+      },
+    },
+    {
+      id: "ch.bd.staying-visible",
+      pathId: "path.business-development",
+      order: 3,
+      title: { ar: "البقاء حاضرًا", en: "Staying visible" },
+      description: {
+        ar: "التواصل الدوري ذو القيمة، وطلب إحالة دون إحراج الطرفين.",
+        en: "Periodic contact that adds value, and asking for a referral without embarrassing either side.",
+      },
+    },
+    {
+      id: "ch.bd.converting-to-instructions",
+      pathId: "path.business-development",
+      order: 4,
+      title: { ar: "التحويل إلى تكليف", en: "Converting to instructions" },
+      description: {
+        ar: "من اهتمام عابر إلى خطوة تالية محددة، دون وعد بنتيجة.",
+        en: "From a passing moment of interest to a concrete next step, with no promise of an outcome.",
+      },
+    },
+  ],
+  units: [...BD_UNITS_01_05, ...BD_UNITS_06_10],
+};
+
 export const PATHS: PathDef[] = [
   CLIENT_COMMUNICATION_PATH,
   LEGAL_ENGLISH_PATH,
   NEGOTIATION_INFLUENCE_PATH,
   SELF_MANAGEMENT_PATH,
   TEAMWORK_LEADERSHIP_PATH,
+  BUSINESS_DEVELOPMENT_PATH,
 ];
