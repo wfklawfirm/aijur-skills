@@ -202,6 +202,14 @@ body {
   }
 }
 
+/* Negative tracking tightens Latin nicely but visually compresses Arabic's
+   connected letterforms (the same reason .text-label already zeroes its own
+   tracking under RTL, below) -- zero it here too rather than leave it
+   silently applied to every Arabic page title. */
+[dir="rtl"] .text-page-title {
+  letter-spacing: 0;
+}
+
 .text-section-title {
   font-size: 1.1875rem;
   line-height: 1.4;
@@ -244,6 +252,38 @@ body {
   text-transform: none;
   letter-spacing: 0;
   font-size: 0.8125rem;
+}
+
+/**
+ * The five custom classes above (.text-page-title, .text-supporting,
+ * .text-label, plus the raw `body` rule) already get an Arabic-specific
+ * size/line-height bump, each hand-tuned, because the same point size reads
+ * smaller in Arabic than Latin. But real usage across the app is not
+ * limited to those five classes -- 50+ places (grep-verified) reach for
+ * Tailwind's own text-xs/sm/base/lg/xl utilities directly (button.tsx,
+ * form.tsx, activity-player.tsx, unit-player.tsx and others), and those
+ * utilities read var(--text-xs) etc. (Tailwind v4's CSS-first theme,
+ * confirmed against the compiled output) with no RTL awareness at all --
+ * so Arabic text sized this way rendered at the same point size as Latin,
+ * inconsistent with every custom-class element right next to it on the
+ * same screen. Overriding the underlying variables here, scoped to
+ * [dir="rtl"], bumps every Tailwind text utility the same way retroactively
+ * -- no component file needs to change. Bumps follow the same proportions
+ * already established above (roughly +5-8% size, +8-12% line-height); only
+ * the sizes actually in use are covered (verified by grep) rather than
+ * guessing values for untested sizes.
+ */
+[dir="rtl"] {
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.6;
+  --text-base: 1.03125rem;
+  --text-base--line-height: 1.65;
+  --text-lg: 1.1875rem;
+  --text-lg--line-height: 1.75;
+  --text-xl: 1.3125rem;
+  --text-xl--line-height: 1.6;
 }
 
 /**

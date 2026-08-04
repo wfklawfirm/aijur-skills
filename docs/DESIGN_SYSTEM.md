@@ -165,6 +165,21 @@ vars." The `@theme inline` block composes them: `--font-sans: var(--font-
 latin), var(--font-arabic), system-ui, sans-serif;` with the comment "The
 browser picks whichever family actually has glyphs for the run."
 
+`(app)/[locale]/layout.tsx` loads the two families via `next/font/google`:
+Latin is **Inter**; Arabic is **IBM Plex Sans Arabic** (`weight: ["400",
+"500", "600", "700"]` — the only weights the app actually uses,
+grep-verified). Arabic was originally **Noto Kufi Arabic**, a Kufic
+*display* face (angular, geometric letterforms built for headlines/
+branding), applied to every Arabic string in the app including body copy
+and buttons — this read as unprofessional and made letters look
+disconnected/blocky rather than the connected Naskh-style flow readers
+expect from UI text. IBM Plex Sans Arabic is a proper text face, part of
+IBM's multi-script Plex family designed specifically to pair with IBM Plex
+Sans (a modern grotesque close in proportions/x-height to Inter), so Latin
+and Arabic runs read as one consistent typographic voice. Verified visually
+via before/after Playwright screenshots of `/ar/sign-in` and `/ar/sign-up`
+against real running builds, not just read as a diff.
+
 ### 2.8 Safe-area / spacing helpers
 
 | Class | Rule |
@@ -234,11 +249,30 @@ RTL-specific overrides:
 - `[dir="rtl"] .text-label` disables uppercasing and tracking entirely —
   comment: "Arabic has no case, so uppercasing does nothing but widen
   tracking oddly" — and bumps to `0.8125rem`.
+- `[dir="rtl"] .text-page-title` zeroes the base rule's `letter-spacing:
+  -0.01em` — negative tracking tightens Latin nicely but visually compresses
+  Arabic's connected letterforms, the same reasoning `.text-label` already
+  applied to its own tracking. Found and fixed alongside the font swap
+  above, not previously scoped to RTL.
 - `[dir="rtl"] body, [lang="ar"]` sets `font-family` to Arabic-first,
   `font-size: 16.5px`, `line-height: 1.85` — comment: "Arabic runs slightly
   larger: the same point size reads smaller than Latin."
 - `[data-text-size="large"] body` is a user-controlled accessibility setting:
   `18px` (`18.5px` combined with RTL).
+- **`[dir="rtl"]` also overrides Tailwind's own type-scale variables**
+  (`--text-xs`/`--text-sm`/`--text-base`/`--text-lg`/`--text-xl` and their
+  paired `--*--line-height` variables — Tailwind v4's utilities read these
+  via `var()`, confirmed against compiled output) with the same ~5-8%
+  size / ~8-12% line-height bump the five custom classes above already
+  apply by hand. Real usage isn't limited to those five classes — 50+
+  places (grep-verified: `button.tsx`, `form.tsx`, `activity-player.tsx`,
+  `unit-player.tsx`, and others) reach for Tailwind's `text-sm`/`text-xs`
+  utilities directly, and those previously rendered at the same point size
+  in Arabic as in Latin — inconsistent with the custom-class elements next
+  to them on the same screen. Only the five sizes actually in use are
+  overridden (verified by grep) rather than guessing values for untested
+  sizes; extend the same block if a larger size (`2xl`+) is ever used on
+  Arabic body content.
 
 There is no `h3`/`h4`-specific scale class — `CardTitle` accepts a `level`
 prop (`2 | 3 | 4`, default `2`) but always renders with the

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Noto_Kufi_Arabic } from "next/font/google";
+import { Inter, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { notFound } from "next/navigation";
 import "../../globals.css";
 import { LOCALE_META, isLocale, LOCALES } from "@/lib/i18n/config";
@@ -13,8 +13,25 @@ const latin = Inter({
   display: "swap",
 });
 
-const arabic = Noto_Kufi_Arabic({
+/**
+ * Noto Kufi Arabic (the original choice here) is a Kufic *display* face --
+ * geometric, angular letterforms built for headlines and branding, not for
+ * body/UI text. Used across every Arabic string in the app (buttons, form
+ * labels, paragraphs), it read as unprofessional and made letters look
+ * disconnected/blocky rather than the natural connected Naskh-style flow
+ * readers expect from app UI text. IBM Plex Sans Arabic is a proper text
+ * face -- part of IBM's multi-script Plex family, specifically designed to
+ * pair with IBM Plex Sans (a modern grotesque very close in proportions and
+ * x-height to Inter, used below for Latin) so Arabic and Latin runs read as
+ * one consistent typographic voice rather than two mismatched systems.
+ * Explicit `weight` list required: unlike Noto Sans Arabic, this family
+ * isn't shipped as a single variable font by Google Fonts, and the app only
+ * actually uses 400/500/600/700 (font-normal/medium/semibold/bold --
+ * verified by grep across src/**\/*.tsx before picking this list).
+ */
+const arabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-arabic-src",
   display: "swap",
 });
