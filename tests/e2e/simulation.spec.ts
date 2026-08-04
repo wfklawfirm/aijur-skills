@@ -111,4 +111,76 @@ test.describe("Simulation player", () => {
       "Ziad, thanks for thinking of me for this -- I want to be upfront though, I'm fully committed to trial prep this week and taking on a Thursday deadline as well isn't realistic without something giving. Can we figure out a workable plan together?",
     );
   });
+
+  // Eight scenarios proved every one of the 8 authored paths has at least
+  // one working simulation pipeline, but most domains actually ship two
+  // scenarios each and only their first has ever been run through this
+  // suite. These seven add the second scenario for every domain that had
+  // one (Legal English, Negotiation & Influence, Self-Management, Teamwork
+  // & Leadership, Business Development, Firm & Matter Operations, Digital
+  // Tools & AI), each exercising a distinct rubric/skill combination from
+  // its domain's first scenario -- catching bugs specific to that second
+  // rubric or character set that the first scenario's content couldn't.
+  test("a ninth scenario completes (Legal English, second)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.le-explaining-process",
+      "Explaining company formation in plain English",
+      "Sure -- let me walk you through it step by step in plain terms. First, we'll need to reserve your company name, which usually takes about three to five business days once we submit the application.",
+    );
+  });
+
+  test("a tenth scenario completes (Negotiation & Influence, second)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.negotiation-hostile-counterpart",
+      "Renewing a lease against a hardball landlord's representative",
+      "I hear you on the timeline, but I want to name what's happening here -- a same-day deadline on a multi-year lease renewal isn't something I can responsibly agree to without a proper review, and I don't think you'd want your client bound to terms rushed through either.",
+    );
+  });
+
+  test("an eleventh scenario completes (Self-Management, second)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.missed-deadline-disclosure",
+      "Proactively disclosing an at-risk deadline",
+      "Salma, I need to flag something now rather than wait -- with two days left on the trademark opposition, I've realized my own triage this week means we won't hit the filing deadline as planned. Here's what happened and here's the recovery plan I'd propose.",
+    );
+  });
+
+  test("a twelfth scenario completes (Teamwork & Leadership, second)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.reluctant-peer-buyin",
+      "Securing a reluctant peer's buy-in with no formal authority",
+      "I know your team is slammed right now, so I don't want to just dump this on you -- but I do need your specialist eyes on this section before Thursday, and I think there's a way to scope it down so it's manageable on your end. Can I walk you through what I have in mind?",
+    );
+  });
+
+  test("a thirteenth scenario completes (Business Development, second)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.converting-warm-contact",
+      "Converting a warm contact's passing remark into a real consultation",
+      "Rami, it's great seeing you again -- that sounds like a genuinely stressful situation with your co-founder. I've actually worked on a few disputes like that; would it be useful if we grabbed fifteen minutes sometime next week so I can hear more about what's going on?",
+    );
+  });
+
+  test("a fourteenth scenario completes (Firm & Matter Operations, second)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.handing-over-your-matter",
+      "Handing over your matter before leave",
+      "I get that you're slammed, Farah, but I don't think a full document dump is going to set you up well here -- let me give you the ten-minute version now: where things stand, what's due next, and the two things most likely to blow up while I'm out.",
+    );
+  });
+
+  test("a fifteenth scenario completes (Digital Tools & AI, second)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.declining-to-use-a-tool",
+      "Declining to use a tool under time pressure",
+      "Firas, I get the time crunch, but I can't put the client's financial data into a tool the firm hasn't approved -- let's find a faster way through the approved channel instead, and I can help you triage what actually needs full verification before six.",
+    );
+  });
 });
