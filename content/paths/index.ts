@@ -6,6 +6,8 @@ import { LE_UNITS_01_05 } from "./le-units-01-05";
 import { LE_UNITS_06_10 } from "./le-units-06-10";
 import { NI_UNITS_01_05 } from "./ni-units-01-05";
 import { NI_UNITS_06_10 } from "./ni-units-06-10";
+import { SM_UNITS_01_05 } from "./sm-units-01-05";
+import { SM_UNITS_06_10 } from "./sm-units-06-10";
 
 export const CLIENT_COMMUNICATION_PATH: PathDef = {
   id: "path.client-communication-foundations",
@@ -201,4 +203,73 @@ export const NEGOTIATION_INFLUENCE_PATH: PathDef = {
   units: [...NI_UNITS_01_05, ...NI_UNITS_06_10],
 };
 
-export const PATHS: PathDef[] = [CLIENT_COMMUNICATION_PATH, LEGAL_ENGLISH_PATH, NEGOTIATION_INFLUENCE_PATH];
+export const SELF_MANAGEMENT_PATH: PathDef = {
+  id: "path.self-management",
+  slug: "self-management",
+  title: {
+    ar: "إدارة الذات",
+    en: "Self-Management",
+  },
+  tagline: {
+    ar: "الطاقة محدودة. الأسبوع الذي يعترف بذلك ينجح.",
+    en: "Capacity is fixed. The week that admits it is the one that works.",
+  },
+  description: {
+    ar: "عشر وحدات تنقلك من رؤية طاقتك الحقيقية إلى الإفصاح المبكر عن موعد ستفوته: كيف تفرز العاجل عن المهم عن طارئ شخص آخر، وتبني خطة تصمد بعد الاثنين، وتحمي وقتًا للتركيز الحقيقي، وترفض طلبًا غير معقول دون أن تُفسد العلاقة، وتلاحظ توتّرك قبل أن يظهر في ردٍّ متسرّع، وتبدأ المهمة التي تتجنّبها، وتُفصح عن موعد ستفوته بخطة تعافٍ واضحة بدل الاختباء.",
+    en: "Ten units that take you from seeing your real capacity to disclosing a deadline you're about to miss: sorting the urgent from the important from someone else's emergency, building a plan that survives Monday, protecting real focus time, saying no to an unreasonable ask without damaging the relationship, noticing your own stress before it leaks into a reply, starting the task you're avoiding, and disclosing a missed deadline with a real recovery plan instead of hiding it.",
+  },
+  track: "professional",
+  audience: ["student", "trainee", "junior", "experienced"],
+  estimatedWeeks: 4,
+  domainIds: ["dom.self-management"],
+  chapters: [
+    {
+      id: "ch.sm.planning-your-week",
+      pathId: "path.self-management",
+      order: 1,
+      title: { ar: "تخطيط أسبوعك", en: "Planning your week" },
+      description: {
+        ar: "الطاقة الحقيقية لا المعلنة، وفرز العاجل عن المهم، وخطة تصمد بعد الاثنين.",
+        en: "Real capacity, not declared capacity — sorting urgent from important, and a plan that survives Monday.",
+      },
+    },
+    {
+      id: "ch.sm.protecting-your-focus",
+      pathId: "path.self-management",
+      order: 2,
+      title: { ar: "حماية تركيزك", en: "Protecting your focus" },
+      description: {
+        ar: "وقت تركيز حقيقي لا يُقاطَع، ورفض مهني لطلب يتجاوز طاقتك.",
+        en: "Real, uninterrupted focus time, and a professional refusal when a request exceeds your capacity.",
+      },
+    },
+    {
+      id: "ch.sm.staying-steady",
+      pathId: "path.self-management",
+      order: 3,
+      title: { ar: "الثبات تحت الضغط", en: "Staying steady" },
+      description: {
+        ar: "ملاحظة توتّرك مبكرًا، والثبات حين يتصاعد الآخرون، وإعادة ضبط سريعة بين مهمة وأخرى.",
+        en: "Noticing your own stress early, staying steady when someone else escalates, and a fast reset between tasks.",
+      },
+    },
+    {
+      id: "ch.sm.recovering-and-sustaining",
+      pathId: "path.self-management",
+      order: 4,
+      title: { ar: "التعافي والاستمرارية", en: "Recovering and sustaining" },
+      description: {
+        ar: "بدء المهمة التي تتجنّبها، والإفصاح المبكر عن موعد ستفوته بخطة تعافٍ واضحة.",
+        en: "Starting the task you're avoiding, and disclosing a deadline you're about to miss with a clear recovery plan.",
+      },
+    },
+  ],
+  units: [...SM_UNITS_01_05, ...SM_UNITS_06_10],
+};
+
+export const PATHS: PathDef[] = [
+  CLIENT_COMMUNICATION_PATH,
+  LEGAL_ENGLISH_PATH,
+  NEGOTIATION_INFLUENCE_PATH,
+  SELF_MANAGEMENT_PATH,
+];

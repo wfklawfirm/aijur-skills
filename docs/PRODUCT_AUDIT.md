@@ -64,13 +64,13 @@ Checked directly rather than assumed:
 - **Automated content ingestion pipeline**: the admin `ingestion` page is a review
   queue over pre-seeded `ingestionSuggestions`, not a live document-to-content
   pipeline; the comment in the source file calls it a "placeholder" for that reason.
-- **Content review workflow completion**: all 47 skills sit at `reviewStatus:
+- **Content review workflow completion**: all 50 skills sit at `reviewStatus:
   "ai_suggested"` — the SME review → approved pipeline that `content/types.ts` models
   (`draft → ai_suggested → sme_reviewed → approved → archived`) has not been exercised
   past the first stage for any skill.
-- **5 of 10 domains have no unit content** (see §4) — Self-Management, Teamwork &
-  Leadership, Business Development, Firm & Matter Operations, and Digital Tools & AI
-  have skills and mastery-level definitions but zero authored units, activities, or
+- **4 of 10 domains have no unit content** (see §4) — Teamwork & Leadership,
+  Business Development, Firm & Matter Operations, and Digital Tools & AI have
+  skills and mastery-level definitions but zero authored units, activities, or
   scenarios.
 
 ## 4. Content coverage
@@ -80,14 +80,14 @@ Counts pulled by loading `content/index.ts`'s `CONTENT` bundle directly:
 | Object | Count |
 |---|---|
 | Domains | 10 |
-| Skills | 47 (all `reviewStatus: ai_suggested`) |
-| Rubrics | 8 |
-| Scenarios (simulations) | 8 |
+| Skills | 50 (all `reviewStatus: ai_suggested`) |
+| Rubrics | 10 |
+| Scenarios (simulations) | 10 |
 | Source records | 33 |
-| Paths | 3 |
+| Paths | 4 |
 | Diagnostics | 1 (8 items) |
-| Units (total, across all paths) | 30 |
-| Activities (total) | 158 |
+| Units (total, across all paths) | 40 |
+| Activities (total) | 207 |
 | Legal-English phrase-bank entries | 96 |
 
 **Path-level detail:**
@@ -97,6 +97,7 @@ Counts pulled by loading `content/index.ts`'s `CONTENT` bundle directly:
 | `path.client-communication-foundations` | professional | client-relations, communication, professional-judgment | 4 | 10 | 50 |
 | `path.legal-english-client-communication` | legal_english | legal-english, client-relations, communication | 4 | 10 | 59 |
 | `path.negotiation-influence` | professional | negotiation-influence | 4 | 10 | 49 |
+| `path.self-management` | professional | self-management | 4 | 10 | 49 |
 
 **Skills-per-domain vs. units-per-domain** (framework-only domains have skills defined
 but zero units written):
@@ -108,36 +109,56 @@ but zero units written):
 | Professional Judgment & Ethics | 4 | 10 |
 | Legal English | 10 | 10 |
 | Negotiation & Influence | 6 | 10 |
-| Self-Management | 3 | **0** |
+| Self-Management | 6 | 10 |
 | Teamwork & Leadership | 4 | **0** |
 | Business Development | 3 | **0** |
 | Firm & Matter Operations | 4 | **0** |
 | Digital Tools & AI | 1 | **0** |
 
-So: **5 of 10 domains have real unit content** (two of them only via the
-cross-listed paths above); **5 of 10 domains are framework-only** — skill
+So: **6 of 10 domains have real unit content** (two of them only via the
+cross-listed paths above); **4 of 10 domains are framework-only** — skill
 definitions and mastery-level descriptors exist, but no lessons, activities,
 scenarios, or rubrics have been written against them yet.
 
 Negotiation & Influence (`path.negotiation-influence`, `content/paths/ni-units-*.ts`)
-was authored in the same session as this audit's most recent update, following
-the identical process as the two original paths: skills/rubrics/scenarios/units
-each written against `content/AUTHORING_BRIEF.md`'s non-negotiables, then
-independently QA-audited against that same brief (id consistency, no repeated
-fact patterns, wrong-answer rationales present, mobile-first block length,
-no accent-scoring or outcome guarantees) before being wired into
-`content/index.ts`. Like every other domain's content, it is
-`reviewStatus: "ai_suggested"` and does not count toward a learner's mastery
-record as human-reviewed until a person reviews it — the platform's
-mandatory-human-review rule applies to this content exactly as it does to
-the original four domains.
+and Self-Management (`path.self-management`, `content/paths/sm-units-*.ts`) were
+both authored in this build session, following the identical process: parallel
+subagents each write one companion file (skills/rubrics/scenarios/one unit batch)
+against `content/AUTHORING_BRIEF.md`'s non-negotiables and a fixed id contract to
+prevent drift, then an independent report-only QA-audit subagent checks the result
+(id consistency, no repeated fact patterns, wrong-answer rationales present,
+mobile-first block length, no accent-scoring or outcome guarantees, natural
+bilingual prose) before anything is wired into `content/index.ts`. For
+Self-Management, the QA pass found and this session fixed two real issues before
+shipping: a repeated Arabic spacing typo ("كلامبالاة" → "كـ لا مبالاة", three
+occurrences) and one worked-example bullet that ran well over the mobile-first
+length guideline (split into two shorter blocks). The QA pass also flagged that
+only 2 of the domain's 4 chapters carry a `simulation` step, against the brief's
+"exactly one per chapter" guideline — **deliberately not changed**: the already-shipped
+Negotiation & Influence domain has the exact same 2-of-4 pattern (no simulation in
+its "preparing" or "closing" chapters), and Self-Management's two chapters without
+one (`ch.sm.planning-your-week`, `ch.sm.staying-steady`) either don't naturally fit
+a live-dialogue simulation (weekly planning) or already get equivalent practice
+through a full 2-node branching-decision activity (`act.sm.07.3`) rather than a
+separate `ScenarioDef`. Forcing in two more scenarios just to satisfy the guideline
+literally would have meant redundant simulation coverage for real quality cost, not
+gain. Both new domains are `reviewStatus: "ai_suggested"` and do not count toward a
+learner's mastery record as human-reviewed until a person reviews them — the
+platform's mandatory-human-review rule applies exactly as it does to every other
+domain.
 
-Activity-kind distribution across the 158 authored activities skews toward the
-same kinds as the original two paths, plus this path's own mix of
-`short_written`/`email_rewrite` (negotiation correspondence),
-`branching_decision` (in-session decision points), and two new `simulation`
-units. Exact counts were not recomputed field-by-field for this update; see
-`content/index.ts`'s `CONTENT.paths` for the authoritative source.
+Every content change in this session was verified the same way: `npx tsc --noEmit`
+for shape-correctness against `content/types.ts`, then a real `npm run db:seed` run
+against the live dev database (a stronger signal than typechecking alone, since
+`types.ts` doesn't enforce cross-referential integrity between id strings like
+`rubricId`/`scenarioId`/`skillId`) — both new domains seeded cleanly with the
+counts shown above.
+
+Activity-kind distribution across the 207 authored activities skews toward the
+same kinds as the earlier paths, plus each new path's own mix of `short_written`
+(reflective/planning writing), `branching_decision` (in-session decision points),
+and `simulation` units. Exact counts were not recomputed field-by-field for this
+update; see `content/index.ts`'s `CONTENT.paths` for the authoritative source.
 
 Prior (4-domain) activity-kind distribution, retained for reference: `reflection` 20,
 `short_written` 18, `listening` 10, `pronunciation` 10, `multiple_choice` 8,
@@ -154,10 +175,10 @@ in production content, just at low volume for some kinds (e.g. only 1
 
 - **Content breadth is still a gap, though narrower than before.** The product is
   architected for 10 domains and multiple paths per audience
-  (student/trainee/junior/experienced/manager per `PathDef.audience`), but only 3
-  paths and 30 units exist (Client Communication, Legal English, Negotiation &
-  Influence). Anyone piloting this beyond those three tracks will hit an empty
-  domain immediately.
+  (student/trainee/junior/experienced/manager per `PathDef.audience`), but only 4
+  paths and 40 units exist (Client Communication, Legal English, Negotiation &
+  Influence, Self-Management). Anyone piloting this beyond those four tracks will
+  hit an empty domain immediately.
 - **Offline AI is meaningfully lower-fidelity than a real model.** The
   `offline`-provider implementations in `src/lib/ai/agents/{simulation,evaluation,
   coaching}.ts` are deterministic, rule-based stand-ins with the same output schema
@@ -165,7 +186,7 @@ in production content, just at low volume for some kinds (e.g. only 1
   not a substitute for LLM-quality simulation dialogue or nuanced rubric scoring.
   `AgentResult.degraded` flags this distinction but nothing downstream currently
   surfaces "degraded" to the learner in a way this audit verified.
-- **All content is unreviewed by a human SME.** Every one of the 47 skills is stuck
+- **All content is unreviewed by a human SME.** Every one of the 50 skills is stuck
   at `reviewStatus: "ai_suggested"` — the review pipeline exists in the schema and
   admin UI (`review-queue` page, `contentReviews` table) but has not been exercised
   to `approved` for anything yet. Treat all current content as pre-SME-review.
