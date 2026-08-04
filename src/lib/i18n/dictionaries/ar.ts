@@ -117,7 +117,19 @@ export const ar = {
     subtitle: "أقل من دقيقتين. يمكنك تغيير كل شيء لاحقًا.",
     stepOf: "خطوة {current} من {total}",
     language: { q: "بأي لغة تريد التعلّم؟", hint: "يمكنك التبديل في أي وقت." },
-    country: { q: "في أي بلد تعمل أو تدرس؟", placeholder: "اختر البلد" },
+    switchLanguage: "اللغة",
+    resume: {
+      title: "لديك تقدّم محفوظ",
+      body: "وصلت في المرة السابقة إلى الخطوة {step} من {total}. تريد المتابعة من هناك أم البدء من جديد؟",
+      continueBtn: "المتابعة من حيث توقفت",
+      restartBtn: "البدء من جديد",
+    },
+    country: {
+      q: "في أي بلد تعمل أو تدرس؟",
+      placeholder: "اختر البلد",
+      arabGroup: "الدول العربية",
+      otherGroup: "دول أخرى",
+    },
     stage: {
       q: "أين أنت الآن مهنيًا؟",
       student: "طالب حقوق",

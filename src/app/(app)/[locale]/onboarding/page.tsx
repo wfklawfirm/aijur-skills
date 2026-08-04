@@ -12,7 +12,7 @@ export default async function OnboardingPage({ params }: { params: Promise<{ loc
 
   return (
     <main id="main" className="mx-auto flex min-h-dvh max-w-sm flex-col px-5 py-8">
-      <OnboardingFlow locale={loc} />
+      <OnboardingFlow locale={loc} userId={user.id} />
     </main>
   );
 }

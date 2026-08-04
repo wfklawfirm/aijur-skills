@@ -28,8 +28,9 @@ test.describe("Sign-up and onboarding", () => {
     // Step 0 - language: defaults to a valid selection already, no interaction needed.
     await clickNext(page);
 
-    // Step 1 - country: a free-text field, must be >= 2 characters.
-    await page.locator("input[dir='auto']").fill("AE");
+    // Step 1 - country: a real <select> (grouped: Arab League states first,
+    // then the rest of the world), not the free-text field it used to be.
+    await page.locator("select[dir='auto']").selectOption("AE");
     await clickNext(page);
 
     // Step 2 - career stage: a single-select radio group, nothing selected by default.
@@ -87,6 +88,66 @@ test.describe("Sign-up and onboarding", () => {
     await page.waitForURL(/\/en\/home$/, { timeout: 10_000 });
     await expect(page.locator("main")).toBeVisible();
     await expect(page.locator("body")).not.toContainText("500");
+  });
+
+  /**
+   * Real coverage for two features that didn't exist before: switching the
+   * onboarding UI's language mid-flow (not just at step 0), and resuming a
+   * saved draft after genuinely leaving and coming back. Both are backed by
+   * the same localStorage draft in `onboarding-flow.tsx` -- a language
+   * switch applies the draft silently (it's not a "did you leave?" event),
+   * while a fresh navigation to the same URL shows the real resume prompt.
+   */
+  test("switching language mid-onboarding, then resuming a saved draft after leaving, both work", async ({
+    page,
+  }) => {
+    const email = freshEmail("e2e-resume");
+
+    await page.goto("/en/sign-up");
+    await page.locator('input[name="name"]').fill("E2E Resume User");
+    await page.locator('input[name="email"]').fill(email);
+    await page.locator('input[name="password"]').fill("CorrectHorseBattery9!");
+    await page.getByRole("button", { name: "Create my account" }).click();
+    await page.waitForURL(/\/en\/onboarding$/, { timeout: 10_000 });
+
+    // Advance to step 1 (country) before switching language, so the
+    // assertion below proves the step position survives the switch, not
+    // just that some default state renders.
+    await clickNext(page);
+    await expect(page.locator("select[dir='auto']")).toBeVisible();
+
+    // Real navigation to /ar/onboarding via the new header toggle, not a
+    // client-only dict swap -- see switchLanguage() in onboarding-flow.tsx.
+    await page.getByRole("button", { name: "العربية" }).click();
+    await page.waitForURL(/\/ar\/onboarding$/, { timeout: 10_000 });
+
+    // Arabic content renders, and the wizard silently resumed at step 1
+    // (country) rather than resetting to step 0 or showing a resume prompt
+    // -- a language switch is not a "did you leave and come back?" event.
+    await expect(page.getByRole("heading", { name: "لنضبط التدريب على مقاسك" })).toBeVisible();
+    await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "2");
+
+    const countrySelect = page.locator("select[dir='auto']");
+    await countrySelect.selectOption("EG");
+    await page.getByRole("button", { name: "التالي" }).click();
+
+    // Now at step 2 (career stage). Simulate genuinely leaving and coming
+    // back with a real fresh page load (not the in-app language switch,
+    // which is deliberately silent) -- this must show the resume prompt.
+    await page.goto("/ar/onboarding");
+    await expect(page.getByRole("heading", { name: "لديك تقدّم محفوظ" })).toBeVisible();
+    await page.getByRole("button", { name: "المتابعة من حيث توقفت" }).click();
+
+    // Resumed at the exact step (index 2, "career stage") rather than reset
+    // to a blank step 0.
+    await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "3");
+    await expect(page.locator('input[name="careerStage"]')).toHaveCount(5);
+
+    // Step back one and confirm the country chosen before the reload
+    // actually persisted through the whole round trip, not just the step
+    // index -- proving the draft carries real answers, not just position.
+    await page.getByRole("button", { name: "رجوع" }).click();
+    await expect(countrySelect).toHaveValue("EG");
   });
 });
 

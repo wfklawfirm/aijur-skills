@@ -437,7 +437,25 @@ in production content, just at low volume for some kinds (e.g. only 1
   elements are labelled and structured correctly but never actually
   drives the page with a keyboard, so it would pass a page whose tab
   order is scrambled or whose submit button is wired to a mouse-only
-  `onClick`. This test would catch either. 118/118 tests
+  `onClick`. This test would catch either, and (20) **a real usability bug
+  the user found in production and two real features they requested**: the
+  onboarding "where do you work or study?" step was a raw free-text input
+  capped at 4 characters with silent uppercasing, despite its own
+  placeholder promising "Choose a country" — a learner typing "Lebanon"
+  watched it get truncated to "LEBA" with no explanation. Replaced with a
+  real `<select>` (`src/lib/i18n/countries.ts`, all UN member states plus
+  Palestine, grouped with the 22 Arab League states first and sorted by
+  display name in whichever language is on screen). Also added, per the
+  same request: (a) a language switcher usable at *every* onboarding step,
+  not just step 0 — implemented as a real navigation to the other locale's
+  `/onboarding` URL (keeping `<html dir/lang>` correct, not a client-only
+  dict swap) with in-progress answers carried across via a `localStorage`
+  draft; (b) resuming that same draft after genuinely leaving and coming
+  back, with an explicit "continue where I left off" vs. "start over"
+  prompt rather than silently picking one. Covered by a new e2e test that
+  switches language mid-flow, confirms the step position and answers
+  survive the switch, then does a real page reload and confirms the resume
+  prompt appears and correctly restores both step and prior answers. 119/119 tests
   passing. This is
   the first repeatable e2e run in the repo — previously only a one-off
   manual Playwright script existed, used to smoke-test the CSRF guard once
@@ -589,7 +607,7 @@ usability gap with its own new e2e regression test (§5, `docs/SECURITY.md`
 | Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **141 / 141 passing**, 38 suites, 0 failed, 0 skipped, 0 todo. Runtime ~14s. |
 | Content seed | `npm run db:reset` | **Succeeds.** 10 domains, 61 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 399 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
 | Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** No build errors, all routes generated (mix of static/SSG/dynamic). |
-| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **118 / 118 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **21 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus three (`scn.guarantee-request`, `scn.flagging-a-quality-issue`, `scn.catching-an-ai-hallucination`, from three different domains) also proven reaching their natural `maxTurns` end** (21 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests), and **a real keyboard-only navigation test** (sign-in driven entirely via `Tab`/keyboard input, no mouse events, 1 test). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
+| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **119 / 119 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **21 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus three (`scn.guarantee-request`, `scn.flagging-a-quality-issue`, `scn.catching-an-ai-hallucination`, from three different domains) also proven reaching their natural `maxTurns` end** (21 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests), and **a real keyboard-only navigation test** (sign-in driven entirely via `Tab`/keyboard input, no mouse events, 1 test). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
 
 `npm run verify` (typecheck → lint → test → build) would pass end to end based on the
 individual results above — all four stages were run and all four are green as of this

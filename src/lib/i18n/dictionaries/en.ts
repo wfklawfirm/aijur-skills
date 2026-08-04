@@ -115,7 +115,19 @@ export const en: Dictionary = {
     subtitle: "Under two minutes. You can change all of it later.",
     stepOf: "Step {current} of {total}",
     language: { q: "Which language do you want to learn in?", hint: "You can switch any time." },
-    country: { q: "Where do you work or study?", placeholder: "Choose a country" },
+    switchLanguage: "Language",
+    resume: {
+      title: "You have progress saved",
+      body: "You reached step {step} of {total} last time. Continue from there, or start over?",
+      continueBtn: "Continue where I left off",
+      restartBtn: "Start over",
+    },
+    country: {
+      q: "Where do you work or study?",
+      placeholder: "Choose a country",
+      arabGroup: "Arab countries",
+      otherGroup: "Other countries",
+    },
     stage: {
       q: "Where are you professionally?",
       student: "Law student",
