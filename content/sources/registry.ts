@@ -47,10 +47,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Blue Check Publishing",
     domains: ["dom.client-relations", "dom.firm-operations", "dom.digital-ai"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Held in the library as the reference work on designing the whole client journey — intake, responsiveness, transparency and follow-up — as a deliberate service rather than a by-product of legal work. Available only as a PDF that has not yet been ingested, so no competency extraction has been performed against it.",
+      "Read in substantial part — introduction, the chapters on expectation-setting, client-first versus client-centered decision-making, empathy, and measuring success, plus the conclusion. Its contribution is treating client experience as inseparable from the legal product itself, and then operationalizing that claim: evidence that reducing client effort predicts loyalty more reliably than delighting clients; a bidirectional decision test that checks every firm change against both client impact and internal efficiency; a diagnostic habit of asking why clients generate repeat contact before redesigning a touchpoint; and a discipline of closing feedback loops with NPS/CES/CSAT rather than anecdote. We took from it a sharper, effort-based framing of expectation management, a metrics literacy for client experience largely absent elsewhere in the library, and billing transparency as a deliberate trust-building technique.",
     kind: "professional",
   },
   {
@@ -91,10 +91,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Warner Books",
     domains: ["dom.business-development", "dom.client-relations", "dom.communication"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Kept in the library for one reason: a client cannot inspect legal work before buying it, so they buy signals — clarity, responsiveness, confidence, follow-through. Still a PDF awaiting ingestion, so it has not yet been mined for competency statements.",
+      "Beckwith's core argument is that a service does not exist until it is performed, so clients buy the invisible on the strength of visible proxies — promptness, tone, small kept promises — and judge satisfaction as the gap between what they expected and what they got, not against any absolute standard. We took from it the case that perceived quality must be actively managed rather than assumed to speak for itself: audit every point of client contact, calibrate promises so as not to manufacture disappointment, and proactively resurface progress and wins during a matter, since unlike a product, good legal work leaves nothing behind to remind the client it happened.",
     kind: "professional",
   },
   {
@@ -106,10 +106,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Harvard Business Review Press",
     domains: ["dom.teamwork-leadership", "dom.business-development", "dom.firm-operations"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Reserved as the evidence base for why cross-practice work produces better client outcomes and stickier relationships than the lone-expert model that still dominates much of the regional market. Not yet ingested — the copy in the library is a PDF.",
+      "The evidence base for treating cross-practice, cross-silo collaboration as a measurable driver of revenue, retention, and resilience rather than a soft cultural aspiration. We took from it: the reframe that cross-selling is vendor-focused while true collaboration is client-focused, backed by data on the revenue multiplier of multi-service client relationships; an explicit taxonomy of collaboration-enabling skills (influence without authority, conflict management, comfort with ambiguity); the finding that new or lateral hires have roughly six months to build reciprocal trust before disengaging; the case that direct pay-for-collaboration backfires while collective scorecards work; the \"tokenism\" and \"Mini-Me\" traps showing diverse team composition doesn't guarantee equitable access to high-value work; and \"threat rigidity\", the pattern by which pressure degrades group decision quality.",
     kind: "professional",
   },
   {
@@ -389,10 +389,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Berrett-Koehler Publishers",
     domains: ["dom.teamwork-leadership", "dom.communication", "dom.business-development"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "In the library so that AIJUR's leadership and presentation skills do not assume an extroverted personality — preparation and listening are treated as leadership assets, not compensations. The copy available is a PDF that has not been ingested.",
+      "Read for its 4 P's framework (preparation, presence, push, practice) and its diagnosis of four concrete failure modes — stress, perception gaps, career derailers, and invisibility — that quieter professionals face at work. We took from it the case that under-delegation is driven by nameable psychological resistance rather than a pure skills gap, a sharper behavioral definition of listening (\"attunement\", not just eye contact), concrete mechanics for running meetings that surface quieter input (written idea generation, separating brainstorming from decisions), and the concept of informal decision-making channels — \"the meeting before the meeting\" — as a distinct organizational-navigation skill. The book insists these are learnable techniques, not personality fixes, consistent with AIJUR's rule against inferring learner traits.",
     kind: "professional",
   },
   {
@@ -404,10 +404,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Hyperion",
     domains: ["dom.business-development", "dom.client-relations", "dom.negotiation-influence"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Retained as a short, blunt reference on client acquisition discipline: prepare before the meeting, ask about the client's problem before describing your service, and follow up exactly when you said you would. PDF only, not yet ingested.",
+      "Read in substantial part (introduction, roughly 30 of 50 short chapters spanning early through late material, the dollarization methodology, a worked case study, and the epilogue). The book's real contribution to AIJUR is a blunt, transactional business-development playbook built around a small number of mechanical disciplines: translate every claimed benefit into an explicit dollar figure before presenting it, concentrate contact effort on the highest-potential prospects rather than spreading it evenly, end every substantive client interaction with an explicit ask for the next commitment rather than a passive presentation, and reframe objections as shared objectives phrased as questions. It also offers sharp, specific language tactics for overcoming refusal and treats the physical staging of client meetings as a controllable success variable. Useful for AIJUR's business-development domain, particularly value-quantification and targeting-discipline content not covered by the current skill set; less useful for client-relations tone, which trends more transactional/American-sales than AIJUR's relationship-centered register.",
     kind: "professional",
   },
   {
@@ -419,10 +419,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Wiley",
     domains: ["dom.business-development", "dom.communication", "dom.client-relations"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Held for its core proposition that answering the questions clients are embarrassed to ask — especially about cost and risk — is the most effective form of professional marketing. Awaiting ingestion; the library copy is a PDF.",
+      "Read for its core marketing philosophy: that trust in a skeptical buyer is built by proactively publishing honest answers to the five questions prospects research most — cost, weaknesses, comparisons, reputation, and \"who's actually best for this\" — rather than waiting to address them face-to-face. Its sharpest contributions for AIJUR are \"assignment selling\" (using short educational content as pre-meeting homework that measurably improves meeting quality and close rates), the \"disarmament\" move of naming one's own limits before making a comparative case, and a structural argument that trust-building content efforts collapse without a single named owner. Less a communication-skills book than a case for treating unprompted transparency — especially about price and weaknesses — as the mechanism of trust itself.",
     kind: "professional",
   },
   {
@@ -434,10 +434,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Portfolio",
     domains: ["dom.firm-operations", "dom.business-development", "dom.teamwork-leadership"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Kept as the reference for building a practice whose value sits in its documented process rather than in one lawyer's memory — the commercial argument behind AIJUR's knowledge-management and delegation skills. Not yet ingested; PDF only.",
+      "Read in full for chapters covering specialization, sales-team design, cash-flow/billing mechanics, and the deal process. Its real contribution to AIJUR is more specific than \"documented process over memory\": it argues a service becomes valuable — and salable, staffable, and delegable — only once it is productized into a named, fixed-scope, fixed-price offering that any team member can execute, and that dependence on one person is something outside evaluators actively probe for and price down. We took from it the concrete mechanics behind AIJUR's delegation and knowledge-management skills, plus new material on recurring-engagement design and late-stage negotiation repricing pressure not previously covered.",
     kind: "operations",
   },
   {
@@ -449,10 +449,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Portfolio",
     domains: ["dom.business-development", "dom.communication"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "In the library as the counterweight to interchangeable professional positioning: if a client cannot tell two firms apart, price decides. It will be referenced for commercial awareness and business development once ingested; currently a PDF.",
+      "Purple Cow contributes the differentiation counterpart to AIJUR's client-experience material: where sources on service quality focus on how a lawyer handles the relationship, this one argues the underlying offering itself must be distinctive enough to be noticed and talked about, because a merely competent, interchangeable service is now invisible in a crowded market. We took from it the audience-segmentation logic (design for the minority who will notice and advocate, not the skeptical median client), the argument that blending in is riskier than standing out, and the caution that a single successful differentiator decays unless a firm keeps reinvesting in the next one. Note: the ingested file is a condensed third-party summary of the book (a \"Joosr\" digest, ~23 pages), not the full original text — its concepts are treated as reliable pointers to Godin's argument, not as a substitute for the complete work.",
     kind: "professional",
   },
   {
@@ -464,26 +464,26 @@ export const SOURCES: SourceRecord[] = [
     publisher: "HarperBusiness",
     domains: ["dom.business-development", "dom.communication", "dom.digital-ai"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Held for the sequencing principle behind professional visibility online: give useful content repeatedly before asking for anything, and adapt the message to each platform rather than reposting it. Still a PDF, so no extraction has been run.",
+      "Read for its central discipline: earn the right to ask by giving real value first, calibrated to the register of the channel delivering it, while identity and substance stay constant across channels. We took from it the give-before-ask sequencing behind staying-top-of-mind, a transferable self-audit habit (\"would the recipient actually value this, or is it just for us?\"), and the effort-as-equalizer argument that disciplined preparation is a controllable competitive variable for small practices. Most of the book's actual content, however, is platform-specific social-media marketing mechanics — dated to 2013 platform norms and out of scope for this app's professional-skills and responsible-AI focus.",
     kind: "professional",
   },
   {
     id: "src.legal-project-management",
     title:
-      "Legal Project Management: Control Costs, Meet Schedules, Manage Risks, and Maintain Sanity",
-    author: "Steven B. Levy",
-    year: 2009,
+      "Legal Project Management: Critical Perspectives on a Managerial Practice Entering the Legal Profession",
+    author: "Fiona Rogers, David Dombkins, and Felicity Bell",
+    year: 2021,
     language: "en",
-    publisher: "Day Pack Books",
+    publisher: "Law, Technology and Humans (peer-reviewed journal article)",
     domains: ["dom.firm-operations", "dom.teamwork-leadership", "dom.client-relations"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "The library's dedicated reference for scoping a matter, agreeing deliverables and dates with the client, and re-planning openly when the facts change. It will anchor the workflow and expectation-management skills; the copy is a PDF awaiting ingestion.",
+      "Correction on ingestion: despite the source library's original title/author fields (which described Steven B. Levy's 2009 practitioner manual of the same catalogue title), the PDF actually held in the library and extracted is a 2021 peer-reviewed journal article by Rogers, Dombkins and Bell that studies legal project management critically, as a case of managerial practice entering the legal profession, rather than teaching it as a toolkit. Its value to AIJUR is conceptual rather than a source of reusable exercise formats: the empirical case that communication cadence, not technical error, drives most client complaints; the idea of making quality-cost-time trade-offs an explicit client choice rather than a silent compromise; and the warning that fragmenting matters into discrete tasks can create ethical blind spots and privilege risk on shared platforms. It anchors expectation-management and professional-judgment content conceptually.",
     kind: "operations",
   },
   {
@@ -522,10 +522,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "St. Martin's Press",
     domains: ["dom.negotiation-influence", "dom.communication"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Kept for its argument that credibility and plain speech persuade further than technique, and that listening is the opening move of any argument. Held as a PDF; no competency extraction has been performed yet.",
+      "Full extraction confirms the book's real contribution is narrower than its title: persuasion is treated as a function of the arguer's visible authenticity — the alignment between what is said and how it is delivered — with disclosed uncertainty or self-interest often building more trust than projected confidence, and listening reframed as the active work of hearing the unmet need behind a counterpart's words or hostility rather than just their stated position. Its most transferable material beyond credibility and listening concerns how power imbalance (junior to senior, employee to institution) constrains what persuasion can accomplish, and how ongoing relationships call for identifying the real issue beneath a recurring dispute rather than winning the immediate exchange. Chapters on parenting, courtroom oratory technique, and corporate-ethics polemics fall outside this app's professional-skills scope and were not mined for exercise content.",
     kind: "advocacy",
   },
   {
@@ -537,10 +537,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Thomson/West",
     domains: ["dom.negotiation-influence", "dom.communication", "dom.legal-english"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "The library's standard on disciplined legal writing and oral argument — lead with the strongest point, concede what must be conceded, never overstate an authority. Reserved for the presentation and plain-explanation skills; PDF only.",
+      "A close, numbered-principles treatment of judicial persuasion whose real value to this app lies less in its litigation mechanics and more in two transferable disciplines: calibrated confidence (never asserting more than one actually knows, volunteering weaknesses early rather than waiting to be caught) and composure under real-time questioning (answering directly before qualifying, never stalling, distinguishing hostile from merely blunt questions). Most useful for sharpening skill.avoiding-guarantees, skill.difficult-questions, skill.le-difficult-questions, and skill.plain-explanation; its statutory-interpretation and brief-mechanics chapters are litigation-specific and out of scope for this app.",
     kind: "advocacy",
   },
   {
@@ -552,10 +552,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "CreateSpace",
     domains: ["dom.negotiation-influence", "dom.professional-judgment"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Held as a compact map of the recurring moves in legal argument — burden, interpretation, procedure, evidence — useful for teaching a junior lawyer to anticipate the other side. Awaiting ingestion as a PDF.",
+      "Offers a structured taxonomy of the recurring moves used to win legal arguments — contesting forum and jurisdiction, reframing what a dispute is really about, allocating the burden of proof, exploiting gaps in how a text is read, invoking or distinguishing precedent, and disputing the remedy — organized as a repeatable pattern of claim and counter-claim that maps naturally onto anticipating an opposing party's next move. Its lasting value to this app is as transferable argument scaffolding for negotiation, persuasion, and pressure-tactic training, and as a sharp vocabulary (procedural versus substantive justice) for explaining to clients why a legally correct outcome can still feel unfair, rather than as a source of jurisdiction-specific legal doctrine. Concepts adapted, in original wording, for skill.persuasive-argument, skill.reading-the-counterpart, skill.handling-pressure-tactics, and skill.professional-ethics.",
     kind: "advocacy",
   },
   {
@@ -567,10 +567,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Harvard University Press",
     domains: ["dom.professional-judgment", "dom.negotiation-influence"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "In the library as the theoretical account of rule-following, analogy and precedent that explains why lawyers reason differently from their clients — which is precisely why plain explanation has to be trained. PDF, not yet ingested.",
+      "Schauer's real argument is that legal reasoning is ordinary human reasoning disproportionately organized around devices — rule-following, precedent, deference to authority, burdens of proof — that deliberately produce outcomes different from an all-things-considered judgment, in the service of predictability and institutional stability rather than case-specific fairness. Its most usable material for this app is the rules-versus-standards distinction and the treatment of burdens of proof as calibrated, intentional tolerance for particular kinds of error, both of which ground scenarios in skill.plain-explanation, skill.avoiding-guarantees and skill.expectation-management about explaining legal uncertainty honestly rather than generically. Large stretches of the book (precedent doctrine, canons of statutory construction, jurisdiction and deference) remain academic background rather than skills-training source material.",
     kind: "advocacy",
   },
   {
@@ -582,10 +582,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "University of Chicago Press",
     domains: ["dom.professional-judgment", "dom.negotiation-influence"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Reserved for the decision-making skill: incentives, risk allocation and the cost of being wrong are the tools a lawyer needs when advising rather than litigating. Held as a PDF pending ingestion.",
+      "Farnsworth's synthesis of the analytical tools economists, game theorists, and psychologists have brought into legal reasoning gives this app concrete, well-evidenced material for advisory (non-litigation) practice: forward-looking incentive analysis as a counterweight to backward-looking fairness judgments, heuristics for allocating risk to whichever party can bear or prevent it most cheaply, and the principal-agent logic behind fee structures and monitoring in the lawyer-client relationship. Its treatment of decision-distorting biases — hindsight and outcome bias, loss-versus-gain framing effects, anchoring, and self-serving overconfidence — offers directly teachable failure modes for how lawyers and clients misjudge risk and past decisions. The book's more purely doctrinal and mathematical material (voting theory, Bayesian probability mechanics, admiralty and damages case law) is less relevant to this app's mandate and was set aside.",
     kind: "advocacy",
   },
   {
@@ -597,10 +597,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "American Bar Association",
     domains: ["dom.negotiation-influence", "dom.communication"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "Kept for its discipline on question design — short, single-fact, controlled questions — which AIJUR inverts for client interviewing, where the aim is to open rather than to close. PDF awaiting ingestion.",
+      "Extraction confirmed the book's real discipline: cross-examination works by pairing short, declarative statements with a brisk pace and no tolerance for silence, so the questioner rather than the witness owns the narrative and the witness is held to one-word confirmations — the opposite of what a client interview needs. AIJUR draws from it a sharpened version of a principle skill.questioning already gestures at: question length and phrasing are a deliberate lever, and where cross-examination shortens, closes and speeds up to seize narrative control, client interviewing lengthens, opens and slows down to hand narrative control to the client. Its impeachment tactics, courtroom misdirection and adversarial-ethics discussion have no client-facing analog and are excluded from the content set.",
     kind: "advocacy",
   },
   {
@@ -612,10 +612,10 @@ export const SOURCES: SourceRecord[] = [
     publisher: "Allen Lane",
     domains: ["dom.professional-judgment"],
     usageRights: "reference_only",
-    analysisStatus: "pending",
+    analysisStatus: "extracted",
     reviewStatus: "ai_suggested",
     notes:
-      "The library's anchor for professional ethics: law that is accessible, equality before it, and the lawyer's duty to the system as well as to the client. It will support the ethics skill's higher levels; currently a PDF that has not been ingested.",
+      "Bingham's account of the rule of law as a set of interlocking principles — accessible and prospective law, decisions governed by rule rather than unchecked discretion, equality before the law, lawful and rational use of public power, protection of fundamental rights, dispute resolution without prohibitive cost or delay, a fair hearing, and a state's own compliance with the law it invokes against others — gives professional-ethics its clearest grounding for why a lawyer's duty runs to the legal system, not only to the immediate client. Its most usable material is the fair-trial chapter's treatment of candour toward the tribunal and genuine equality of arms, together with its case studies of officials and lawyers constructing technically defensible justifications for outcomes the law did not actually permit — a pattern directly adaptable into professional-ethics and avoiding-guarantees scenarios. Large parts of the book (constitutional history, international-law analysis, the parliamentary-sovereignty debate) are jurisprudence rather than practice-ready material and remain background context.",
     kind: "professional",
   },
   {

@@ -59,9 +59,20 @@ TypeScript array. Verified counts (33 entries total):
 
 | `analysisStatus` | count | meaning |
 |---|---|---|
-| `extracted` | 16 | The source has been read and mined for competency concepts; its `sections` are mapped and its `notes` field records what was drawn from it. All 16 have populated `sections` arrays. |
-| `pending` | 17 | Registered in the library (title, author, domains, notes) but **not yet ingested** — the note on each explicitly says "PDF only" / "not yet ingested" / "no competency extraction has been performed." |
-| `in_progress`, `normalised` | 0 | Defined in the `analysisStatus` union but no source currently sits in either state. |
+| `extracted` | 33 (all) | The source has been read and mined for competency concepts; its `notes` field records what was drawn from it. The original 16 also have populated `sections` (chapter/TOC) arrays; the 17 sources extracted most recently (the business-development/marketing cluster and the argumentation/legal-reasoning cluster) were mined for their `notes` field only — each was read via a dedicated agent pass over the actual PDF, with concrete "what this book contributes" findings, but `sections` (a structural chapter map) was not separately populated for those 17. That's a real, honest gap, not an oversight to hide: the competency-relevant work (what to draw from the book, in original words) is done; the chapter-map metadata is not. |
+| `pending`, `in_progress`, `normalised` | 0 | No source currently sits in any of these states — every registered source has been read and extracted. |
+
+**Two data-integrity corrections surfaced during this extraction pass**, both
+caught by the extraction agent actually reading the PDF rather than trusting
+the pre-existing catalogue metadata, and both fixed in the registry rather
+than silently ignored: `src.legal-project-management`'s title/author/year
+originally described Steven B. Levy's 2009 practitioner book, but the PDF
+actually held in the library is a 2021 peer-reviewed journal article by
+Rogers, Dombkins and Bell — the registry entry's `title`/`author`/`year`/
+`publisher` were corrected to match the real file. `src.purple-cow`'s PDF is
+a ~23-page third-party condensed ("Joosr") summary of Seth Godin's book, not
+the full original text — the registry `notes` now say so explicitly rather
+than implying the full book was read.
 
 Other breakdowns found by inspection:
 - `usageRights`: 32 × `reference_only`, 1 × `owned` (`src.governance-raci`, AIJUR's
@@ -273,11 +284,14 @@ published → archived` status lives on the database row and is what
   an honest placeholder: it shows which registered sources are waiting to be
   analysed and explains the intended workflow, but the 'Start analysis'
   action is inert — it must never look like it did something it didn't."* The
-  "Start analysis" button is rendered `disabled`. This lines up with the
-  17 sources stuck at `analysisStatus: "pending"` — there is currently no
-  code path that would move them to `"in_progress"` or `"extracted"`; that
-  transition has so far only happened by a human/author manually editing
-  `registry.ts` (as was done for the 16 `extracted` sources).
+  "Start analysis" button is rendered `disabled`. As of this checkout all 33
+  registered sources now sit at `analysisStatus: "extracted"` (0 `"pending"`),
+  so the `admin/ingestion` page currently renders an empty list — but that
+  status transition has so far only happened by a human/author (or an
+  AI extraction agent working from the actual PDF, under human direction)
+  manually editing `registry.ts`, never through an automated pipeline; there
+  is still no code path that moves a *newly added* source from `"pending"` to
+  `"extracted"` on its own.
   `ingestion.decide` is a real, enforced permission
   (`src/lib/auth/rbac.ts`) and `decideIngestionSuggestion()` is a real,
   working server action — but they operate on rows in an
@@ -303,8 +317,8 @@ exercised. All server-side mutations live in `src/lib/actions/admin.ts`.
   `analysisStatus` and `reviewStatus` as badges. Purely informational; no
   mutation actions on this page.
 - **`admin/ingestion`** (`page.tsx`) — lists the sources with
-  `analysisStatus === "pending"` (currently all 17) and shows a disabled
-  "Start analysis" button per source, with a warning callout
+  `analysisStatus === "pending"` (currently none — see §4) and shows a
+  disabled "Start analysis" button per source, with a warning callout
   (`dict.admin.ingestionNotWired`) explaining the pipeline isn't wired up
   yet. As described in §4, this is an intentionally honest placeholder.
 - **`admin/review-queue`** (`page.tsx`) — the working half of the
@@ -359,9 +373,11 @@ library and what it will inform conceptually — never a summary that lifts
 book phrasing. Then add its id to the "Source ids available for `sourceIds`"
 list at the bottom of `content/AUTHORING_BRIEF.md` so other authors can cite
 it. Because ingestion analysis (moving `pending → extracted`) currently has no
-tooling (§4 limitations), this step today means a human reading the source
-and hand-editing `sections`/`notes`/`analysisStatus` in the registry — the
-same way the 16 `extracted` entries were produced.
+tooling (§4 limitations), this step today means a human (or an AI extraction
+agent working directly from the source PDF, under human direction) reading
+the source and hand-editing `notes`/`analysisStatus` (and, ideally,
+`sections`) in the registry — the same way all 33 `extracted` entries were
+produced.
 
 **Add a new skill.** Add a `SkillDef` to `content/framework/skills.ts`,
 picking one of the fixed skill ids listed in `AUTHORING_BRIEF.md` (or
