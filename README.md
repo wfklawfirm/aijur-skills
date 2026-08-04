@@ -53,7 +53,7 @@ race with the very first cold navigation under headless automation. Covers:
 a full sign-up → onboarding → all 8 diagnostic items → `/home`, an
 authenticated learner reaching real content across all 8 authored paths
 (plus a last-unit spot check on two of them and a middle-unit spot check on
-two more, to catch chapter-boundary bugs a first-unit-only check would
+all 8, to catch chapter-boundary bugs a first-unit-only check would
 miss), eight full simulation runs — one from every authored path (start →
 message → early-end → evaluation), the admin human review queue (a real
 queued evaluation's full AI payload and queue reason render, not just a
@@ -65,7 +65,7 @@ service worker's actual offline behavior (registration, the manifest, a
 previously-visited page staying readable offline, a never-visited page
 falling back to `/offline`) — this last one found and fixed two real bugs
 that meant the service worker had never actually worked in this build at
-all (see `docs/PRODUCT_AUDIT.md` §5). 36/36 tests passing. See
+all (see `docs/PRODUCT_AUDIT.md` §5). 42/42 tests passing. See
 `docs/PRODUCT_AUDIT.md` §5 for what it does and doesn't cover
 yet.
 

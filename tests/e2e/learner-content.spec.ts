@@ -98,4 +98,23 @@ test.describe("Authenticated learner content", () => {
       await expect(page.getByRole("button").first()).toBeVisible();
     });
   }
+
+  // Two of 8 paths spot-checked at their middle unit still leaves six
+  // completely unchecked between their first and last step. These six
+  // close that gap for every remaining authored path: Client Communication
+  // (whose own file split is actually 01-04/05-07/08-10, not the
+  // 01-05/06-10 pattern the others use -- unit 5 here is a different, still
+  // real seam, between the first and second authoring files), Legal
+  // English, Self-Management, Teamwork & Leadership, Business Development,
+  // and Digital Tools & AI. With these, every one of the 8 authored paths
+  // now has first, middle, and (for two of them) last unit exercised.
+  for (const unitId of ["unit.cc.05", "unit.le.05", "unit.sm.05", "unit.tl.05", "unit.bd.05", "unit.da.05"]) {
+    test(`a middle unit of every remaining path renders too (${unitId})`, async ({ page }) => {
+      await page.goto(`/en/unit/${unitId}`);
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("body")).not.toContainText("404");
+      await expect(page.locator("body")).not.toContainText("500");
+      await expect(page.getByRole("button").first()).toBeVisible();
+    });
+  }
 });
