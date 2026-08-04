@@ -1,7 +1,7 @@
 import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
-import { BrandMark } from "@/components/layout/brand-mark";
+import { BrandLockup } from "@/components/layout/brand-mark";
 import { SignUpForm } from "./sign-up-form";
 
 export default async function SignUpPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -15,7 +15,7 @@ export default async function SignUpPage({ params }: { params: Promise<{ locale:
         <LanguageSwitcher />
       </div>
       <header className="flex flex-col items-center gap-3 text-center">
-        <BrandMark size={56} />
+        <BrandLockup width={128} />
         <h1 className="text-page-title">{dict.auth.signUp}</h1>
       </header>
       <SignUpForm locale={loc} />

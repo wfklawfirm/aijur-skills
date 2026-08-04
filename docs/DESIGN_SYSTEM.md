@@ -85,26 +85,39 @@ The user supplied a real logo (scales of justice fused with a skills/
 checklist notebook, deep burgundy on white, with an "AIJUR SKILLS / SMARTER
 LAW PRACTICE" wordmark lockup below it). Source assets live in
 `public/brand/` and `public/icons/`, both derived from the one supplied
-image via ImageMagick (crop the icon out of the full lockup, transparent
-background, square-pad, downscale per target):
+image via ImageMagick:
 
 | File | Size | Background | Use |
 |---|---|---|---|
-| `public/brand/aijur-logo-mark.png` | 800×800 | transparent | Source for `<BrandMark>` (`src/components/layout/brand-mark.tsx`) — icon only, no wordmark |
-| `public/brand/aijur-logo-full.png` | 730×1084 | transparent | Source for `<BrandLockup>` — full icon + wordmark + tagline, currently unused (see the component's own comment for why) |
+| `public/brand/aijur-logo-full.png` | 778×1130 | transparent | Source for `<BrandLockup>` — the full lockup **exactly as supplied**, artwork pixels unaltered, only the surrounding blank canvas trimmed and the background made transparent. Used on every on-page brand placement. |
+| `public/brand/aijur-logo-mark.png` | 800×800 | transparent | Source for `<BrandMark>` — icon only, no wordmark. Used only where a full lockup is technically impossible: the PWA/favicon files below are generated from this crop, since an OS home-screen icon can't render a tall wordmark legibly at 48–192px. Not used inside any page's JSX. |
 | `public/icons/icon-192.png`, `icon-512.png` | 192×192, 512×512 | transparent | PWA `manifest.webmanifest` icons, `purpose: "any"` — previously referenced by the manifest but **missing on disk entirely** until this fix |
 | `public/icons/maskable-512.png` | 512×512 | solid `#f7f8fa` (matches `manifest.webmanifest`'s `background_color`) | PWA maskable icon — icon content scaled to fit inside the ~80%-diameter safe zone so OS circle/rounded-square masking never clips it (verified by compositing a circle mask over it) |
 | `src/app/icon.png` | 256×256 | transparent | Next.js file-convention favicon (auto-detected, no `metadata.icons` needed) |
 | `src/app/apple-icon.png` | 180×180 | solid white | iOS home-screen icon — opaque background because iOS renders transparent PNG icon areas as black |
 
-`<BrandMark size={56} className?>` renders the icon-only mark via
-`next/image`; used at `size={56}` on all 5 pre-auth headers (sign-in,
-sign-up, forgot-password, reset-password, verify-email) and `size={92}` on
-the landing page. Deliberately **not** used with the full lockup's baked-in
-English wordmark on the Arabic locale — the landing page instead pairs
-`<BrandMark>` with the already-localized `dict.brand.name`/`dict.brand.
-slogan` text, keeping the bilingual app's translation discipline intact
-rather than showing untranslated raster text to Arabic readers.
+`<BrandLockup width={128|160} className?>` renders the full, unmodified
+lockup via `next/image` — `width={128}` on all 5 pre-auth headers (sign-in,
+sign-up, forgot-password, reset-password, verify-email), `width={160}` on
+the landing page (where the redundant `<Badge>{dict.brand.name}</Badge>`
+pill was removed, since the logo image already spells out "AIJUR SKILLS"
+directly above it; the localized `dict.brand.slogan` paragraph stays,
+since it's a distinct, richer line than the image's baked-in tagline, not
+a duplicate).
+
+**First pass had a real, since-fixed bug**: an early background-removal
+pass (2-corner flood fill) left an opaque gray patch in the full lockup's
+bottom-left corner, near the tagline text — invisible at a glance but a
+visible mismatched box against the app's `#f7f8fa` background once actually
+placed on a page, exactly the "doesn't blend with the white background"
+problem reported. Root-caused and fixed by bordering the trimmed image with
+a few guaranteed-connected pixels before flood-filling from a single seed
+(so the entire perimeter is provably one connected region, catching every
+corner), then verifying with a Python/Pillow script that samples the full
+image perimeter for non-zero alpha — not just eyeballing a screenshot. The
+same pass also caught the tagline text sitting flush against the trim edge
+(zero margin, reading as slightly clipped) and added a small transparent
+margin on all sides without touching any artwork pixel.
 
 ---
 

@@ -4,10 +4,9 @@ import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
 import { getSessionUser } from "@/lib/auth/session";
 import { Card, CardBody } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { PracticeIcon, ShieldIcon, GlobeIcon, UsersIcon } from "@/components/ui/icons";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
-import { BrandMark } from "@/components/layout/brand-mark";
+import { BrandLockup } from "@/components/layout/brand-mark";
 
 export default async function LandingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -30,8 +29,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
         <LanguageSwitcher />
       </div>
       <header className="flex flex-col items-center gap-3 text-center">
-        <BrandMark size={92} />
-        <Badge tone="brand">{dict.brand.name}</Badge>
+        <BrandLockup width={160} />
         <p className="text-supporting max-w-xs">{dict.brand.slogan}</p>
       </header>
 
