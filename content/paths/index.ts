@@ -12,6 +12,8 @@ import { TL_UNITS_01_05 } from "./tl-units-01-05";
 import { TL_UNITS_06_10 } from "./tl-units-06-10";
 import { BD_UNITS_01_05 } from "./bd-units-01-05";
 import { BD_UNITS_06_10 } from "./bd-units-06-10";
+import { FO_UNITS_01_05 } from "./fo-units-01-05";
+import { FO_UNITS_06_10 } from "./fo-units-06-10";
 
 export const CLIENT_COMMUNICATION_PATH: PathDef = {
   id: "path.client-communication-foundations",
@@ -399,6 +401,70 @@ export const BUSINESS_DEVELOPMENT_PATH: PathDef = {
   units: [...BD_UNITS_01_05, ...BD_UNITS_06_10],
 };
 
+export const FIRM_OPERATIONS_PATH: PathDef = {
+  id: "path.firm-operations",
+  slug: "firm-matter-operations",
+  title: {
+    ar: "إدارة المكتب والملفات",
+    en: "Firm and Matter Operations",
+  },
+  tagline: {
+    ar: "الملف الذي يفهمه أي أحد هو الملف الذي لا ينهار تحت الضغط.",
+    en: "A file anyone can pick up is a file that doesn't collapse under pressure.",
+  },
+  description: {
+    ar: "عشر وحدات تنقلك من استلام تكليف جديد بشكل صحيح إلى تسليم ملفك لزميل في محادثة مباشرة: كيف تؤكد نطاق العمل كتابيًا، وتنظّم الملف من اليوم الأول، وتصمم قائمة تحقق تصمد تحت الضغط، وتحفظ الدرس بعد إغلاق الملف، وتراجع المخرجات قبل خروجها، وتكتب مذكّرة أتعاب واضحة، وتُبلغ عن خطأ حقيقي دون إخفائه أو تحميل الآخرين المسؤولية، وتسلّم ملفك بإيجاز لا ينسى شيئًا مهمًا.",
+    en: "Ten units that take you from properly taking on a new instruction to handing your matter to a colleague in a live conversation: confirming scope in writing, organizing a file from day one, designing a checklist that survives time pressure, capturing the lesson after a file closes, checking output before it leaves, writing a billing narrative that holds up, disclosing a real error without hiding it or blaming someone else, and handing over a matter without losing anything that matters.",
+  },
+  track: "professional",
+  audience: ["trainee", "junior", "experienced"],
+  estimatedWeeks: 4,
+  domainIds: ["dom.firm-operations"],
+  chapters: [
+    {
+      id: "ch.fo.taking-on-a-matter",
+      pathId: "path.firm-operations",
+      order: 1,
+      title: { ar: "استلام التكليف", en: "Taking on a matter" },
+      description: {
+        ar: "تأكيد نطاق العمل كتابيًا قبل البدء، وفتح الملف بالشكل الصحيح.",
+        en: "Confirming scope in writing before work starts, and opening the file correctly.",
+      },
+    },
+    {
+      id: "ch.fo.organizing-the-file",
+      pathId: "path.firm-operations",
+      order: 2,
+      title: { ar: "تنظيم الملف", en: "Organizing the file" },
+      description: {
+        ar: "بنية ملف يجدها أي أحد خلال ثوانٍ، وقائمة تحقق تصمد تحت الضغط.",
+        en: "A file structure anyone can navigate in seconds, and a checklist that survives time pressure.",
+      },
+    },
+    {
+      id: "ch.fo.quality-before-it-leaves",
+      pathId: "path.firm-operations",
+      order: 3,
+      title: { ar: "الجودة قبل الخروج", en: "Quality before it leaves" },
+      description: {
+        ar: "مراجعة أخيرة دقيقة، مذكّرة أتعاب واضحة، والإبلاغ عن خطأ حقيقي دون إخفائه.",
+        en: "A careful final check, a billing narrative that holds up, and disclosing a real error without hiding it.",
+      },
+    },
+    {
+      id: "ch.fo.closing-and-handover",
+      pathId: "path.firm-operations",
+      order: 4,
+      title: { ar: "الإغلاق والتسليم", en: "Closing and handover" },
+      description: {
+        ar: "مذكّرة تسليم لا تنسى شيئًا مهمًا، ومحادثة تسليم مباشرة مع الزميل الذي يخلفك.",
+        en: "A handover note that doesn't lose anything that matters, and a live handover conversation with your successor.",
+      },
+    },
+  ],
+  units: [...FO_UNITS_01_05, ...FO_UNITS_06_10],
+};
+
 export const PATHS: PathDef[] = [
   CLIENT_COMMUNICATION_PATH,
   LEGAL_ENGLISH_PATH,
@@ -406,4 +472,5 @@ export const PATHS: PathDef[] = [
   SELF_MANAGEMENT_PATH,
   TEAMWORK_LEADERSHIP_PATH,
   BUSINESS_DEVELOPMENT_PATH,
+  FIRM_OPERATIONS_PATH,
 ];
