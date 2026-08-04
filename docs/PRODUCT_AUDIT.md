@@ -170,12 +170,16 @@ in production content, just at low volume for some kinds (e.g. only 1
   admin UI (`review-queue` page, `contentReviews` table) but has not been exercised
   to `approved` for anything yet. Treat all current content as pre-SME-review.
 - **No automated e2e, visual regression, or accessibility test coverage.** The test
-  suite (`tests/*.test.ts`, 120 tests / 33 suites, all unit/integration-level via
+  suite (`tests/*.test.ts`, 130 tests / 35 suites, all unit/integration-level via
   Node's built-in test runner) covers grading logic, mastery math, RBAC, tenant
   isolation, rate limiting, audit logging, password-reset and email-verification
-  token lifecycles, i18n key parity, review scheduling, and evaluation safety —
-  there is no Playwright/Cypress suite, no visual diffing, and no automated
-  a11y audit (e.g. axe) anywhere in the repo.
+  token lifecycles, the CSRF Origin guard, i18n key parity, review scheduling,
+  and evaluation safety. There is no standing Playwright/Cypress suite in the
+  repo — the CSRF Origin guard and a real sign-up flow were smoke-tested with
+  Playwright driving a real headless Chromium against a production build
+  during this session (see `docs/SECURITY.md` §7), but that was a one-off
+  verification run, not a committed, repeatable e2e suite; no visual diffing
+  or automated a11y audit (e.g. axe) exists anywhere in the repo.
 - **AI-graded scores now visibly flag pending review, but "degraded" mode still
   doesn't.** `unit-player.tsx`'s `aiResultNode` shows a dedicated callout
   (`dict.unit.pendingReview`) whenever `SubmitActivityResult.pendingReview` is true,

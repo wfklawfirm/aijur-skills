@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { DEFAULT_LOCALE, LOCALES } from "@/lib/i18n/config";
+import { MUTATING_METHODS, isSameOriginRequest } from "@/lib/auth/csrf";
 
 const PUBLIC_FILE = /\.(?:svg|png|jpg|jpeg|gif|webp|ico|json|webmanifest|js|css|txt|xml)$/;
 
@@ -21,6 +22,15 @@ export function proxy(request: NextRequest) {
     PUBLIC_FILE.test(pathname)
   ) {
     return NextResponse.next();
+  }
+
+  // Application-level CSRF guard — see src/lib/auth/csrf.ts for why this
+  // exists alongside Next's own built-in Server Action Origin check.
+  if (MUTATING_METHODS.has(request.method)) {
+    const origin = request.headers.get("origin");
+    if (!isSameOriginRequest(origin, request.nextUrl.origin)) {
+      return NextResponse.json({ error: "cross_origin_request_blocked" }, { status: 403 });
+    }
   }
 
   const hasLocale = LOCALES.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`));
