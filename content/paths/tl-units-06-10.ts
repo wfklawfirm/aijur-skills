@@ -1104,8 +1104,9 @@ export const TL_UNITS_06_10: UnitDef[] = [
       { kind: "activity", id: "s.tl.08.a1", activityId: "act.tl.08.1", mode: "quick" },
       { kind: "activity", id: "s.tl.08.a2", activityId: "act.tl.08.2", mode: "guided" },
       { kind: "activity", id: "s.tl.08.a3", activityId: "act.tl.08.3", mode: "independent" },
-      { kind: "simulation", id: "s.tl.08.sim", scenarioId: "scn.disagreeing-with-supervisor" },
       { kind: "activity", id: "s.tl.08.a4", activityId: "act.tl.08.4", mode: "independent" },
+      { kind: "simulation", id: "s.tl.08.sim", scenarioId: "scn.disagreeing-with-supervisor" },
+      { kind: "activity", id: "s.tl.08.a5", activityId: "act.tl.08.5", mode: "independent" },
       { kind: "summary", id: "s.tl.08.summary", summaryCardId: "card.tl.08" },
       {
         kind: "apply_tomorrow",
@@ -1271,6 +1272,75 @@ export const TL_UNITS_06_10: UnitDef[] = [
       },
       {
         id: "act.tl.08.4",
+        kind: "find_mistake",
+        skillId: "skill.managing-up",
+        secondarySkillIds: ["skill.leadership-communication"],
+        stage: 3,
+        weight: 2,
+        context: {
+          ar: [
+            "في اجتماع الفريق، تقول الشريكة ريما صقر إن مدة تقادم مطالبة تجارية معينة ثلاث سنوات. المحامية دانا خليل تعرف أن المدة الصحيحة لهذا النوع من المطالبات خمس سنوات، وهي محقة.",
+            "تقاطع دانا فوراً أمام الفريق كله: «لا، هذا خطأ. المدة خمس سنوات.» ثم تنتقل مباشرة للنقطة التالية في جدول الاجتماع.",
+          ],
+          en: [
+            "In a team meeting, partner Rima Saqr says a certain commercial claim's limitation period is three years. Associate Dana Khalil knows the correct period for this claim type is five years — and she's right.",
+            "Dana cuts in immediately, in front of the whole team: 'No, that's wrong. It's five years.' Then she moves straight on to the next item on the agenda.",
+          ],
+        },
+        prompt: {
+          ar: "المعلومة القانونية التي قالتها دانا صحيحة. فما الخطأ فعلاً في طريقتها؟",
+          en: "Dana's legal point is correct. So what actually went wrong with how she made it?",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "صحّحت الشريكة علناً أمام الفريق كله وبلا تمهيد، فبدت الملاحظة الصحيحة وكأنها تحدٍّ لسلطتها لا مساهمة مهنية.",
+              en: "She corrected the partner publicly, in front of the whole team, with no lead-in — so a correct point read as a challenge to her authority rather than a professional contribution.",
+            },
+            correct: true,
+            rationale: {
+              ar: "بالضبط. المحتوى القانوني صحيح، لكن التوقيت والعلانية حوّلاه إلى موقف تصادمي؛ نفس المعلومة قيلت للشريكة على انفراد أو بصيغة أقل حسماً كانت لتصل دون أن تُشعرها بالإحراج أمام الفريق.",
+              en: "Exactly. The legal content was correct, but the timing and the public setting turned it into a confrontation; the same information said to the partner privately, or in a less blunt phrasing, would have landed without embarrassing her in front of the team.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "المعلومة القانونية التي قالتها دانا خاطئة فعلاً، وهذا هو الخطأ الحقيقي.",
+              en: "Dana's legal information is actually wrong, and that's the real mistake here.",
+            },
+            rationale: {
+              ar: "المعلومة صحيحة بحسب المعطيات؛ الخلط بين محتوى الحجة وطريقة إيصالها يمنع رؤية المشكلة الفعلية، وهي طريقة الإلقاء لا صحة المضمون.",
+              en: "The information is correct per the facts given; conflating an argument's content with how it's delivered hides the actual problem, which is the delivery, not the substance.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "كان يجب أن تصمت تماماً ولا تذكر الخطأ إطلاقاً حفاظاً على موقع الشريكة.",
+              en: "She should have stayed completely silent and never mentioned the mistake at all, to protect the partner's standing.",
+            },
+            rationale: {
+              ar: "تصحيح متطلب لصالح الملف والعميل؛ المشكلة ليست في ذكر الملاحظة بل في توقيتها وعلانيتها. الحل ليس الصمت الكامل بل تغيير كيفية طرحها ومتى.",
+              en: "The correction was necessary for the file and the client; the problem isn't that she raised it, it's the timing and publicity. The fix is changing how and when it's raised, not staying silent altogether.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "لم تستخدم مصطلحات قانونية رسمية كافية عند تصحيح الشريكة.",
+              en: "She didn't use enough formal legal terminology when correcting the partner.",
+            },
+            rationale: {
+              ar: "المفردات ليست القضية هنا؛ نفس الجملة بمصطلحات أدق كانت ستُقرأ تصادمية أيضاً لو قيلت بنفس الحسم وأمام الفريق كله.",
+              en: "Vocabulary isn't the issue here; the same sentence with more precise terminology would still read as confrontational if said with the same bluntness in front of the whole team.",
+            },
+          },
+        ],
+      },
+      {
+        id: "act.tl.08.5",
         kind: "reflection",
         skillId: "skill.managing-up",
         stage: 3,

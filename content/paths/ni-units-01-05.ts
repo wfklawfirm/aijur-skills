@@ -1810,6 +1810,7 @@ export const NI_UNITS_01_05: UnitDef[] = [
       { kind: "activity", id: "s.ni.04.a3", activityId: "act.ni.04.3", mode: "guided" },
       { kind: "activity", id: "s.ni.04.a4", activityId: "act.ni.04.4", mode: "independent" },
       { kind: "activity", id: "s.ni.04.a5", activityId: "act.ni.04.5", mode: "independent" },
+      { kind: "activity", id: "s.ni.04.a6", activityId: "act.ni.04.6", mode: "independent" },
       { kind: "summary", id: "s.ni.04.summary", summaryCardId: "card.ni.04" },
       {
         kind: "apply_tomorrow",
@@ -2044,6 +2045,75 @@ export const NI_UNITS_01_05: UnitDef[] = [
       },
       {
         id: "act.ni.04.5",
+        kind: "best_response",
+        skillId: "skill.negotiation",
+        secondarySkillIds: ["skill.reading-the-counterpart"],
+        stage: 2,
+        weight: 2,
+        context: {
+          ar: [
+            "مجموعة الفنار للأغذية عميل دائم للمكتب منذ ثلاث سنوات. للربع الرابع على التوالي، يشتكي مدير المشتريات المهندس طارق العُمري من «بطء» مراجعة عقود الموردين.",
+            "في كل مرة، يعِد المكتب بتسريع المراجعة، وفي كل مرة تعود الشكوى نفسها بعد أسابيع قليلة — رغم أن أحداً لم يفوّت موعداً نهائياً فعلياً.",
+          ],
+          en: [
+            "Al-Fanar Foods Group has been a steady client of the firm for three years. For the fourth quarter running, Procurement Director Eng. Tariq Al-Omari complains that supplier-contract review is 'too slow.'",
+            "Every time, the firm promises to speed up review, and every time the same complaint returns a few weeks later — even though no actual deadline has ever been missed.",
+          ],
+        },
+        prompt: {
+          ar: "بعد الشكوى الرابعة على التوالي حول «بطء المراجعة»، ما أفضل خطوة قادمة؟",
+          en: "After the fourth complaint in a row about 'slow review,' what is the best next step?",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "طلب اجتماع مباشر مع المهندس طارق لفهم ما يقف فعلاً خلف تكرار الشكوى نفسها، بدل الوعد بسرعة أكبر هذه المرة أيضاً.",
+              en: "Requesting a direct meeting with Eng. Tariq to understand what is actually behind the same complaint recurring, instead of promising even more speed this time too.",
+            },
+            correct: true,
+            rationale: {
+              ar: "شكوى تتكرر بالصياغة نفسها رغم وفاء المكتب بمواعيده الفعلية غالباً تخفي سبباً آخر غير السرعة نفسها — كخشية طارق من الظهور بمظهر البطيء أمام إدارته، أو خلل في طريقة إرسال العقود من جهته. لا سبيل لمعرفة ذلك سوى سؤاله مباشرة وبفضول حقيقي.",
+              en: "A complaint that keeps recurring in the same words, even though the firm has generally met its actual deadlines, usually hides something other than speed itself — Tariq's own fear of looking slow to his management, say, or a flaw in how his side sends the contracts. The only way to find out is to ask him directly, with genuine curiosity.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "الالتزام بموعد أسرع رسمياً (مثلاً: مراجعة في اليوم نفسه دائماً) لإنهاء الشكوى نهائياً.",
+              en: "Formally committing to an even faster deadline (for example: always same-day review) to end the complaint for good.",
+            },
+            rationale: {
+              ar: "تكرار وعد السرعة يعالج العرض لا السبب؛ إن لم تكن السرعة هي المشكلة الحقيقية، سيُكسر الوعد الجديد كما سبق، وتتراجع مصداقية المكتب أكثر في كل مرة.",
+              en: "Repeating a speed promise treats the symptom, not the cause; if speed was never the real problem, the new promise will break just like the last one, eroding the firm's credibility a little more each time.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "الرد بجدول يوثّق كل مرة أرسل فيها طارق العقود متأخراً، لإثبات أن التأخير ليس من المكتب.",
+              en: "Responding with a log documenting every time Tariq sent the contracts late, to prove the delay isn't the firm's fault.",
+            },
+            rationale: {
+              ar: "حتى لو كان الجدول دقيقاً، فإن تحويل الحوار إلى إثبات مَن المخطئ يحوّل عميلاً مستمراً منذ ثلاث سنوات إلى خصم في نقاش يخسره الطرفان معاً؛ الهدف حلّ التوتر المتكرر لا كسب الجولة.",
+              en: "Even if the log is accurate, turning the exchange into a contest over who's at fault turns a three-year client into an opponent in an argument nobody wins; the goal is resolving the recurring friction, not scoring the point.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "التقليل الهادئ من الاهتمام بملفات هذا العميل، انتظاراً لأن يثير الأمر رسمياً أو ينقل عمله لمكتب آخر.",
+              en: "Quietly reducing attention to this client's files, and waiting for the issue to be raised formally or for the client to move the work elsewhere.",
+            },
+            rationale: {
+              ar: "التجنّب لا يحلّ احتكاكاً متكرراً، بل يؤجّل الانفجار ويجعله أكبر حين يقع، ويهدر فرصة معالجة السبب الحقيقي بينما العلاقة ما زالت قابلة للإصلاح.",
+              en: "Avoidance doesn't resolve a recurring friction; it postpones the blow-up and makes it bigger when it lands, wasting the chance to address the real cause while the relationship is still fixable.",
+            },
+          },
+        ],
+      },
+      {
+        id: "act.ni.04.6",
         kind: "reflection",
         skillId: "skill.negotiation",
         stage: 2,

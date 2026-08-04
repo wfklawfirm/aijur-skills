@@ -106,6 +106,14 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
             ar: "يجهّز ردًا جاهزًا على أقوى اعتراض متوقّع من الطرف الآخر.",
             en: "Prepares a ready response to the other side's strongest likely objection.",
           },
+          {
+            ar: "يطّلع على حجج الطرف الآخر ووثائقه المحتملة قبل الجلسة، لا على حججه هو فقط.",
+            en: "Studies the other side's likely arguments and documents before the session, not only his own.",
+          },
+          {
+            ar: "يختار الموقف الافتتاحي الأكثر قابلية للدفاع عنه بدل الأكثر طموحًا.",
+            en: "Chooses the most defensible opening position rather than the most ambitious one.",
+          },
         ],
         commonMistakes: [
           { ar: "يفاجأ بالاعتراض الأول فيرتجل ردًا ضعيفًا.", en: "Is caught off guard by the first objection and improvises a weak response." },
@@ -113,14 +121,34 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
             ar: "يكدّس أدلة كثيرة فتضيع الحجة الأقوى بينها.",
             en: "Piles on too much evidence, burying the strongest argument among them.",
           },
+          {
+            ar: "يفترض ضعف حجة الطرف الآخر دون التحقق منها فعليًا.",
+            en: "Assumes the other side's case is weak without actually verifying it.",
+          },
+          {
+            ar: "يفتتح بمطلب متطرّف يصعب الدفاع عنه فيفقد مصداقيته عند أول اعتراض.",
+            en: "Opens with an extreme demand that is hard to defend, losing credibility at the first objection.",
+          },
         ],
         successCriteria: [
           { ar: "الحجة تتضمن دليلاً واحدًا موثّقًا على الأقل لكل بند.", en: "The argument includes at least one documented piece of evidence per term." },
           { ar: "الرد على أقوى اعتراض محضّر مسبقًا.", en: "The response to the strongest objection is prepared in advance." },
+          {
+            ar: "يستطيع تلخيص حجة الطرف الآخر بدقة تعادل أو تفوق طريقة عرضهم لها.",
+            en: "Can summarize the other side's case as precisely as, or more precisely than, they present it themselves.",
+          },
+          {
+            ar: "الموقف الافتتاحي المختار يصمد كاملاً أمام اعتراض جدّي.",
+            en: "The chosen opening position withstands a serious objection intact.",
+          },
         ],
         evidenceRequired: [
           { ar: "ملف حجج مكتوب مع الأدلة المرفقة.", en: "A written argument file with attached evidence." },
           { ar: "محضر جلسة يظهر الرد على اعتراض فعلي.", en: "A session record showing the response to an actual objection." },
+          {
+            ar: "ملخّص مكتوب لحجة الطرف الآخر مُعدّ قبل الجلسة.",
+            en: "A written summary of the other side's case prepared before the session.",
+          },
         ],
       },
       {
@@ -138,6 +166,14 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
             ar: "يميّز بين تعديل الصياغة والتنازل عن جوهر المطلب.",
             en: "Distinguishes between adjusting the wording and conceding the substance of the demand.",
           },
+          {
+            ar: "يصف النزاع بأكثر من طريقة معقولة، كمسألة امتثال أو مسألة علاقة مستمرة، قبل اختيار التوصيف الأنسب لهدف الموكّل.",
+            en: "Describes the dispute in more than one defensible way, such as a compliance issue or an ongoing-relationship issue, before choosing the framing that serves the client's goal.",
+          },
+          {
+            ar: "يحسم التأطير الذي سيُبنى عليه الملف قبل الدخول في تفاصيل الحجة نفسها.",
+            en: "Settles on the framing the matter will be built around before getting into the substance of the argument.",
+          },
         ],
         commonMistakes: [
           {
@@ -148,15 +184,35 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
             ar: "يتجاهل مصلحة الطرف الآخر فتُقرأ حجته كإملاء لا إقناع.",
             en: "Ignores the other side's interest, so the argument reads as dictation rather than persuasion.",
           },
+          {
+            ar: "يتبنّى التوصيف الأول الذي يخطر له للنزاع دون فحص بدائل أخرى معقولة.",
+            en: "Adopts the first characterization of the dispute that comes to mind without testing other reasonable alternatives.",
+          },
+          {
+            ar: "يختار تأطيرًا يريحه شخصيًا في الجلسة لا تأطيرًا يخدم هدف الموكّل الفعلي.",
+            en: "Picks a framing that is personally comfortable in the room rather than one that serves the client's actual goal.",
+          },
         ],
         successCriteria: [
           { ar: "الحجة المعدّلة تحافظ على جوهر مطلب الموكّل.", en: "The revised argument preserves the substance of the client's demand." },
           { ar: "الطرف الآخر يستجيب للحجة لا يتجاهلها.", en: "The other side engages with the argument rather than dismissing it." },
+          {
+            ar: "طُرح أكثر من توصيف معقول للنزاع قبل اعتماد واحد منها.",
+            en: "More than one reasonable characterization of the dispute was considered before one was adopted.",
+          },
+          {
+            ar: "التوصيف المعتمد يخدم هدف الموكّل الفعلي لا مجرد نقطة الجدل الظاهرة.",
+            en: "The adopted framing serves the client's actual goal, not just the surface issue being argued.",
+          },
         ],
         evidenceRequired: [
           {
             ar: "محاكاة أو محضر جلسة يُظهر تعديل الحجة تحت الضغط.",
             en: "A simulation or session record showing the argument adjusted under pressure.",
+          },
+          {
+            ar: "ملاحظات تحضير تُظهر أكثر من توصيف مطروح للنزاع قبل اختيار أحدها.",
+            en: "Preparation notes showing more than one framing considered for the dispute before one was chosen.",
           },
         ],
       },
@@ -221,7 +277,7 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
         ],
       },
     ],
-    sourceIds: ["src.how-to-argue-and-win", "src.making-your-case", "src.tools-of-argument"],
+    sourceIds: ["src.how-to-argue-and-win", "src.making-your-case", "src.tools-of-argument", "src.legal-analyst"],
     confidence: 0.8,
     reviewStatus: "ai_suggested",
     prerequisiteSkillIds: ["skill.negotiation"],
@@ -287,6 +343,14 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
             en: "Asks, in a subcontractor payment dispute, who holds the final decision at the main contracting company.",
           },
           { ar: "يستفسر عن الجدول الزمني الذي يعمل الطرف الآخر تحت ضغطه.", en: "Asks about the timeline the other side is working under pressure from." },
+          {
+            ar: "ينتبه حين يكون الرقم الافتتاحي الذي طرحه أحد الطرفين تقديرًا اعتباطيًا لا مبنيًا على أساس فعلي.",
+            en: "Notices when an opening number either side puts forward is an arbitrary estimate, not grounded in fact.",
+          },
+          {
+            ar: "يبني تقديره الخاص بمعزل عن الرقم الافتتاحي قبل مقارنته به.",
+            en: "Forms his own estimate independently of the opening number before comparing the two.",
+          },
         ],
         commonMistakes: [
           {
@@ -297,6 +361,14 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
             ar: "يسأل أسئلة مباشرة تكشف شكوكه فيصبح الطرف الآخر أكثر حذرًا.",
             en: "Asks overly direct questions that reveal his suspicion, making the other side more guarded.",
           },
+          {
+            ar: "يقيس كل عرض لاحق بالرقم الافتتاحي حتى بعد أن يتبيّن أنه اعتباطي.",
+            en: "Keeps measuring every later offer against the opening number even after it proves arbitrary.",
+          },
+          {
+            ar: "يعتمد أول رقم يُطرح كنقطة انطلاق دون أن يسأل من أين جاء.",
+            en: "Treats the first number raised as the starting point without asking where it came from.",
+          },
         ],
         successCriteria: [
           { ar: "صلاحية محدّثه في الجهة المقابلة معروفة.", en: "The counterpart's decision-making authority is known." },
@@ -304,9 +376,21 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
             ar: "ضغط الوقت أو الظرف الذي يعمل تحته الطرف الآخر مرصود.",
             en: "The time pressure or circumstance the other side is working under is identified.",
           },
+          {
+            ar: "مصدر الرقم الافتتاحي مفهوم، ومدى ارتباطه بوقائع الملف واضح.",
+            en: "The source of the opening number is understood, and how it relates to the facts of the matter is clear.",
+          },
+          {
+            ar: "التقديرات اللاحقة لا تتأثر برقم افتتاحي ثبت أنه اعتباطي.",
+            en: "Later estimates are not distorted by an opening number shown to be arbitrary.",
+          },
         ],
         evidenceRequired: [
           { ar: "ملاحظات تتضمن صلاحية المحدّث وضغوطه.", en: "Notes recording the counterpart's authority and pressures." },
+          {
+            ar: "ملاحظات تُظهر تقديرًا مستقلاً للرقم الافتتاحي قبل الاعتماد عليه.",
+            en: "Notes showing an independent assessment of the opening number before relying on it.",
+          },
         ],
       },
       {
@@ -324,12 +408,28 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
             ar: "يبطئ وتيرة الجلسة مع طرف يميل للتروّي، ويختصر مع من يميل للحسم السريع.",
             en: "Slows the pace with a deliberative counterpart, and moves faster with one who favours quick decisions.",
           },
+          {
+            ar: "يميّز اعتراض الطرف الآخر على صفته في إثارة مسألة معيّنة بأنه تحرّك إجرائي لا موقف موضوعي.",
+            en: "Recognizes the other side's challenge to one's standing to raise an issue as a procedural move, not a substantive one.",
+          },
+          {
+            ar: "يسمّي محاولة الطرف الآخر نقل عبء الإثبات إليه بأنها تكتيك إجرائي، ويتعامل معها على هذا الأساس.",
+            en: "Names an attempt by the other side to shift the burden of proof as a procedural tactic, and responds to it accordingly.",
+          },
         ],
         commonMistakes: [
           { ar: "يعامل كل الأطراف بالأسلوب نفسه بصرف النظر عن طباعهم.", en: "Treats every counterpart the same way regardless of their style." },
           {
             ar: "يخلط بين تكتيك مؤقت للطرف الآخر ومصلحته الدائمة.",
             en: "Confuses the other side's temporary tactic with their lasting interest.",
+          },
+          {
+            ar: "يردّ على دفع بعدم الصفة أو بسبق الأوان بحجج موضوعية، فيهدر الجلسة على معركة خاطئة.",
+            en: "Responds to a standing or prematurity objection with substantive arguments, wasting the session on the wrong fight.",
+          },
+          {
+            ar: "يقبل انتقال عبء الإثبات إليه دون أن ينتبه أن الانتقال نفسه غير مبرَّر.",
+            en: "Accepts a shift in the burden of proof onto himself without noticing the shift itself was unjustified.",
           },
         ],
         successCriteria: [
@@ -338,9 +438,21 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
             ar: "أسلوب التفاوض المعتمد يلائم طبع الطرف الآخر الملحوظ.",
             en: "The negotiating approach used matches the other side's observed style.",
           },
+          {
+            ar: "التحرّكات الإجرائية للطرف الآخر مُسمّاة ومفصولة عن جوهر النزاع.",
+            en: "The other side's procedural moves are named and kept separate from the merits of the dispute.",
+          },
+          {
+            ar: "عبء الإثبات بقي حيث يجب أن يكون رغم محاولة الطرف الآخر نقله.",
+            en: "The burden of proof stays where it belongs despite the other side's attempt to shift it.",
+          },
         ],
         evidenceRequired: [
           { ar: "تحليل مكتوب لمصلحة الطرف الآخر بعد الجلسة.", en: "A written post-session analysis of the other side's interest." },
+          {
+            ar: "محضر يُظهر تمييزًا واضحًا بين اعتراض إجرائي واعتراض موضوعي.",
+            en: "A record showing a clear distinction drawn between a procedural objection and a substantive one.",
+          },
         ],
       },
       {
@@ -441,7 +553,7 @@ export const NEGOTIATION_INFLUENCE_SKILLS: SkillDef[] = [
         ],
       },
     ],
-    sourceIds: ["src.thinking-like-a-lawyer", "src.tools-of-argument", "src.your-brain-at-work"],
+    sourceIds: ["src.thinking-like-a-lawyer", "src.tools-of-argument", "src.your-brain-at-work", "src.legal-analyst"],
     confidence: 0.75,
     reviewStatus: "ai_suggested",
     prerequisiteSkillIds: ["skill.active-listening"],

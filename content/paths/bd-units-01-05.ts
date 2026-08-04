@@ -1145,6 +1145,7 @@ export const BD_UNITS_01_05: UnitDef[] = [
       { kind: "activity", id: "s.bd.03.a3", activityId: "act.bd.03.3", mode: "guided" },
       { kind: "activity", id: "s.bd.03.a4", activityId: "act.bd.03.4", mode: "independent" },
       { kind: "activity", id: "s.bd.03.a5", activityId: "act.bd.03.5", mode: "independent" },
+      { kind: "activity", id: "s.bd.03.a6", activityId: "act.bd.03.6", mode: "independent" },
       { kind: "summary", id: "s.bd.03.summary", summaryCardId: "card.bd.03" },
       {
         kind: "apply_tomorrow",
@@ -1424,6 +1425,73 @@ export const BD_UNITS_01_05: UnitDef[] = [
           en: "Had you applied the real-position and maintenance-cost tests, would you have chosen differently?",
         },
       },
+      {
+        id: "act.bd.03.6",
+        kind: "best_response",
+        skillId: "skill.business-development",
+        secondarySkillIds: ["skill.relationship-building"],
+        stage: 2,
+        weight: 2,
+        context: {
+          ar: [
+            "أمامك أربع ساعات فقط هذا الفصل لتنمية العمل، وخمسة أشخاص في قائمتك: فادي كنعان، زميل دراسة أصبح مستشارًا داخليًا في مجموعة زهرة الشرق القابضة ويراجع عقودها التجارية شهريًا؛ وداد نصّار، المديرة المالية لشركة بركات للشحن والخدمات اللوجستية، ذكرت عرضًا أنها تبحث عن مستشار قانوني جديد لتوسّع مرتقب في سلسلة التوريد؛ رانيا صعب، ابنة عمك التي تدير مخبزًا منزليًا صغيرًا؛ طارق شامي، أستاذك الجامعي السابق الواسع المعارف الأكاديمية لكن بلا موقع تجاري؛ ويوسف حيدر، محامٍ مبتدئ زميل في مكتب صغير منافس.",
+          ],
+          en: [
+            "You have exactly four hours this quarter for business development, and five people on your list: Fadi Kanaan, a law-school friend now in-house counsel at Zahret Al-Sharq Holding who reviews its commercial contracts monthly; Widad Nassar, CFO of Barakat Freight & Logistics, who mentioned in passing she's looking for new counsel for an upcoming supply-chain expansion; Rania Saab, your cousin who runs a small home bakery; Tarek Chami, your former university professor, well-connected academically but with no business position; and Yousef Haidar, a junior associate at a small competing firm.",
+          ],
+        },
+        prompt: {
+          ar: "ما أفضل استخدام لساعاتك الأربع؟",
+          en: "What's the wisest use of your four hours?",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "خصّص معظم الساعات لفادي ووداد تحديدًا، فهما يملكان موقعًا حقيقيًا وإشارة حاجة فعلية، واترك هامشًا صغيرًا فقط لأي متسع إضافي.",
+              en: "Devote most of the hours to Fadi and Widad specifically — they hold a real position and a genuine signal of need — leaving only a small margin for anything extra.",
+            },
+            correct: true,
+            rationale: {
+              ar: "الاثنان يجمعان بين موقع حقيقي وإشارة جدية، فتركيز الساعات القليلة عليهما يرفع احتمال إثمارها فعليًا.",
+              en: "Both combine a real position with a genuine signal, so concentrating your scarce hours on them raises the actual odds of a payoff.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "وزّع الساعات الأربع بالتساوي على الخمسة، نحو خمسين دقيقة لكل شخص، لأن هذا يبدو الأكثر إنصافًا.",
+              en: "Split the four hours evenly across all five, about fifty minutes each, since that feels the fairest approach.",
+            },
+            rationale: {
+              ar: "التوزيع المتساوي يشعر بالعدل لكنه يمنح رانيا وطارق ويوسف وقتًا لا يحتمل أن يثمر، على حساب الوقت الذي كان يمكن أن يذهب لفادي ووداد.",
+              en: "Even splitting feels fair, but it hands Rania, Tarek and Yousef time unlikely to ever pay off, at the expense of time that could have gone to Fadi and Widad.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "امنح الساعات الأربع بالكامل لوداد وحدها لأنها الأعلى احتمالًا، وتجاهل فادي كليًا.",
+              en: "Give all four hours to Widad alone since she's the highest-odds contact, and ignore Fadi entirely.",
+            },
+            rationale: {
+              ar: "الاعتماد الكامل على شخص واحد يخاطر بخسارة الفصل بأكمله إن لم تتقدم إشارتها، بينما فادي علاقة قائمة منخفضة التكلفة كان يستحق نصيبًا من الوقت.",
+              en: "Betting everything on one contact risks losing the whole quarter if her signal doesn't advance, while Fadi is a low-cost existing relationship that deserved a share of the time too.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "أجّل التواصل مع الجميع هذا الفصل حتى تملك وقتًا كافيًا للتعامل مع الخمسة بشكل لائق.",
+              en: "Postpone contacting anyone this quarter until you have enough time to handle all five properly.",
+            },
+            rationale: {
+              ar: "الانتظار يفوّت إشارة وداد الفعلية الآن، ويترك علاقة فادي القديمة بلا متابعة رغم أن كلاهما لا يحتاج سوى وقت قليل.",
+              en: "Waiting misses Widad's real signal right now, and leaves Fadi's old relationship unattended, even though both need only a little time.",
+            },
+          },
+        ],
+      },
     ],
     summaryCard: {
       id: "card.bd.03",
@@ -1637,6 +1705,7 @@ export const BD_UNITS_01_05: UnitDef[] = [
       { kind: "activity", id: "s.bd.04.a3", activityId: "act.bd.04.3", mode: "guided" },
       { kind: "activity", id: "s.bd.04.a4", activityId: "act.bd.04.4", mode: "independent" },
       { kind: "activity", id: "s.bd.04.a5", activityId: "act.bd.04.5", mode: "independent" },
+      { kind: "activity", id: "s.bd.04.a6", activityId: "act.bd.04.6", mode: "independent" },
       { kind: "summary", id: "s.bd.04.summary", summaryCardId: "card.bd.04" },
       {
         kind: "apply_tomorrow",
@@ -1913,6 +1982,73 @@ export const BD_UNITS_01_05: UnitDef[] = [
           ar: "لو سألت اليوم، أي سؤال تجاري كان سيغيّر تركيز مراجعتك؟",
           en: "If you asked today, which commercial question would have changed your review's focus?",
         },
+      },
+      {
+        id: "act.bd.04.6",
+        kind: "best_response",
+        skillId: "skill.commercial-awareness",
+        secondarySkillIds: ["skill.business-development"],
+        stage: 2,
+        weight: 2,
+        context: {
+          ar: [
+            "غيث الصراف، صاحب متجر الصراف للأجهزة المنزلية، عميلك الحالي في مراجعة عقد إيجار فرعه الجديد، ذكر أنه سيطلق متجرًا إلكترونيًا العام القادم وسيبدأ بجمع بيانات دفع العملاء. يملك المكتب فريقًا متخصصًا في حماية البيانات وتجارة إلكترونية قد يفيده.",
+          ],
+          en: [
+            "Ghaith Sarraf, owner of Sarraf Home Appliances, your current client for his new branch's lease review, mentioned he's launching an online store next year and will start collecting customer payment data. The firm has a data-protection and e-commerce team that could help him.",
+          ],
+        },
+        prompt: {
+          ar: "كيف يجب أن تفكّر قبل إثارة هذا الموضوع؟",
+          en: "How should you think about this before raising it?",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "اسأل نفسك أولًا: هل مراجعة خصوصية البيانات تقلّل فعلًا مخاطرة حقيقية على متجر غيث الجديد؟ ثم أثِر الموضوع معه فقط إن كان الجواب نعم فعلًا.",
+              en: "First ask yourself: would a data-privacy review genuinely reduce a real risk for Ghaith's new store? Then raise it with him only if the answer is genuinely yes.",
+            },
+            correct: true,
+            rationale: {
+              ar: "يمركز القرار حول حاجة غيث الفعلية لا حول إيراد إضافي للمكتب، فيصل إليه فقط إن كانت القيمة حقيقية.",
+              en: "It centers the decision on Ghaith's actual need, not extra firm revenue, so it only reaches him when the value is real.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "أخبر زميلك في فريق حماية البيانات أن يتواصل مع غيث لأن كل عمل إضافي من عميل قائم يفيد المكتب.",
+              en: "Tell your colleague in the data-protection team to reach out, since any extra work from an existing client benefits the firm.",
+            },
+            rationale: {
+              ar: "معيار «يفيد المكتب» يضع مصلحة الإيرادات أولًا، وقد يجعل غيث يشعر لاحقًا بأنه يُستهدف للبيع لا يُخدم فعلًا.",
+              en: "Judging by \"benefits the firm\" puts revenue first, and Ghaith may later feel he was targeted for a sale rather than genuinely served.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "اذكر كل خدمات المكتب الممكنة في الاجتماع القادم معه حتى يعرف غيث كامل نطاق ما تقدّمونه.",
+              en: "Mention every possible firm service in your next meeting with him, so Ghaith knows the full range you offer.",
+            },
+            rationale: {
+              ar: "عرض عام لكل الخدمات يحوّل اجتماع مراجعة عقد إلى عرض بيع، ويشتت التركيز عن حاجته المحددة الفعلية.",
+              en: "A broad rundown of every service turns a lease-review meeting into a sales pitch, diluting focus away from his one actual need.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "لا تذكر شيئًا، لأن اقتراح خدمة أخرى قد يبدو محاولة لتضخيم الفاتورة.",
+              en: "Say nothing at all, since suggesting another service might look like padding the bill.",
+            },
+            rationale: {
+              ar: "الصمت المفرط يحجب عن غيث ملاحظة فعلية تهمّ عمله الجديد، بدافع حذر زائد لا حكمة مهنية.",
+              en: "Excessive silence withholds a genuinely relevant observation about his new venture, out of over-caution rather than sound judgment.",
+            },
+          },
+        ],
       },
     ],
     summaryCard: {

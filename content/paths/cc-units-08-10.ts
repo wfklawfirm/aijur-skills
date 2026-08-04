@@ -770,6 +770,7 @@ export const CC_UNITS_08_10: UnitDef[] = [
       { kind: "activity", id: "s.cc.09.a3", activityId: "act.cc.09.3", mode: "guided" },
       { kind: "activity", id: "s.cc.09.a4", activityId: "act.cc.09.4", mode: "independent" },
       { kind: "activity", id: "s.cc.09.a5", activityId: "act.cc.09.5", mode: "independent" },
+      { kind: "activity", id: "s.cc.09.a6", activityId: "act.cc.09.6", mode: "independent" },
       { kind: "summary", id: "s.cc.09.summary", summaryCardId: "card.cc.09" },
       {
         kind: "apply_tomorrow",
@@ -1279,6 +1280,113 @@ export const CC_UNITS_08_10: UnitDef[] = [
           en: "Why is that name the one who waited longest? In practice, the file we postpone writing about is the file we do not enjoy thinking about. Does that apply here?",
         },
       },
+      {
+        id: "act.cc.09.6",
+        kind: "categorization",
+        skillId: "skill.client-follow-up",
+        stage: 4,
+        weight: 2,
+        context: {
+          ar: [
+            "الموكّل المهندس كريم دياب ينتظر ثلاثة تحديثات هذا الأسبوع عبر ثلاث قنوات مختلفة لنفس الملف: رسالة سريعة عبر بوابة المكتب، خطاب رسمي يُرفق بالدعوى، ومكالمة هاتفية.",
+            "المضمون واحد في الجوهر: لا جديد، ولا مطلوب منه شيء الآن. لكن كل قناة تحتاج نبرة مختلفة.",
+          ],
+          en: [
+            "Client Karim Diab is expecting three updates this week through three different channels on the same file: a quick message on the firm’s client portal, a formal letter attached to the filing, and a phone call.",
+            "The substance is the same at its core: nothing new, nothing required from him now. But each channel needs a different tone.",
+          ],
+        },
+        prompt: {
+          ar: "صنّف كل صياغة: هل نبرتها مناسبة للقناة التي أُرسلت عبرها، أم لا؟",
+          en: "Sort each wording: does its tone fit the channel it was sent through, or not?",
+        },
+        hint: {
+          ar: "المضمون يبقى ثابتًا في كل القنوات؛ ما يتغيّر هو طول الجملة ودرجة رسميتها، لا وقارك المهني.",
+          en: "The substance stays constant across every channel; what changes is sentence length and formality, not your professional standing.",
+        },
+        accessibleAlternative: {
+          ar: "اختر التصنيف من زرَّي «مناسبة» و«غير مناسبة» أسفل كل صياغة بدل السحب.",
+          en: "Choose “Fits” or “Doesn’t fit” from buttons under each wording instead of dragging.",
+        },
+        buckets: [
+          { id: "fits", label: { ar: "النبرة تناسب القناة", en: "Tone fits the channel" } },
+          { id: "mismatch", label: { ar: "النبرة لا تناسب القناة", en: "Tone does not fit the channel" } },
+        ],
+        items: [
+          {
+            id: "m1",
+            label: {
+              ar: "على بوابة المكتب: «مساء الخير مهندس كريم. لا جديد هذا الأسبوع، وسأكتب الثلاثاء المقبل.»",
+              en: "On the firm portal: “Good evening, Mr Karim. Nothing new this week — I’ll write again next Tuesday.”",
+            },
+            bucketId: "fits",
+            rationale: {
+              ar: "قصيرة ومباشرة، وهذا بالضبط ما تسمح به قناة سريعة يقرأها الموكّل من هاتفه بين اجتماعين. الجوهر المهني حاضر رغم الاختصار.",
+              en: "Short and direct, exactly what a quick channel a client reads on his phone between meetings calls for. The professional substance is present despite the brevity.",
+            },
+          },
+          {
+            id: "m2",
+            label: {
+              ar: "في الخطاب الرسمي المرفق بالدعوى: «الرجاء الاطّلاع 🙂 وبانتظار ردّكم قريبًا!»",
+              en: "In the formal letter attached to the filing: “Please review 🙂 looking forward to your reply soon!”",
+            },
+            bucketId: "mismatch",
+            rationale: {
+              ar: "الرمز التعبيري وعلامة التعجّب يُفرغان الخطاب الرسمي من وقاره، وهو مستند قد يُرفق بملف قضائي. المضمون قد يكون صحيحًا، لكن سجلّه اللغوي غير مقبول في هذه القناة تحديدًا.",
+              en: "The emoji and exclamation mark strip the formal letter of its gravity — a document that may be attached to a court file. The content might be fine, but its register is wrong for exactly this channel.",
+            },
+          },
+          {
+            id: "m3",
+            label: {
+              ar: "على الهاتف: يقرأ المحامي نصّ الخطاب الرسمي كلمة بكلمة دون تغيير نبرته.",
+              en: "On the phone: the lawyer reads the formal letter word for word without changing his tone.",
+            },
+            bucketId: "mismatch",
+            rationale: {
+              ar: "المكالمة قناة حيّة تحتمل التفاعل والتوضيح الفوري؛ قراءة نصّ رسمي حرفيًّا تُشعر الموكّل أنه يستمع إلى تسجيل لا إلى محاميه، فيتردّد في المقاطعة بسؤال.",
+              en: "A call is a live channel that allows real-time interaction and clarification; reading a formal text verbatim makes the client feel he is listening to a recording rather than his lawyer, so he hesitates to interrupt with a question.",
+            },
+          },
+          {
+            id: "m4",
+            label: {
+              ar: "في الخطاب الرسمي: تاريخ، رقم إشارة الملف، ثم فقرات مرقّمة بلغة قانونية دقيقة ومحترمة.",
+              en: "In the formal letter: a date, a file reference number, then numbered paragraphs in precise, courteous legal language.",
+            },
+            bucketId: "fits",
+            rationale: {
+              ar: "هذا ما يحتاجه مستند سيُرفق بملف رسمي وقد يُقرأ لاحقًا خارج سياق العلاقة الشخصية بينكما — دقّته ورسميته ليستا برودًا، بل ملاءمة لغرضه.",
+              en: "This is what a document meant to be filed and possibly read later outside your personal relationship needs — its precision and formality are not coldness, but a fit for its purpose.",
+            },
+          },
+          {
+            id: "m5",
+            label: {
+              ar: "على الهاتف: «مرحبًا مهندس كريم، معك [الاسم]. بختصار: لا جديد هذا الأسبوع، والملف عند القاضي. عندك سؤال؟»",
+              en: "On the phone: “Hello Mr Karim, this is [name]. Briefly: nothing new this week, the file is with the judge. Any question?”",
+            },
+            bucketId: "fits",
+            rationale: {
+              ar: "طبيعية ومباشرة، وتترك فرصة فورية للسؤال — وهذا بالضبط ما تتيحه المكالمة ولا تتيحه رسالة مكتوبة.",
+              en: "Natural and direct, and it leaves an immediate opening for a question — exactly what a call allows and a written message does not.",
+            },
+          },
+          {
+            id: "m6",
+            label: {
+              ar: "على بوابة المكتب: رسالة من ثلاث فقرات تبدأ بـ«تحية طيبة وبعد» وتُختم بصيغة ختامية رسمية كاملة.",
+              en: "On the firm portal: a three-paragraph message opening with a full formal salutation and closing with a complete formal sign-off.",
+            },
+            bucketId: "mismatch",
+            rationale: {
+              ar: "القناة سريعة والموكّل يتوقّع منها سطرين لا رسالة بصيغة خطاب. الإفراط في الرسمية هنا لا يُقرأ احترامًا بل بطئًا: على الموكّل أن يقرأ فقرتين ليصل إلى «لا جديد».",
+              en: "The channel is fast, and the client expects two lines, not a message in letter form. Excess formality here does not read as respect but as slowness: the client must read two paragraphs to reach “nothing new”.",
+            },
+          },
+        ],
+      },
     ],
     summaryCard: {
       id: "card.cc.09",
@@ -1372,6 +1480,7 @@ export const CC_UNITS_08_10: UnitDef[] = [
       "skill.expectation-management",
       "skill.next-steps-closure",
       "skill.avoiding-guarantees",
+      "skill.decision-making",
     ],
     stage: 4,
     estimatedMinutes: 12,
@@ -1560,6 +1669,7 @@ export const CC_UNITS_08_10: UnitDef[] = [
       { kind: "activity", id: "s.cc.10.a4", activityId: "act.cc.10.4", mode: "independent" },
       { kind: "simulation", id: "s.cc.10.sim", scenarioId: "scn.angry-client-delay" },
       { kind: "activity", id: "s.cc.10.a5", activityId: "act.cc.10.5", mode: "independent" },
+      { kind: "activity", id: "s.cc.10.a6", activityId: "act.cc.10.6", mode: "independent" },
       { kind: "summary", id: "s.cc.10.summary", summaryCardId: "card.cc.10" },
       {
         kind: "apply_tomorrow",
@@ -2052,6 +2162,77 @@ export const CC_UNITS_08_10: UnitDef[] = [
           ar: "اكتب الآن الجملة التي كان يجب أن تسبقها — بكلماته هو وأرقامه، لا بكلماتك.",
           en: "Now write the sentence that should have come before it — in his words and his numbers, not yours.",
         },
+      },
+      {
+        id: "act.cc.10.6",
+        kind: "best_response",
+        skillId: "skill.decision-making",
+        secondarySkillIds: ["skill.difficult-client-basics"],
+        stage: 4,
+        weight: 2,
+        context: {
+          ar: [
+            "الساعة الثالثة، والموعد النهائي لإرسال ردّكم على إنذار خالد المطيري هو الخامسة اليوم.",
+            "أنت والمحامية الأقدم منك، وتارق المتدرّب الجديد، تراجعون الصياغة معًا.",
+            "طرح تارق ملاحظة: «أظن أن الفقرة الثالثة تعترف بمسؤولية أكثر ممّا نقصد.» قاطعته الزميلة: «ما في وقت، خلّينا نمشي فيها متل ما هي.» صمت تارق.",
+          ],
+          en: [
+            "It is three o’clock, and the deadline to send your reply to Khaled Al-Mutairi’s formal notice is five today.",
+            "You, a more senior colleague, and Tarek, a new trainee, are reviewing the draft together.",
+            "Tarek raises a point: “I think paragraph three admits more liability than we intend.” The colleague cuts in: “No time for that — let’s send it as is.” Tarek goes quiet.",
+          ],
+        },
+        prompt: {
+          ar: "بصفتك الشخص الذي يملك القرار النهائي على هذا الردّ، ماذا تفعل الآن؟",
+          en: "As the person who owns the final call on this reply, what do you do now?",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "«لحظة — تارق، أكمل ملاحظتك. ما الذي يقلقك تحديدًا في الفقرة الثالثة؟» ثم تقرّرون معًا خلال دقيقتين، وترسلون في الموعد.",
+              en: "“Hold on — Tarek, finish your point. What exactly worries you about paragraph three?” Then you decide together within two minutes, and still send on time.",
+            },
+            correct: true,
+            rationale: {
+              ar: "المهلة حقيقية، وهذا بالضبط ما يجعل التحقّق السريع ضروريًّا لا ترفًا: ملاحظة تارق قد تكشف خطأ صياغيًّا يكلّف الملف كلّه لاحقًا. سؤاله مباشرةً بدل تجاهله يستغرق دقيقتين فقط، ولا يمنع الإرسال في الموعد.",
+              en: "The deadline is real, and that is exactly why a fast check is necessary, not a luxury: Tarek’s point might expose a drafting error that costs the whole matter later. Asking him directly instead of brushing him off takes two minutes and does not stop the reply going out on time.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "تُوافق زميلتك وترسلون الصياغة كما هي، لأن الوقت لا يسمح بمراجعة إضافية.",
+              en: "You agree with your colleague and send the wording as is, because there is no time for further review.",
+            },
+            rationale: {
+              ar: "المهلة تُستعمل هنا ذريعةً لا سببًا حقيقيًّا: التحقّق من ملاحظة واحدة محدّدة يستغرق دقائق لا ساعات. الأخطر أن تارق يتعلّم في هذه اللحظة أن ملاحظاته تُقابَل بالصمت حين يكون الوقت ضيّقًا — وهو بالضبط الوقت الذي تحتاج فيه أكثر إلى من يلاحظ ما فاتك.",
+              en: "The deadline is used here as an excuse rather than a real constraint: checking one specific point takes minutes, not hours. Worse, Tarek learns in this moment that his input gets silence whenever time is tight — precisely when you most need someone to catch what you missed.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "تفترض أن صمت تارق بعد المقاطعة يعني أنه اقتنع، وتمضي دون التحقّق.",
+              en: "You assume Tarek’s silence after being cut off means he was convinced, and you proceed without checking.",
+            },
+            rationale: {
+              ar: "الصمت بعد المقاطعة نادرًا ما يعني الاقتناع؛ غالبًا يعني أنه لم يجد مساحة ليُكمل. من يبني قراره على صمتٍ فرضه هو بنفسه يخسر أفضل فرصة لديه لاكتشاف خطأ قبل إرساله لا بعده.",
+              en: "Silence after being interrupted rarely means agreement; more often it means the person found no room to finish. Building a decision on a silence you yourself imposed forfeits the best chance you had to catch a mistake before sending it, not after.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "توقفون العمل كلّه لتناقشوا الملاحظة نقاشًا مفصّلاً حتى يتّفق الجميع تمامًا، ولو تجاوزتم الموعد النهائي.",
+              en: "You stop everything to debate the point in full detail until everyone agrees completely, even if it means missing the deadline.",
+            },
+            rationale: {
+              ar: "الحرص على سماع كل رأي لا يبرّر تفويت مهلة حقيقية يملكها الخصم لا أنت. القرار الجيّد تحت ضغط الوقت ليس إجماعًا كاملًا، بل تحقّقًا سريعًا ومركّزًا من النقطة المطروحة فعلًا.",
+              en: "Wanting to hear every view does not justify missing a real deadline that belongs to the other side, not to you. A good decision under time pressure is not full consensus — it is a fast, focused check of the specific point actually raised.",
+            },
+          },
+        ],
       },
     ],
     summaryCard: {

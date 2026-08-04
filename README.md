@@ -77,7 +77,10 @@ behavior (registration, the manifest, a previously-visited page staying
 readable offline, a never-visited page falling back to `/offline`) — this
 last one found and fixed two real bugs that meant the service worker had
 never actually worked in this build at all (see `docs/PRODUCT_AUDIT.md`
-§5). 123/123 tests passing. See `docs/PRODUCT_AUDIT.md` §5 for what it
+§5), and a regression test confirming that advancing between two
+consecutive `activity` steps in a unit remounts the activity view instead
+of visually leaking the previous activity's answered state into the next.
+124/124 tests passing. See `docs/PRODUCT_AUDIT.md` §5 for what it
 does and doesn't cover yet.
 
 ## Project layout

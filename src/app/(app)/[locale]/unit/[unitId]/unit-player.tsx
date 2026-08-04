@@ -134,6 +134,7 @@ export function UnitPlayer({
           />
         </div>
         <StepView
+          key={step.id}
           step={step}
           unit={unit}
           scenarios={scenarios}

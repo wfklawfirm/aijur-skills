@@ -1721,6 +1721,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يرسل رسالة تلخّص المدد والنطاق خلال يوم عمل.",
             en: "Sends a message summarising timing and scope within one working day.",
           },
+          {
+            ar: "يلتزم بموعد ثابت للتحديث — أسبوعي مثلاً — بدل الاكتفاء بالرد حين يُسأل.",
+            en: "Commits to a fixed update cadence — weekly, for instance — instead of only responding when asked.",
+          },
         ],
         commonMistakes: [
           {
@@ -1731,6 +1735,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يذكر النطاق شفهيًا ولا يوثّقه.",
             en: "States the scope orally and never records it.",
           },
+          {
+            ar: "يترك التواصل رهن مبادرته اللحظية فيبدو غير منتظم للموكّل.",
+            en: "Leaves communication to his own momentary initiative, so it looks irregular to the client.",
+          },
         ],
         successCriteria: [
           {
@@ -1740,6 +1748,10 @@ export const SKILLS: SkillDef[] = [
           {
             ar: "لم يُستخدم تعبير زمني مطّاط في المراسلة.",
             en: "No elastic time phrase appears in the correspondence.",
+          },
+          {
+            ar: "التحديثات تصل بانتظام لا بردّ فعل على سؤال الموكّل.",
+            en: "Updates arrive on a regular rhythm, not as a reaction to the client asking.",
           },
         ],
         evidenceRequired: [
@@ -1768,6 +1780,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يعطي تقديرًا للكلفة يشمل المصاريف لا الأتعاب وحدها.",
             en: "Gives a cost estimate that includes disbursements, not just fees.",
           },
+          {
+            ar: "يتنبّه حين تكون ممانعة الموكّل ناتجة عن طريقة عرض الرقم أو النتيجة لا عن خلاف جوهري عليها.",
+            en: "Notices when the client's resistance comes from how a figure or outcome is framed rather than from real disagreement with it.",
+          },
         ],
         commonMistakes: [
           {
@@ -1778,6 +1794,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يؤجّل خبر التأخير أملًا في تدارُكه.",
             en: "Delays the news of a delay hoping to make it up.",
           },
+          {
+            ar: "يكرّر الرقم نفسه بصياغة أكثر إلحاحًا بدل إعادة صياغته كمكسب لا كخسارة.",
+            en: "Repeats the same figure more insistently instead of reframing it as a gain rather than a loss.",
+          },
         ],
         successCriteria: [
           {
@@ -1787,6 +1807,10 @@ export const SKILLS: SkillDef[] = [
           {
             ar: "الملف يتضمّن تقدير كلفة شاملًا للمصاريف.",
             en: "The file contains a cost estimate inclusive of disbursements.",
+          },
+          {
+            ar: "الرقم أو النتيجة عُرضا بصياغتين — خسارة ومكسب — حتى يتبيّن أساس الممانعة الحقيقي.",
+            en: "The figure or outcome was presented both ways — as a loss and as a gain — to reveal the real basis of the resistance.",
           },
         ],
         evidenceRequired: [
@@ -1815,6 +1839,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يسأل الموكّل عن الأثر العملي للتأخير على أعماله.",
             en: "Asks the client what practical effect the delay has on his business.",
           },
+          {
+            ar: "يستعيد ثقة الموكّل بتقليل الجهد الذي يبذله للحصول على معلومة — يبادر بالجواب قبل أن يُسأل — لا بلفتة واحدة كبيرة.",
+            en: "Rebuilds the client's trust by cutting the effort the client must spend to get information — answering before being asked — rather than through one big gesture.",
+          },
         ],
         commonMistakes: [
           {
@@ -1825,6 +1853,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يعوّض بخصم مالي بدل معالجة سبب الخلل.",
             en: "Compensates with a discount instead of fixing the cause.",
           },
+          {
+            ar: "يعوّض التأخير بهدية أو خصم بدل تسهيل وصول الموكّل إلى المعلومة أصلاً.",
+            en: "Compensates for the delay with a gift or discount instead of making information easier for the client to get in the first place.",
+          },
         ],
         successCriteria: [
           {
@@ -1834,6 +1866,10 @@ export const SKILLS: SkillDef[] = [
           {
             ar: "التزم المكتب بالتواريخ الجديدة في الدورة التالية.",
             en: "The firm met the new dates in the following cycle.",
+          },
+          {
+            ar: "عدد المرات التي يضطر فيها الموكّل إلى السؤال عن وضع ملفّه تراجع.",
+            en: "The number of times the client has to ask about the status of his matter has fallen.",
           },
         ],
         evidenceRequired: [
@@ -1952,6 +1988,8 @@ export const SKILLS: SkillDef[] = [
       "src.your-brain-at-work",
       "src.small-firm-roadmap",
       "src.the-antidote",
+      "src.client-centered-law-firm",
+      "src.legal-analyst",
     ],
     confidence: 0.96,
     reviewStatus: "ai_suggested",
@@ -2045,6 +2083,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يوثّق الجواب في رسالة المتابعة.",
             en: "Records the answer in the follow-up message.",
           },
+          {
+            ar: "يشرح للموكّل أن رضاه لن يُقاس بمعيار مطلق لجودة العمل، بل بالفارق بين ما قيل له وما تحقّق فعلاً.",
+            en: "Explains to the client that his satisfaction will be judged less by an absolute quality bar than by the gap between what he was told and what actually happens.",
+          },
         ],
         commonMistakes: [
           {
@@ -2055,6 +2097,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يعوّض الرفض بمبالغة في وصف خبرة المكتب.",
             en: "Compensates for the refusal by overstating the firm's track record.",
           },
+          {
+            ar: "يصف عملاً جيدًا بلغة أكثر ثقة ممّا يمكن إثباته، فيتّسع الفارق بين الوعد والنتيجة رغم سلامة العمل نفسه.",
+            en: "Describes solid work in language more confident than the evidence supports, widening the gap between promise and result even though the work itself is sound.",
+          },
         ],
         successCriteria: [
           {
@@ -2064,6 +2110,10 @@ export const SKILLS: SkillDef[] = [
           {
             ar: "الموكّل يعرف ما التزم به المكتب بالضبط.",
             en: "The client knows exactly what the firm has committed to.",
+          },
+          {
+            ar: "لغة الجواب لا توحي بنتيجة أفضل ممّا يمكن تبريره، حتى حين يكون العمل ممتازًا.",
+            en: "The wording of the answer implies no better a result than can be justified, even when the work itself is excellent.",
           },
         ],
         evidenceRequired: [
@@ -2092,6 +2142,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يبيّن ما الذي قد يغيّر التقدير لاحقًا.",
             en: "Explains what could change the assessment later.",
           },
+          {
+            ar: "يسمّي ميل الطرفين — المحامي والموكّل كلاهما — إلى المبالغة بتقدير حظوظهما، كأحد أسباب إلحاح الموكّل على ضمانة.",
+            en: "Names both sides' tendency to overrate their own prospects — lawyer and client alike — as part of why the client is pressing for a guarantee.",
+          },
         ],
         commonMistakes: [
           {
@@ -2102,6 +2156,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يخفّف أسوأ حالة كي لا يخسر التوكيل.",
             en: "Softens the worst case so as not to lose the instruction.",
           },
+          {
+            ar: "يسمح لتفاؤله الشخصي بشأن الملف بأن يتسلّل إلى الرقم أو الاحتمال الذي يذكره للموكّل.",
+            en: "Lets his own optimism about the file leak into the figure or likelihood he states to the client.",
+          },
         ],
         successCriteria: [
           {
@@ -2111,6 +2169,10 @@ export const SKILLS: SkillDef[] = [
           {
             ar: "أقرّ الموكّل كتابيًا بعلمه بأسوأ حالة.",
             en: "The client acknowledged the worst case in writing.",
+          },
+          {
+            ar: "التقدير المذكور للموكّل مبني على وقائع الملف لا على ثقة المحامي الشخصية بقضيته.",
+            en: "The estimate given to the client rests on the facts of the file, not on the lawyer's personal confidence in his case.",
           },
         ],
         evidenceRequired: [
@@ -2139,6 +2201,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يرفض التوكيل حين يكون شرط الموكّل ضمان النتيجة.",
             en: "Declines the instruction when the client's condition is a guaranteed result.",
           },
+          {
+            ar: "لا يذكر درجة يقين أعلى ممّا تسنده الوقائع، ويطرح نقطة الضعف في الملف من تلقاء نفسه قبل أن يُسأل عنها.",
+            en: "States no higher degree of certainty than the facts support, and raises the case's weak point on his own before being asked about it.",
+          },
         ],
         commonMistakes: [
           {
@@ -2149,6 +2215,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يقبل التوكيل ويؤجّل التوضيح إلى ما بعد التوقيع.",
             en: "Accepts the instruction and defers the clarification until after signature.",
           },
+          {
+            ar: "يُخفي نقطة الضعف في الملف أملًا في ألّا يلاحظها أحد، فتُكتشف لاحقًا في وقت أسوأ.",
+            en: "Hides the case's weak point hoping nobody notices, and it surfaces later at a worse moment.",
+          },
         ],
         successCriteria: [
           {
@@ -2158,6 +2228,10 @@ export const SKILLS: SkillDef[] = [
           {
             ar: "استمرّت العلاقة أو انتهت برفض موثّق ومهني.",
             en: "The relationship continued, or ended in a documented and professional refusal.",
+          },
+          {
+            ar: "نقطة الضعف موثّقة في مراسلة مع الموكّل قبل أن يثيرها أي طرف آخر.",
+            en: "The weak point is documented in correspondence with the client before any other party raises it.",
           },
         ],
         evidenceRequired: [
@@ -2276,6 +2350,9 @@ export const SKILLS: SkillDef[] = [
       "src.rule-of-law",
       "src.68-power-moves",
       "src.game-changing-attorney",
+      "src.selling-the-invisible",
+      "src.legal-analyst",
+      "src.making-your-case",
     ],
     confidence: 0.91,
     reviewStatus: "ai_suggested",
@@ -11171,6 +11248,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يوثّق الطلب والرفض في الملف.",
             en: "Documents both the request and the refusal in the file.",
           },
+          {
+            ar: "يمتنع عن استغلال عجز الطرف الآخر العملي عن متابعة الدعوى كأنّه ميزة إجرائية مشروعة.",
+            en: "Refrains from treating the other side's practical inability to pursue the case as if it were a legitimate procedural advantage.",
+          },
         ],
         commonMistakes: [
           {
@@ -11181,6 +11262,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يحيل الطلب إلى زميل بدل رفضه.",
             en: "Passes the request to a colleague instead of refusing it.",
           },
+          {
+            ar: "يعتبر أن واجبه ينحصر في كسب الموكّل، متجاهلاً أن التزامه يمتد إلى نزاهة الإجراء أمام القضاء.",
+            en: "Treats his duty as limited to winning for the client, forgetting that it extends to the integrity of the process before the court.",
+          },
         ],
         successCriteria: [
           {
@@ -11190,6 +11275,10 @@ export const SKILLS: SkillDef[] = [
           {
             ar: "الموكّل عرف الأساس المهني للرفض.",
             en: "The client was told the professional basis for the refusal.",
+          },
+          {
+            ar: "تصرّفه أمام القضاء يحافظ على تكافؤ الفرص بين الطرفين ولو كلّفه ميزة تكتيكية.",
+            en: "His conduct before the court preserves a level playing field between the parties, even at the cost of a tactical edge.",
           },
         ],
         evidenceRequired: [
@@ -11214,6 +11303,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يوثّق تحليل الخيارات الأخلاقية لا القرار وحده.",
             en: "Documents the analysis of the ethical options, not just the decision.",
           },
+          {
+            ar: "حين يكتشف داخل علاقة مؤسّسية أمرًا مقلقًا أخلاقيًا، يثيره صراحة بدل بناء موقف يبدو مدافَعًا عنه فنّيًا لإرضاء الجهة الأعلى.",
+            en: "On discovering something ethically troubling inside an institutional relationship, raises it openly rather than constructing a position that merely sounds technically defensible to please a superior or client.",
+          },
         ],
         commonMistakes: [
           {
@@ -11224,6 +11317,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يستشير من يعرف أنه سيوافقه.",
             en: "Consults someone he knows will agree with him.",
           },
+          {
+            ar: "يصوغ حجّة تبدو سليمة فنّيًا لتبرير ما يريده الموكّل المؤسّسي أصلاً، بدل مساءلة موقف الموكّل نفسه.",
+            en: "Crafts an argument that merely sounds technically sound to justify what the institutional client already wants, instead of questioning the client's position itself.",
+          },
         ],
         successCriteria: [
           {
@@ -11233,6 +11330,10 @@ export const SKILLS: SkillDef[] = [
           {
             ar: "القرار قابل للتفسير أمام جهة مهنية.",
             en: "The decision can be explained to a professional body.",
+          },
+          {
+            ar: "المسألة أُثيرت مع صاحب القرار المناسب قبل أن تتحوّل إلى مذكّرة أو رأي نهائي.",
+            en: "The issue was raised with the appropriate decision-maker before it hardened into a memorandum or final opinion.",
           },
         ],
         evidenceRequired: [
@@ -11261,6 +11362,10 @@ export const SKILLS: SkillDef[] = [
             ar: "يدرّب الفريق على حالات رمادية واقعية.",
             en: "Trains the team on realistic grey cases.",
           },
+          {
+            ar: "يدرّب الفريق على التمييز بين حجّة قانونية سليمة وحجّة صيغت فقط لإرضاء موكّل أو رئيس مؤسّسي.",
+            en: "Trains the team to tell a genuinely sound legal argument apart from one drafted only to please an institutional client or superior.",
+          },
         ],
         commonMistakes: [
           {
@@ -11270,6 +11375,10 @@ export const SKILLS: SkillDef[] = [
           {
             ar: "يجعل التصعيد يمرّ عبر من قد يكون طرفًا في المشكلة.",
             en: "Routes escalation through the person who may be part of the problem.",
+          },
+          {
+            ar: "يترك المحامين الأحدث وحدهم أمام ضغط موكّل مؤسّسي كبير دون مرجع يستشيرونه.",
+            en: "Leaves junior lawyers alone under pressure from a large institutional client with no reference point to consult.",
           },
         ],
         successCriteria: [
@@ -11337,10 +11446,339 @@ export const SKILLS: SkillDef[] = [
         ],
       },
     ],
-    sourceIds: ["src.rule-of-law", "src.managing-professional-service-firm", "src.the-antidote", "src.ali-rise", "src.governance-raci"],
+    sourceIds: [
+      "src.rule-of-law",
+      "src.managing-professional-service-firm",
+      "src.the-antidote",
+      "src.ali-rise",
+      "src.governance-raci",
+      "src.how-to-argue-and-win",
+      "src.tools-of-argument",
+    ],
     confidence: 0.88,
     reviewStatus: "ai_suggested",
     prerequisiteSkillIds: ["skill.avoiding-guarantees"],
+  },
+  {
+    id: "skill.whole-matter-awareness",
+    domainId: "dom.professional-judgment",
+    name: { ar: "الإحاطة الكاملة بالملف", en: "Maintaining Whole-Matter Awareness" },
+    synonyms: [
+      "seeing the whole file",
+      "avoiding task-tunnel vision",
+      "الرؤية الكلية للملف",
+      "matter-level context",
+    ],
+    definition: {
+      ar: "الحفاظ على تصوّر كامل لملف الموكّل حتى حين يُكلَّف المحامي بجزء محدود منه فقط، بحيث لا يفوته ما لا يظهر إلا عند النظر إلى الملف مجتمعًا.",
+      en: "Keeping a full picture of a client's matter even when assigned only a narrow slice of it, so nothing that becomes visible only at the whole-file level gets missed.",
+    },
+    levels: [
+      {
+        level: 0,
+        definition: {
+          ar: "لم تُجمَع بعد أدلة على قدرة المتدرّب على تكوين صورة شاملة للملف حين يُكلَّف بجزء منه فقط.",
+          en: "No evidence has been collected yet on the learner's ability to hold a whole-matter picture when assigned only part of a file.",
+        },
+        observableBehaviors: [],
+        commonMistakes: [],
+        successCriteria: [],
+        evidenceRequired: [],
+      },
+      {
+        level: 1,
+        definition: {
+          ar: "يدرك أن تجزئة العمل قد تُخفي الصورة الكاملة، لكنه ينفّذ مهمّته المحدّدة دون أن يسأل عمّا حولها.",
+          en: "Recognises that splitting work into slices can hide the full picture, but carries out his own defined task without asking what surrounds it.",
+        },
+        observableBehaviors: [
+          {
+            ar: "ينفّذ المهمّة الموكلة إليه بدقّة ضمن حدودها المكتوبة.",
+            en: "Executes the assigned task accurately within its written boundaries.",
+          },
+          {
+            ar: "يسأل أحيانًا عن الغاية العامة من المهمّة دون أن يطلب الاطّلاع على الملف كاملاً.",
+            en: "Sometimes asks about the task's general purpose without asking to see the whole file.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يفترض أن من كلّفه بالمهمّة رأى الصورة الكاملة، فلا داعي لسؤاله.",
+            en: "Assumes whoever assigned the task already sees the full picture, so there is no need to ask.",
+          },
+          {
+            ar: "يعتبر حدود المهمّة المكتوبة حدود مسؤوليته الوحيدة.",
+            en: "Treats the written scope of the task as the entire boundary of his responsibility.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "المهمّة المحدّدة أُنجزت دون خطأ ضمن حدودها.",
+            en: "The defined task was completed correctly within its boundaries.",
+          },
+          {
+            ar: "طُرح سؤال واحد على الأقل عن سياق المهمّة الأوسع.",
+            en: "At least one question was asked about the task's wider context.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "تقرير ذاتي عن مهمّة نُفّذت ضمن ملف مجزّأ.",
+            en: "A self-report on a task carried out within a fragmented matter.",
+          },
+        ],
+      },
+      {
+        level: 2,
+        definition: {
+          ar: "يطلب لمحة عامة عن الملف قبل بدء مهمّته الجزئية، ليعرف أين تقع حلقته ضمن السلسلة.",
+          en: "Requests a brief overview of the matter before starting his slice of it, to know where his link sits in the chain.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يقرأ ملخّص الملف أو آخر مذكّرة قبل بدء مهمّته.",
+            en: "Reads the matter summary or the last memorandum before starting his task.",
+          },
+          {
+            ar: "يسأل عمّن يتولّى الأجزاء الأخرى من الملف.",
+            en: "Asks who is handling the other parts of the file.",
+          },
+          {
+            ar: "يلاحظ حين تبدو مهمّته منفصلة عن هدف الملف المعلن.",
+            en: "Notices when his task seems disconnected from the file's stated objective.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يكتفي بعنوان المهمّة دون قراءة أي سياق يسبقها.",
+            en: "Settles for the task's title without reading any context that precedes it.",
+          },
+          {
+            ar: "يفترض ثبات الصورة العامة للملف طوال مدّة عمله عليه.",
+            en: "Assumes the matter's overall picture stays fixed for as long as he works on it.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "ملخّص الملف قُرئ وموثّق أنه قُرئ قبل بدء المهمّة.",
+            en: "The matter summary was read, and reading it is recorded, before the task began.",
+          },
+          {
+            ar: "يعرف اسم كل من يتولّى جزءًا آخر من الملف نفسه.",
+            en: "Knows the name of everyone else handling a part of the same file.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "سجلّ اطّلاع على ملخّص الملف قبل مهمّة موثّقة.",
+            en: "A log showing the matter summary was reviewed before a documented task.",
+          },
+        ],
+      },
+      {
+        level: 3,
+        definition: {
+          ar: "يربط بين مهمّته وأجزاء أخرى من الملف فيلاحظ تناقضًا أو مؤشّرًا لا يظهر إلا عند جمع الصورة، ويصعّده.",
+          en: "Connects his task to other parts of the matter and spots an inconsistency or signal visible only once the picture is assembled, then escalates it.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يقارن معطيات مهمّته بما ورد في أجزاء سابقة من الملف.",
+            en: "Compares the facts of his task against what appeared in earlier parts of the file.",
+          },
+          {
+            ar: "يبلّغ عن تناقض بين تعليمات تلقّاها وما يظهر في مستند آخر من الملف.",
+            en: "Reports a contradiction between instructions received and what another document in the file shows.",
+          },
+          {
+            ar: "يوثّق الملاحظة العابرة للمهام قبل أن تُنسى.",
+            en: "Records the cross-task observation before it is forgotten.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يلاحظ التناقض ويكتفي بتصحيحه ضمن مهمّته دون إبلاغ أحد.",
+            en: "Notices the inconsistency and simply fixes it within his own task without telling anyone.",
+          },
+          {
+            ar: "يفترض أن التناقض مقصود لأن شخصًا أقدم راجعه.",
+            en: "Assumes the inconsistency is deliberate because someone more senior reviewed it.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "الملاحظة العابرة للمهام وصلت إلى من يملك صورة الملف الكاملة.",
+            en: "The cross-task observation reached whoever holds the full picture of the file.",
+          },
+          {
+            ar: "التصعيد وثّق أساسه بدل الاكتفاء بإشارة شفهية.",
+            en: "The escalation recorded its basis rather than relying on a verbal remark alone.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "رسالة تصعيد لتناقض لوحظ بين جزأين من الملف.",
+            en: "An escalation message for an inconsistency noticed between two parts of the file.",
+          },
+        ],
+      },
+      {
+        level: 4,
+        definition: {
+          ar: "يكتشف في ملف موزَّع على منصّة إدارة موحّدة مؤشّرًا أخلاقيًا أو استراتيجيًا لا يظهر إلا عند النظر إلى الملف كاملاً، رغم أن كل مهمّة فردية بدت سليمة.",
+          en: "Detects, in a matter spread across a standardised management platform, an ethical or strategic signal that only appears when the file is seen whole, even though every individual task looked fine on its own.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يخصّص وقتًا دوريًا لمراجعة الملف كاملاً لا مهامه المجزّأة فقط.",
+            en: "Sets aside regular time to review the whole matter, not only his own sliced-off tasks.",
+          },
+          {
+            ar: "يربط مؤشّرًا صغيرًا في مهمّته بنمط أوسع يظهر عبر عدّة مهام أخرى.",
+            en: "Links a small signal in his own task to a wider pattern showing across several other tasks.",
+          },
+          {
+            ar: "يطرح السؤال على صاحب الملف الكامل حتى حين تبدو مهمّته الفردية غير معنيّة.",
+            en: "Raises the question with whoever owns the whole file, even when his own task seems unrelated to it.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يثق بأن تقسيم المنصّة للعمل يعني بالضرورة أن أحدًا آخر يراقب الصورة الكاملة.",
+            en: "Trusts that the platform's division of work necessarily means someone else is watching the full picture.",
+          },
+          {
+            ar: "يعتبر المؤشّر تفصيلاً هامشيًا لأنه خارج حدود مهمّته المكلَّف بها.",
+            en: "Treats the signal as a minor detail because it falls outside the boundaries of his assigned task.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "الإشارة إلى المؤشّر وصلت مكتوبة إلى صاحب الملف الكامل قبل أن يفوت أوانها.",
+            en: "The signal reached whoever owns the whole file, in writing, before it was too late to act on.",
+          },
+          {
+            ar: "المراجعة الدورية للملف كاملاً موثّقة بتاريخ منتظم.",
+            en: "The periodic whole-file review is documented on a regular schedule.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "مذكّرة تصف المؤشّر الذي ظهر فقط عند جمع الملف.",
+            en: "A memorandum describing the signal that appeared only once the file was assembled.",
+          },
+          {
+            ar: "توثيق المراجعة الدورية للملف لفترة كاملة.",
+            en: "Documentation of the periodic whole-file review across a full period.",
+          },
+        ],
+      },
+      {
+        level: 5,
+        definition: {
+          ar: "يصمّم آلية مكتبية تضمن وجود صاحب ملف واحد يرى الصورة الكاملة، حتى حين تُوزَّع المهام على عدّة أشخاص أو منصّات.",
+          en: "Designs a firm mechanism that guarantees one matter owner always sees the full picture, even when tasks are distributed across several people or platforms.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يحدّد دورًا واضحًا لصاحب الملف يختلف عن أدوار منفّذي المهام الجزئية.",
+            en: "Defines a clear matter-owner role, distinct from the roles of those executing individual task slices.",
+          },
+          {
+            ar: "يفرض نقطة مراجعة دورية للملف كاملاً منفصلة عن مراجعة كل مهمّة على حدة.",
+            en: "Requires a periodic whole-file review point, separate from the review of each individual task.",
+          },
+          {
+            ar: "يقيس عدد المؤشّرات العابرة للمهام التي اكتُشفت بفضل هذه الآلية.",
+            en: "Measures how many cross-task signals were caught thanks to this mechanism.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يوزّع دور صاحب الملف بين عدّة أشخاص فيغيب مركز المسؤولية.",
+            en: "Splits the matter-owner role between several people, and accountability disappears.",
+          },
+          {
+            ar: "يكتفي بمراجعة شكلية للملف الكامل دون وقت فعلي مخصّص لها.",
+            en: "Settles for a nominal whole-file review with no real time actually set aside for it.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "كل ملف موزَّع على أكثر من شخص له صاحب ملف معلوم.",
+            en: "Every matter distributed across more than one person has a named matter owner.",
+          },
+          {
+            ar: "عدد المؤشّرات المكتشفة عبر المراجعة الدورية موثّق ومتزايد.",
+            en: "The number of signals caught through the periodic review is documented and rising.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "وثيقة الدور ومواعيد المراجعة الدورية للملف.",
+            en: "The role document and the schedule of periodic whole-file reviews.",
+          },
+          {
+            ar: "سجلّ مؤشّرات اكتُشفت خلال فصلين.",
+            en: "A log of signals caught over two quarters.",
+          },
+        ],
+      },
+      {
+        level: 6,
+        definition: {
+          ar: "يعيد النظر في طريقة تجزئة العمل نفسها عبر المكتب أو المنصّة، ويجعل الحفاظ على الصورة الكاملة معيار تصميم لا استدراكًا لاحقًا.",
+          en: "Rethinks how work is sliced up across the firm or platform in the first place, making whole-picture preservation a design criterion rather than an afterthought.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يراجع سنويًا حوادث كادت تفوت بسبب تجزئة العمل ويستخلص منها تعديلاً في طريقة التوزيع.",
+            en: "Reviews near-misses caused by task fragmentation yearly and draws a change in how work is distributed from them.",
+          },
+          {
+            ar: "يشترط أن يتضمّن أي نظام أو منصّة جديدة لإدارة الملفّات آلية إحاطة كاملة لصاحب الملف.",
+            en: "Requires that any new matter-management system or platform include a mechanism for the matter owner's full-picture visibility.",
+          },
+          {
+            ar: "يدرّب قادة الفرق على التعرّف على الملفّات المعرّضة لخطر التجزئة قبل توزيعها.",
+            en: "Trains team leads to recognise matters at risk of fragmentation before they are distributed.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يعالج كل حادثة تجزئة على حدة دون تعديل بنية التوزيع نفسها.",
+            en: "Handles each fragmentation incident individually without changing the distribution structure itself.",
+          },
+          {
+            ar: "يثق بمنصّة إدارة ملفّات جديدة دون اختبار أثرها على وضوح الصورة الكاملة.",
+            en: "Trusts a new matter-management platform without testing its effect on whole-picture clarity.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "حوادث فوات المؤشّرات بسبب التجزئة تراجعت على مدى سنة.",
+            en: "Missed-signal incidents caused by fragmentation have fallen over a year.",
+          },
+          {
+            ar: "كل منصّة أو نظام توزيع جديد يخضع لاختبار الإحاطة الكاملة قبل اعتماده.",
+            en: "Every new distribution platform or system undergoes a whole-picture test before adoption.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "تقرير المراجعة السنوي لحوادث التجزئة وتعديلاته.",
+            en: "The annual fragmentation-incident review report and its resulting changes.",
+          },
+          {
+            ar: "معيار الإحاطة الكاملة المعتمد لأي نظام توزيع جديد.",
+            en: "The adopted whole-picture criterion for any new distribution system.",
+          },
+        ],
+      },
+    ],
+    sourceIds: ["src.legal-project-management"],
+    confidence: 0.82,
+    reviewStatus: "ai_suggested",
   },
   // -------------------------------------------------------------------------
   // dom.business-development

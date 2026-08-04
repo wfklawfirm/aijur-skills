@@ -181,6 +181,7 @@ export const CC_UNITS_01_04: UnitDef[] = [
       { kind: "activity", id: "s.cc.01.a3", activityId: "act.cc.01.3", mode: "guided" },
       { kind: "activity", id: "s.cc.01.a4", activityId: "act.cc.01.4", mode: "independent" },
       { kind: "activity", id: "s.cc.01.a5", activityId: "act.cc.01.5", mode: "independent" },
+      { kind: "activity", id: "s.cc.01.a6", activityId: "act.cc.01.6", mode: "independent" },
       { kind: "summary", id: "s.cc.01.summary", summaryCardId: "card.cc.01" },
       {
         kind: "apply_tomorrow",
@@ -512,6 +513,73 @@ export const CC_UNITS_01_04: UnitDef[] = [
           en: "And what did you read on his face at the moment you asked it?",
         },
       },
+      {
+        id: "act.cc.01.6",
+        kind: "multiple_choice",
+        skillId: "skill.meeting-preparation",
+        stage: 1,
+        context: {
+          ar: [
+            "غدًا الساعة الحادية عشرة: الموكّل أحمد زايد، صاحب مصنع أثاث، يأتي لمراجعة عرض تسوية في نزاع عمالي.",
+            "اللقاء في غرفة الاجتماعات الصغيرة، ومعك عشر دقائق لترتيبها قبل دخوله.",
+          ],
+          en: [
+            "Tomorrow at eleven: the client Ahmad Zayed, who owns a furniture factory, is coming to review a settlement offer in a labour dispute.",
+            "The meeting is in the small conference room, and you have ten minutes to set it up before he arrives.",
+          ],
+        },
+        prompt: {
+          ar: "ما أفضل طريقة لترتيب الغرفة وافتتاح اللقاء؟",
+          en: "What is the best way to arrange the room and open the meeting?",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "تجلسان بزاوية على طاولة جانبية لا وجهًا لوجه عبر مكتب كبير، والأكواب على طاولة صغيرة بعيدًا عن الملف، وتفتتح بجملة ترحيب واحدة قبل أن تعلن الوقت وتبدأ.",
+              en: "You sit at an angle at a side table rather than facing each other across a large desk, cups on a small side table away from the file, and you open with one welcoming line before announcing the time and starting.",
+            },
+            correct: true,
+            rationale: {
+              ar: "الجلوس بزاوية يخفّف إحساس الاستجواب الذي يصنعه مكتب كبير بينكما، وإبعاد المشروبات عن الأوراق يحمي ملفًا قد يستغرق إعداده ساعات من انسكاب عرضي. جملة ترحيب واحدة تكفي؛ الوقت المعلن بعدها يمنح أحمد إطارًا واضحًا فورًا.",
+              en: "Sitting at an angle softens the interrogation feel a large desk creates between you, and keeping drinks off the paperwork protects a file that may have taken hours to prepare from an accidental spill. One welcoming line is enough; announcing the time right after it gives Ahmad a clear frame immediately.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "تجلسان وجهًا لوجه عبر المكتب الكبير، والملف مفتوح أمامك وكوب الشاي الساخن بجانبه مباشرة.",
+              en: "You sit facing each other across the large desk, the file open in front of you with the hot tea cup right beside it.",
+            },
+            rationale: {
+              ar: "الوضع المقابل عبر مكتب كبير يخلق مسافة رسمية تُقرأ استجوابًا لا استشارة، وكوب ساخن ملاصق للأوراق مخاطرة غير ضرورية: انسكابة واحدة تُتلف مستندات قد تكون الأصل الوحيد لديك.",
+              en: "Facing each other across a large desk creates a formal distance that reads as an interrogation rather than a consultation, and a hot cup right next to the papers is an unnecessary risk: one spill can ruin documents that may be your only original copy.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "تفتتح اللقاء بخمس دقائق من الحديث عن حركة السير والطقس قبل الانتقال إلى الموضوع، لتخفيف التوتر.",
+              en: "You open the meeting with five minutes of talk about traffic and the weather before moving to the matter, to ease the tension.",
+            },
+            rationale: {
+              ar: "أحمد جاء بمهلة زمنية محدودة وموضوع يشغل باله؛ خمس دقائق من كلام لا صلة له به لا تُريحه بل تُشعره أن وقته الثمين يُستهلك في مجاملة مؤجَّلة الفائدة. الترحيب الصادق لا يحتاج طولًا ليكون دافئًا.",
+              en: "Ahmad arrived with limited time and a matter on his mind; five minutes of unrelated talk does not relax him — it tells him his valuable time is being spent on a courtesy with no real payoff. A sincere welcome does not need length to be warm.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "تلتقيان في الردهة العامة لأن أي مكان مناسب طالما الحديث واضح.",
+              en: "You meet in the general lobby because any space works as long as the conversation is clear.",
+            },
+            rationale: {
+              ar: "نزاع عمالي يتضمّن أرقامًا وربما تفاصيل محرجة عن موظفين؛ ردهة عامة تُلغي الخصوصية التي يحتاجها أحمد ليتكلّم بصراحة، وتُشعره أن ملفه لا يستحق غرفة مغلقة.",
+              en: "A labour dispute involves figures and possibly awkward details about staff; a public lobby removes the privacy Ahmad needs to speak candidly, and tells him his file does not merit a closed room.",
+            },
+          },
+        ],
+      },
     ],
     summaryCard: {
       id: "card.cc.01",
@@ -756,6 +824,7 @@ export const CC_UNITS_01_04: UnitDef[] = [
       { kind: "activity", id: "s.cc.02.a3", activityId: "act.cc.02.3", mode: "guided" },
       { kind: "activity", id: "s.cc.02.a4", activityId: "act.cc.02.4", mode: "independent" },
       { kind: "activity", id: "s.cc.02.a5", activityId: "act.cc.02.5", mode: "independent" },
+      { kind: "activity", id: "s.cc.02.a6", activityId: "act.cc.02.6", mode: "independent" },
       { kind: "summary", id: "s.cc.02.summary", summaryCardId: "card.cc.02" },
       {
         kind: "apply_tomorrow",
@@ -1091,6 +1160,94 @@ export const CC_UNITS_01_04: UnitDef[] = [
           en: "Did you tell him? Or did you shorten what you were saying, leave, and never go back?",
         },
       },
+      {
+        id: "act.cc.02.6",
+        kind: "priority_ranking",
+        skillId: "skill.trust-building",
+        secondarySkillIds: ["skill.client-follow-up"],
+        stage: 1,
+        context: {
+          ar: [
+            "الموكّلة غنى فارس، صاحبة معرض أثاث، في نزاع مع مالك المحل حول فسخ عقد الإيجار.",
+            "هي لا تستطيع أن تحكم على جودة مذكّرتك القانونية؛ تحكم عليك من تفاصيل أخرى لا تلاحظ أنها تقيسك بها.",
+            "هذا الأسبوع: اتصلت الثلاثاء وردّ عليها المكتب الخميس. وصلتها فاتورة كُتب فيها سطر واحد: «أتعاب قانونية». وأرسلتَ رسالة متابعة بعد الجلسة بأسبوعين لا بيوم.",
+          ],
+          en: [
+            "Your client Ghina Fares, who owns a furniture showroom, is disputing a lease termination with her landlord.",
+            "She cannot judge the quality of your legal memo; she judges you on other details she does not realise she is measuring.",
+            "This week: she called on Tuesday and the office replied Thursday. Her invoice arrived with one line: “legal fees.” Your hearing follow-up went out two weeks later, not the same day.",
+          ],
+        },
+        prompt: {
+          ar: "رتّب نقاط التماس الخمس من الأقوى إشارةً على جودة عملك إلى الأضعف — أي ما يقرأه الموكّل أولًا حين لا يستطيع قراءة الملف نفسه.",
+          en: "Rank the five touchpoints from the strongest silent signal of your work’s quality to the weakest — what a client reads first when she cannot read the file itself.",
+        },
+        hint: {
+          ar: "اسأل عن كل نقطة: لو كانت هذه هي المعلومة الوحيدة التي تصل الموكّلة هذا الأسبوع، ماذا كانت لتستنتج عن مكتبك؟",
+          en: "Ask of each point: if this were the only information reaching the client this week, what would she conclude about your office?",
+        },
+        accessibleAlternative: {
+          ar: "اختر رقم الترتيب (١ إلى ٥) من قائمة منسدلة بجانب كل نقطة بدل السحب.",
+          en: "Choose the rank number (1 to 5) from a dropdown beside each point instead of dragging.",
+        },
+        items: [
+          {
+            id: "i1",
+            label: {
+              ar: "سرعة الردّ على اتصالها خلال ساعات العمل نفسها.",
+              en: "How fast her call is returned within the same business day.",
+            },
+            rationale: {
+              ar: "التأخّر يومين في الردّ يُقرأ رسالة واحدة: ملفك ليس أولوية. لا يوجد دليل يعادل غياب الردّ، فتصل الموكّلة إلى الاستنتاج الأسوأ المتاح لها.",
+              en: "A two-day delay in replying sends one message: her file is not a priority. Nothing outweighs an unanswered call, so she arrives at the worst conclusion available to her.",
+            },
+          },
+          {
+            id: "i2",
+            label: {
+              ar: "وضوح الفاتورة، وربط كل بند فيها بعمل فعلي أنجزته.",
+              en: "How clear the invoice is, with each line tied to work actually done.",
+            },
+            rationale: {
+              ar: "سطر واحد بعنوان «أتعاب قانونية» لا يثبت شيئًا، فتقيس غنى قيمة الفاتورة بحجم الرقم وحده لا بما أنجزتَه. الفاتورة المفصّلة هي الدليل الملموس الوحيد على عمل لا تراه.",
+              en: "A single line reading “legal fees” proves nothing, so she measures the invoice by the number alone, not the work behind it. An itemised invoice is the only tangible evidence of work she cannot otherwise see.",
+            },
+          },
+          {
+            id: "i3",
+            label: {
+              ar: "توقيت رسالة المتابعة بعد الجلسة، لا فحواها فقط.",
+              en: "The timing of the post-hearing follow-up, not only its content.",
+            },
+            rationale: {
+              ar: "رسالة ممتازة تصل بعد أسبوعين تُقرأ تأخيرًا مهما كان مضمونها دقيقًا. الرسالة نفسها في مساء الجلسة تُقرأ اهتمامًا. المحتوى لم يتغيّر؛ التوقيت هو ما تغيّر.",
+              en: "An excellent message arriving two weeks late reads as delay however precise its content. The same message sent that evening reads as attentiveness. The content did not change; the timing did.",
+            },
+          },
+          {
+            id: "i4",
+            label: {
+              ar: "نبرة البريد الإلكتروني في المراسلات القصيرة: رسمية أم عابرة.",
+              en: "The tone of short email exchanges: formal or offhand.",
+            },
+            rationale: {
+              ar: "إشارة حقيقية لكنها أخفّ وزنًا من الثلاث السابقة؛ نبرة عابرة تُزعج، لكنها لا تُقنع الموكّلة بأن أحدًا تجاهلها كما تفعل مكالمة لم تُردّ.",
+              en: "A real signal, but lighter than the first three; an offhand tone irritates without convincing her that she was ignored, the way an unanswered call does.",
+            },
+          },
+          {
+            id: "i5",
+            label: {
+              ar: "تصميم شعار المكتب وترويسة الرسائل الرسمية.",
+              en: "The design of the firm’s logo and letterhead.",
+            },
+            rationale: {
+              ar: "أضعف الإشارات على الإطلاق، رغم أنها ما يُنفق عليه المحامون الجدد وقتًا أكثر ممّا يستحقّ. موكّلة تنتظر ردًّا منذ ثلاثة أيام لن يواسيها شعار أنيق.",
+              en: "The weakest signal of all, despite being what junior lawyers spend more time on than it deserves. A client who has waited three days for a reply finds no comfort in an elegant logo.",
+            },
+          },
+        ],
+      },
     ],
     summaryCard: {
       id: "card.cc.02",
@@ -1170,7 +1327,12 @@ export const CC_UNITS_01_04: UnitDef[] = [
       en: "Your mind reaches the legal label after three sentences; your mouth has to wait for ten.",
     },
     primarySkillId: "skill.active-listening",
-    skillIds: ["skill.active-listening", "skill.trust-building", "skill.avoiding-guarantees"],
+    skillIds: [
+      "skill.active-listening",
+      "skill.trust-building",
+      "skill.avoiding-guarantees",
+      "skill.meeting-preparation",
+    ],
     stage: 2,
     estimatedMinutes: 10,
     steps: [
@@ -1336,6 +1498,7 @@ export const CC_UNITS_01_04: UnitDef[] = [
       { kind: "activity", id: "s.cc.03.a3", activityId: "act.cc.03.3", mode: "guided" },
       { kind: "activity", id: "s.cc.03.a4", activityId: "act.cc.03.4", mode: "independent" },
       { kind: "activity", id: "s.cc.03.a5", activityId: "act.cc.03.5", mode: "independent" },
+      { kind: "activity", id: "s.cc.03.a6", activityId: "act.cc.03.6", mode: "independent" },
       { kind: "summary", id: "s.cc.03.summary", summaryCardId: "card.cc.03" },
       {
         kind: "apply_tomorrow",
@@ -1669,6 +1832,80 @@ export const CC_UNITS_01_04: UnitDef[] = [
           ar: "ومتى ظهرت تلك الواقعة في النهاية: من فمه، أم من مستند قدّمه الخصم؟",
           en: "And where did that fact finally surface: from his own mouth, or from a document filed by the other side?",
         },
+      },
+      {
+        id: "act.cc.03.6",
+        kind: "best_response",
+        skillId: "skill.meeting-preparation",
+        secondarySkillIds: ["skill.active-listening"],
+        stage: 2,
+        context: {
+          ar: [
+            "الموعد غدًا مع الموكّلة سلمى يوسف بشأن فسخ عقد وكالة تجارية.",
+            "أرسلتَ لها مساء أمس رسالة من فقرة واحدة: ثلاثة مستندات يفيد إحضارها، وسؤال واحد لتفكّر فيه قبل اللقاء — لا كشرط للحضور، بل لتوفير وقتكما.",
+            "تدخل سلمى وتقول: «أستاذ، بصراحة لم أفتح الرسالة، كان أسبوعًا صعبًا جدًّا.»",
+          ],
+          en: [
+            "Tomorrow’s appointment is with client Salma Youssef about terminating a commercial agency contract.",
+            "Last night you sent her a one-paragraph message: three documents worth bringing, and one question to think over before the meeting — not a condition of attending, just something to save time.",
+            "Salma walks in and says: “Counsellor, honestly I never opened the message. It’s been a very hard week.”",
+          ],
+        },
+        prompt: {
+          ar: "ما أفضل ردّ في هذه اللحظة؟",
+          en: "What is the best response at this moment?",
+        },
+        hint: {
+          ar: "الرسالة كانت أداة مساعدة لا واجبًا مدرسيًّا. الردّ الذي يُشعرها بالتقصير يهدم الغرض منها قبل أن تبدأ الجلسة.",
+          en: "The message was a helping tool, not homework to be graded. A reply that makes her feel she failed defeats its purpose before the session even starts.",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "«لا مشكلة إطلاقًا. لنبدأ من حيث نحن الآن — احكي لي القصة من أولها، وسأسألك عن التفاصيل التي أحتاجها في حينها.»",
+              en: "“No problem at all. Let’s start from where we are — tell me the story from the beginning, and I’ll ask for the details I need as we go.”",
+            },
+            correct: true,
+            rationale: {
+              ar: "يمتصّ الموقف في جملة ويعيد اللقاء إلى مساره المعتاد فورًا. الرسالة كانت لتوفير وقت لو سنحت الفرصة؛ غيابها لا يُلغي اللقاء، بل يُعيده إلى أسلوب السؤال المفتوح المعتاد.",
+              en: "It absorbs the moment in one line and puts the meeting straight back on its normal track. The message was meant to save time if the chance arose; its absence does not derail the meeting — it just returns it to the usual open-question approach.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "«كنت آمل أن تجدي وقتًا لها، فيها معلومات كانت ستوفّر علينا الكثير اليوم.»",
+              en: "“I was hoping you’d find time for it — it had information that would have saved us a lot today.”",
+            },
+            rationale: {
+              ar: "يبدو بريئًا لكنه توبيخ مغلّف. سلمى أتت من أسبوع صعب لتحكي عن نزاع يقلقها، لا لتُقيَّم على واجب لم تُنجزه؛ هذه الجملة تجعلها تدخل الجلسة بشعور تقصير قبل أن تنطق بجملة عن قضيتها.",
+              en: "It sounds gentle but is a rebuke in disguise. Salma came out of a hard week to talk about a dispute worrying her, not to be graded on unfinished homework; this line has her enter the session already feeling she failed, before she has said a word about her case.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "«حسنًا، خذي خمس دقائق الآن واقرئيها هنا قبل أن نبدأ.»",
+              en: "“All right, take five minutes now and read it here before we start.”",
+            },
+            rationale: {
+              ar: "يحوّل أداة مساعدة إلى شرط دخول، ويستهلك دقائق من لقاء محدود المدة أصلًا في قراءة صامتة بدل الاستماع إليها. لو كانت الرسالة ضرورية فعلًا، مكانها أن تُطرح شفهيًا في أول دقيقتين، لا واجبًا يُفرض داخل الغرفة.",
+              en: "It turns a helping tool into an entry requirement, and burns minutes of an already limited meeting on silent reading instead of listening to her. If the message truly mattered, it should be raised verbally in the first two minutes, not imposed as homework inside the room.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "تفترض أن عدم قراءتها يعني أنها لا تهتمّ بملفها فعلًا، وتُعامل باقي اللقاء بحذر أكبر.",
+              en: "You assume that not reading it means she does not really care about her file, and you treat the rest of the meeting with extra caution.",
+            },
+            rationale: {
+              ar: "استنتاج غير مبرَّر من واقعة واحدة لا تعرف سببها الحقيقي — أسبوع صعب قد يعني أزمة عائلية أو عملًا مرهقًا، لا لا مبالاة. الحذر المبني على هذا الافتراض يُغيّر نبرتك دون أن تدري، وستلاحظ هي الفرق دون أن تعرف سببه.",
+              en: "An unwarranted inference from a single fact whose real cause you do not know — a hard week could mean a family crisis or a punishing workload, not indifference. Caution built on that assumption changes your tone without your noticing, and she will sense the difference without knowing why.",
+            },
+          },
+        ],
       },
     ],
     summaryCard: {

@@ -427,7 +427,6 @@ export const en: Dictionary = {
       "We send what you write in exercises and simulations to an AI provider for assessment only. Your data is never used to train any model. You can withdraw consent at any time, and assessment falls back to the local engine.",
     consentGiven: "Granted",
     consentWithheld: "Not granted",
-    exportData: "Export my data",
     deleteAccount: "Delete account",
     deleteBody: "Permanently deletes your account and all your performance evidence.",
     organization: "Organisation",

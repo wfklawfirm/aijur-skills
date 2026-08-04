@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { DEMO_STORAGE_STATE } from "./global-setup";
+import { freshEmail } from "./helpers";
 
 /**
  * Verifies that a real, already-onboarded learner can see authored content
@@ -239,4 +240,95 @@ test.describe("Authenticated learner content", () => {
       await expect(page.getByRole("button").first()).toBeVisible();
     });
   }
+});
+
+/**
+ * Regression test for a real bug: `<StepView>` (unit-player.tsx, rendered
+ * per unit step including each activity) was missing a `key` prop. When a
+ * unit advanced from one `activity` step straight into another `activity`
+ * step, React reused the same `ActivityStepView` -> `ActivityPlayer`
+ * component instance instead of remounting it, so the *previous* activity's
+ * local `submitted`/`grade` state -- its verdict banner and its
+ * disabled/revealed option list -- visually leaked into the next activity
+ * before the learner had touched it. Fixed by `<StepView key={step.id} .../>`.
+ *
+ * `unit.da.02` (content/paths/da-units-01-05.ts) has two consecutive,
+ * choice-based activity steps right after its intro content, with nothing
+ * (no simulation) between them: `act.da.02.1` (multiple_choice) then
+ * `act.da.02.2` (find_mistake) -- exactly the transition this bug hit.
+ *
+ * Deliberately does *not* use `DEMO_STORAGE_STATE`: this test submits a real
+ * answer and advances real step progress via `saveUnitStep()`, which
+ * persists `unitProgress.stepIndex` per user+unit in the DB. `startUnit()`
+ * only initialises that to 0 on a brand-new row (see its doc comment in
+ * src/lib/actions/progress.ts), so reusing the shared demo account would
+ * make a second run of this test resume mid-unit instead of at step 0, and
+ * the fixed number of "Continue" clicks below would land on the wrong step.
+ * A fresh throwaway account (as signup-onboarding.spec.ts already does for
+ * the same reason) sidesteps that entirely.
+ */
+test.describe("Activity step transitions", () => {
+  test("answering one activity does not leak its verdict/state into the next activity step", async ({ page }) => {
+    const email = freshEmail("e2e-activity-transition");
+    await page.goto("/en/sign-up");
+    await page.locator('input[name="name"]').fill("E2E Activity Transition");
+    await page.locator('input[name="email"]').fill(email);
+    await page.locator('input[name="password"]').fill("CorrectHorseBattery9!");
+    await page.getByRole("button", { name: "Create my account" }).click();
+    await page.waitForURL(/\/en\/onboarding$/, { timeout: 10_000 });
+
+    // The unit page is only gated on being signed in (getSessionUser()), not
+    // on having completed onboarding -- go straight to the real unit.
+    await page.goto("/en/unit/unit.da.02");
+    await expect(page.locator("main")).toBeVisible();
+
+    // Six non-activity steps precede the first activity: hook,
+    // why_it_matters, learning_goal, micro_lesson, visual, worked_example.
+    for (let i = 0; i < 6; i++) {
+      await page.getByRole("button", { name: "Continue" }).click();
+    }
+
+    // First activity (act.da.02.1, multiple_choice): "What's the right move?"
+    await expect(page.getByText("What's the right move?")).toBeVisible();
+    await page.getByRole("button", { name: /Rely on your written notes or memory for the call/ }).click();
+    await page.getByRole("button", { name: "Check" }).click();
+
+    // Real, local grading fires immediately (gradeActivity()) -- the correct
+    // option was chosen, so the verdict Callout's title reads "Correct".
+    // Scoped to the Callout's own title paragraph (`feedback.tsx`'s
+    // `Callout`) rather than a bare text match: "Correct" also appears as a
+    // screen-reader-only per-option label and inside the revealed rationale
+    // once submitted, so a plain `getByText("Correct")` matches several
+    // elements here.
+    const verdictTitle = page.locator("p.font-semibold.leading-tight");
+    await expect(verdictTitle.filter({ hasText: "Correct" })).toBeVisible();
+    await page.getByRole("button", { name: "Continue" }).click();
+
+    // Second activity (act.da.02.2, find_mistake): must render as a
+    // genuinely fresh, unanswered question.
+    await expect(page.getByText("What's the core mistake here?")).toBeVisible();
+
+    // No stale verdict banner (or per-option "Correct"/"Incorrect" labels,
+    // or revealed rationale) carried over from the first activity -- on a
+    // truly fresh render none of this text should exist anywhere on the
+    // page at all.
+    await expect(page.getByText("Correct")).toHaveCount(0);
+    await expect(page.getByText("Not the strongest")).toHaveCount(0);
+    await expect(page.getByText("Partly right")).toHaveCount(0);
+
+    // The footer shows "Check" (unsubmitted), not "Continue" -- proof this
+    // activity's own `submitted` state is false, not inherited from the last
+    // one.
+    await expect(page.getByRole("button", { name: "Check" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Continue" })).not.toBeVisible();
+
+    // Its own options are enabled and unselected, not disabled/revealed
+    // leftovers from the first activity's submission.
+    const secondOption = page.getByRole("button", {
+      name: /She pasted the real client's name, amount, and dispute details/,
+    });
+    await expect(secondOption).toBeVisible();
+    await expect(secondOption).toBeEnabled();
+    await expect(secondOption).toHaveAttribute("aria-pressed", "false");
+  });
 });

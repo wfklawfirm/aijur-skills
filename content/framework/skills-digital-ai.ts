@@ -936,4 +936,302 @@ export const DIGITAL_AI_SKILLS: SkillDef[] = [
     reviewStatus: "ai_suggested",
     prerequisiteSkillIds: ["skill.responsible-ai-use"],
   },
+  {
+    id: "skill.ai-collaborative-partner",
+    domainId: "dom.digital-ai",
+    name: {
+      ar: "التعاون الذكي مع أدوات الذكاء الاصطناعي",
+      en: "Working With AI as a Collaborative Partner",
+    },
+    synonyms: [
+      "AI task allocation",
+      "human-AI division of labor",
+      "knowing what to delegate to AI",
+      "AI as force multiplier",
+      "تقسيم العمل مع الذكاء الاصطناعي",
+    ],
+    definition: {
+      ar: "تصميم تقسيم عمل واعٍ بين المحامي وأدوات الذكاء الاصطناعي: تكليف الأداة بما تُتقنه من سرعة وحجم ومطابقة أنماط، والاحتفاظ شخصيًا بإدارة العلاقة مع الموكّل والتوليف الإبداعي والمسؤولية المهنية النهائية عن كل ما يصدر — إلى جانب التحقّق من كل ما تنتجه الأداة، لا بدلًا منه.",
+      en: "Designing a deliberate division of labor between the lawyer and AI tools: handing the tool the work that rewards speed, scale and pattern-matching, while personally keeping client-relationship management, creative synthesis and final professional accountability for everything that goes out — alongside verifying whatever the tool produces, not instead of it.",
+    },
+    levels: [
+      {
+        level: 0,
+        definition: {
+          ar: "لم تُجمَع بعد أدلة على قدرة المتدرّب على تقسيم العمل بذكاء بينه وبين أدوات الذكاء الاصطناعي.",
+          en: "No evidence has been collected yet on the learner's ability to divide work deliberately between himself and AI tools.",
+        },
+        observableBehaviors: [],
+        commonMistakes: [],
+        successCriteria: [],
+        evidenceRequired: [],
+      },
+      {
+        level: 1,
+        definition: {
+          ar: "يستخدم الذكاء الاصطناعي أو يتجاهله حسب رد فعل اللحظة لا حسب تفكير في طبيعة المهمّة، فيسند إليه أحيانًا ما يحتاج حكمًا شخصيًا، وينجز يدويًا في أحيان أخرى ما كانت الأداة لتُنجزه أسرع.",
+          en: "Uses or avoids AI by momentary reflex rather than by thinking about what the task actually needs — sometimes handing it work that calls for personal judgment, other times doing by hand what the tool could finish faster.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يطلب من الأداة صياغة كامل رسالة اعتذار لموكّل غاضب من تأخّر التسليم، ويرسلها كما هي دون أن يتّصل به شخصيًا.",
+            en: "Asks the tool to draft an entire apology email to a client angry about a late delivery, and sends it almost unchanged instead of calling the client himself.",
+          },
+          {
+            ar: "يعيد كتابة نموذج بند فسخ إيجار متكرر يدويًا في كل مرة رغم وجود أداة معتمدة تنجزه في ثوانٍ.",
+            en: "Manually retypes a recurring lease-termination clause every time, even though an approved tool could produce it in seconds.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يتعامل مع المهمّة كوحدة واحدة يُسندها كلّها للأداة أو يُنجزها كلّها بنفسه، دون تقسيمها.",
+            en: "Treats a task as one indivisible block — all to the tool or all by hand — instead of splitting it.",
+          },
+          {
+            ar: "يظن أن الوقت الذي توفّره الأداة في جزء من العمل لا يُستثمر في الجزء الذي يحتاج انتباهه الشخصي.",
+            en: "Assumes time the tool saves on one part of the work isn't meant to be reinvested in the part that needs his personal attention.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "يقرّ حين يُسأل بأن بعض المهام تناسب الأداة وبعضها لا يناسبها.",
+            en: "Acknowledges when asked that some tasks suit the tool and others don't.",
+          },
+          {
+            ar: "لم يُسند بعد للأداة مهمّة كاملة تتطلّب إدارة علاقة مع موكّل من أولها لآخرها.",
+            en: "Has not yet handed the tool an entire task that requires managing a client relationship start to finish.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "مثال على قرار استخدام غير متّسق: مهمّة أُسندت للأداة كاملة كان يجب الاحتفاظ بجزء منها، أو مهمّة أُنجزت يدويًا بالكامل كانت الأداة لتسرّعها.",
+            en: "An example of an inconsistent use decision — a task fully handed to the tool that needed a human part kept back, or a fully manual task the tool could have sped up.",
+          },
+        ],
+      },
+      {
+        level: 2,
+        definition: {
+          ar: "يبدأ بتقسيم المهمّة الواحدة فعليًا إلى جزء يناسب سرعة الأداة وحجمها ومطابقة الأنماط فيها، وجزء يحتاج حكمًا شخصيًا أو علاقة مباشرة مع الموكّل — لكنّ التقسيم لا يكون دائمًا في مكانه الصحيح.",
+          en: "Begins actually splitting a single task into a part suited to the tool's speed, scale and pattern-matching, and a part that needs personal judgment or a direct client relationship — but the split isn't always drawn in the right place.",
+        },
+        observableBehaviors: [
+          {
+            ar: "في مراجعة عناية واجبة لأربعين عقدًا، يكلّف الأداة بفرز البنود القياسية سريعًا، ويراجع بنفسه البنود التي وسمتها الأداة كخطر، ويكتب ملخّص المخاطر للموكّل شخصيًا.",
+            en: "In a due-diligence review of forty contracts, has the tool do the fast first-pass flagging of standard clauses, but reviews the flagged risk items himself and writes the client-facing risk summary personally.",
+          },
+          {
+            ar: "في خطاب إنهاء خدمة موظف، يصوغ الفقرات الحسّاسة بنفسه أولًا، ثم يطلب من الأداة مراجعة الاتساق في الصياغة والتنسيق فقط.",
+            en: "For an employee-termination letter, drafts the sensitive paragraphs himself first, then asks the tool only to check consistency of wording and formatting.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يسند أحيانًا للأداة الحكم على درجة الخطورة نفسها لا مجرّد فرز الأنماط الأولي.",
+            en: "Sometimes hands the tool the actual risk judgment itself, not just the initial pattern-sorting.",
+          },
+          {
+            ar: "يقضي وقتًا في صياغة نموذج متكرّر كانت الأداة لتنتجه بالسرعة نفسها، فيهدر الوقت الذي وفّره في مكان آخر.",
+            en: "Spends time drafting a recurring template the tool could produce just as fast, wasting the time saved elsewhere.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "أغلب حالات التقسيم في العيّنة المراجَعة تفصل بشكل صحيح بين العمل الآلي والعمل الذي يحتاج حكمًا.",
+            en: "Most split-work cases in the reviewed sample correctly separate mechanical work from work that needs judgment.",
+          },
+          {
+            ar: "المهمّة التي تتطلّب إدارة علاقة أو مسؤولية مباشرة بقيت بيد المحامي.",
+            en: "The task requiring relationship management or direct accountability stayed with the lawyer.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "مثال على مهمّة مقسَّمة فعليًا مع نتاج كل جزء منها — ما أنتجته الأداة وما أنجزه المحامي شخصيًا.",
+            en: "An example of an actually split task with the output of each half — what the tool produced and what the lawyer did personally.",
+          },
+        ],
+      },
+      {
+        level: 3,
+        definition: {
+          ar: "يطبّق طريقة عمل ثابتة: يقرّر تقسيم العمل قبل البدء بالصياغة لا أثناءها، ويطبّق القرار باتساق عبر ملفّات مختلفة، ويعيد التوزيع إذا تبيّن أثناء العمل أن جزءًا أُسند خطأً للأداة.",
+          en: "Applies a repeatable method: decides the division of labor before starting to draft, not partway through, applies the decision consistently across different matters, and reallocates a part if it turns out mid-task that it was wrongly handed to the tool.",
+        },
+        observableBehaviors: [
+          {
+            ar: "قبل البدء بدفعة من إشعارات شيكات مرتجعة، يقرّر مسبقًا: تصوغ الأداة رسائل المطالبة الأولى القياسية، ويتولّى هو شخصيًا كل مكالمة مع الموكّلين وأي تسوية تُتَّفق عليها.",
+            en: "Before starting a batch of bounced-cheque notices, decides upfront: the tool drafts the standard initial demand letters, while he personally handles every client call and any negotiated settlement.",
+          },
+          {
+            ar: "في منتصف صياغة بند علاقات الشركاء في عقد تأسيس شركة عائلية، يلاحظ أن البند يحتاج فهمًا دقيقًا لديناميكيات العائلة، فيسحبه من الأداة ويكمله بنفسه.",
+            en: "Midway through drafting a shareholder-relations clause in a family company-formation agreement, notices the clause needs a fine reading of family dynamics, and takes it back from the tool to finish himself.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يقرّر تقسيم العمل مرة واحدة لكل نوع ملف، لا حسب مضمون كل مهمّة فعليًا.",
+            en: "Decides the division of labor once per matter type instead of based on what each actual task requires.",
+          },
+          {
+            ar: "لا يستطيع تبرير سبب التقسيم حين يُسأل عنه، فيبدو القرار عشوائيًا.",
+            en: "Can't explain the reason for the split when asked, so the decision looks arbitrary.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "قرار تقسيم العمل مُدوَّن أو معلَن قبل بدء العمل الفعلي.",
+            en: "The division-of-labor decision is documented or stated before the actual work begins.",
+          },
+          {
+            ar: "أعاد توزيع جزء من العمل حين تبيّن أنه يحتاج حكمًا أكبر مما كان متوقَّعًا.",
+            en: "Reallocated part of the work when it turned out to need more judgment than expected.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "خطة تقسيم عمل مُعلنة لملف حقيقي، مع مثال موثَّق واحد على إعادة توزيع أثناء العمل.",
+            en: "A stated division-of-labor plan for a real matter, plus one documented mid-task reallocation.",
+          },
+        ],
+      },
+      {
+        level: 4,
+        definition: {
+          ar: "يشرح تقسيم العمل بوضوح لموكّل أو مشرف حين يُسأل — لماذا أُسند جزء للأداة ولماذا احتُفظ بجزء آخر شخصيًا — دون أن يبالغ في موثوقية الأداة أو يقلّل من مسؤوليته هو عن كل ما يصدر.",
+          en: "Explains the division of labor plainly to a client or supervisor when asked — why a part went to the tool and why another part was kept personally — without overstating the tool's reliability or understating his own responsibility for everything that goes out.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يوضّح لموكّل أن المسودة الأولى لاتفاقية عدم إفصاح قياسية أُعدّت بمساعدة الأداة توفيرًا للوقت، لكنه راجع كل بند فيها ويبقى مسؤولًا عنها بالكامل.",
+            en: "Explains to a client that the first draft of a standard NDA was AI-assisted for speed, but that he personally reviewed every clause and remains fully responsible for it.",
+          },
+          {
+            ar: "يشرح للشريك المشرف سبب استعانته بالأداة لتلخيص مئتي صفحة من مستندات الكشف، مقابل توليه شخصيًا إعداد أسئلة الاستجواب.",
+            en: "Explains to the supervising partner why he used the tool to summarize two hundred pages of discovery documents, versus personally preparing the deposition questions.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يُبرز الجزء الذي أنجزته الأداة ليبدو أسرع، ويقلّل من ذكر مراجعته الشخصية.",
+            en: "Highlights the part the tool did to look faster, and downplays mentioning his own review.",
+          },
+          {
+            ar: "يشرح تقسيم العمل مرة واحدة ثم يطبّقه على ملفات لاحقة مشابهة دون مراجعته من جديد.",
+            en: "Explains the division of labor once, then applies it to similar later matters without revisiting it.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "الموكّل أو المشرف قادر على إعادة ذكر ما أنجزته الأداة وما أنجزه المحامي بدقة بعد الشرح.",
+            en: "The client or supervisor can accurately repeat what the tool did and what the lawyer did after the explanation.",
+          },
+          {
+            ar: "الشرح لا يوحي بموثوقية غير مشروطة للأداة ولا يقلّل من مسؤولية المحامي الشخصية.",
+            en: "The explanation neither implies unconditional trust in the tool nor understates the lawyer's personal responsibility.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "شرح موثَّق قُدِّم لموكّل أو مشرف عن تقسيم عمل فعلي في ملف حقيقي.",
+            en: "A documented explanation given to a client or supervisor about an actual division of labor on a real matter.",
+          },
+        ],
+      },
+      {
+        level: 5,
+        definition: {
+          ar: "يصمّم تقسيم العمل لنوع ملف كامل أو لسير عمل فريق، لا لمهمّة واحدة فقط، ويختبره في مقابل ما يحدث فعليًا، ويعدّله حين تتغيّر قدرات الأداة أو تركيبة الفريق — مع إبقاء ممارسات التحقّق والإفصاح مرتبطة بكل جزء يُسند للأداة.",
+          en: "Designs the division of labor for an entire matter type or a team's workflow, not just one task, tests it against what actually happens, and adjusts it as the tool's capability or the team changes — while keeping verification and disclosure practices tied to whatever gets delegated.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يقترح على الفريق تقسيمًا موحّدًا لملفات نزاعات عقود المقاولين: تصوغ الأداة الملخّص الأولي للمطالبات، ويتولّى المحامي المسؤول التحقّق من كل رقم والتفاوض مع الطرف الآخر.",
+            en: "Proposes a standard split to the team for contractor-payment dispute matters: the tool drafts the initial claims summary, while the responsible lawyer verifies every figure and handles negotiation with the other side.",
+          },
+          {
+            ar: "يلاحظ أن متدرّبين يتركون الأداة تحدّد لهجة رسائل الموكّلين بالكامل، فيعيد تدريبهم على إبقاء قرار اللهجة بأيديهم واستخدام الأداة للتنسيق فقط.",
+            en: "Notices trainees letting the tool decide client-email tone entirely, and retrains them to keep the tone decision themselves while using the tool only for formatting.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يصمّم سير العمل دون ربطه بإجراءات التحقّق والإفصاح المعتمدة في المكتب، فتنشأ فجوة.",
+            en: "Designs the workflow without linking it to the firm's adopted verification and disclosure procedures, leaving a gap.",
+          },
+          {
+            ar: "يترك سير العمل ثابتًا دون مراجعة رغم تغيّر قدرات الأداة المستخدمة.",
+            en: "Leaves the workflow unchanged without review even as the tool's capabilities change.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "تقسيم العمل على مستوى سير العمل معتمد ومطبَّق في أكثر من ملف من النوع نفسه.",
+            en: "The workflow-level division of labor is adopted and applied across more than one matter of the same type.",
+          },
+          {
+            ar: "نقاط التحقّق مرتبطة فعليًا بكل جزء من العمل مُسند للأداة ضمن سير العمل.",
+            en: "Verification checkpoints are genuinely attached to every part of the work delegated to the tool within the workflow.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "وثيقة تقسيم عمل لنوع ملف كامل تتضمّن نقاط التحقّق، مع مثال موثَّق على تعديلها بعد المراجعة.",
+            en: "A division-of-labor document for a full matter type that includes verification checkpoints, with a documented example of it being revised after review.",
+          },
+        ],
+      },
+      {
+        level: 6,
+        definition: {
+          ar: "يضع للمكتب برنامج تدريب أو سياسة توضح كيفية تقسيم العمل القانوني بين المحامي والذكاء الاصطناعي — تعليم المتدرّبين تمييز المهام الآمنة للتفويض عن المهام التي يجب أن تبقى بحكم بشري — مع تأكيد صريح أن هذا التقسيم لا يخفّف مسؤولية المحامي الفردية عن أي شيء يصدر.",
+          en: "Establishes a firm-wide training program or policy explaining how to divide legal work between lawyer and AI — teaching trainees to distinguish tasks safe to delegate from tasks that must stay with human judgment — with an explicit statement that this division never reduces the individual lawyer's responsibility for anything that goes out.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يقود جلسة تدريب للمحامين الجدد حول كيفية تقرير، مهمّة بمهمّة، ما يُسند للأداة وما يُحتفظ به، مستخدمًا أمثلة حقيقية من عمل المكتب.",
+            en: "Leads a training session for new lawyers on how to decide, task by task, what to hand to AI and what to keep, using real examples from the firm's work.",
+          },
+          {
+            ar: "يكتب دليلًا للمكتب يقرن كل نوع مهمّة تناسب الأداة بتذكير صريح بأن المحامي يبقى مسؤولًا عنها كاملة، ويُعتمد عبر الأقسام.",
+            en: "Writes a firm guideline pairing each task type suited to the tool with an explicit reminder that the lawyer remains fully responsible for it, adopted across departments.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يعلّم تقسيم العمل كوسيلة لزيادة الكفاءة فقط، دون ربطه بواجب التحقّق والإفصاح الذي يبقى قائمًا على كل ما يُسند للأداة.",
+            en: "Teaches the division of labor purely as an efficiency technique, without tying it to the verification and disclosure duty that still applies to everything delegated.",
+          },
+          {
+            ar: "يضع دليلًا واحدًا ثابتًا ولا يحدّثه مع تطوّر قدرات الأداة، فيتبع الفريق تقسيمًا قديمًا.",
+            en: "Sets a single fixed guideline and never updates it as the tool's capabilities evolve, leaving the team following an outdated split.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "برنامج التدريب أو الدليل معتمد رسميًا ومطبَّق عبر المكتب.",
+            en: "The training program or guideline is formally adopted and applied across the firm.",
+          },
+          {
+            ar: "المتدرّبون يطبّقون تقسيمًا صحيحًا على مهام جديدة بعد التدريب، مع بقاء التحقّق خطوة إلزامية.",
+            en: "Trainees apply a correct division on new tasks after training, with verification remaining a mandatory step.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "الدليل أو مادة التدريب المعتمدة، مع دليل على تطبيق المتدرّبين الصحيح له.",
+            en: "The adopted guideline or training material, with evidence of trainees applying it correctly.",
+          },
+          {
+            ar: "ربط صريح موثَّق بين تقسيم العمل وواجب التحقّق والإفصاح القائم أصلًا.",
+            en: "An explicit documented link between the division of labor and the pre-existing verification and disclosure duty.",
+          },
+        ],
+      },
+    ],
+    sourceIds: ["src.smarter-collaboration"],
+    confidence: 0.8,
+    reviewStatus: "ai_suggested",
+    prerequisiteSkillIds: ["skill.responsible-ai-use"],
+  },
 ];

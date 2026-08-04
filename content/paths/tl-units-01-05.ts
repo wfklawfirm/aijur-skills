@@ -179,6 +179,7 @@ export const TL_UNITS_01_05: UnitDef[] = [
       { kind: "activity", id: "s.tl.01.a3", activityId: "act.tl.01.3", mode: "guided" },
       { kind: "activity", id: "s.tl.01.a4", activityId: "act.tl.01.4", mode: "independent" },
       { kind: "activity", id: "s.tl.01.a5", activityId: "act.tl.01.5", mode: "independent" },
+      { kind: "activity", id: "s.tl.01.a6", activityId: "act.tl.01.6", mode: "independent" },
       { kind: "summary", id: "s.tl.01.summary", summaryCardId: "card.tl.01" },
       {
         kind: "apply_tomorrow",
@@ -460,6 +461,73 @@ export const TL_UNITS_01_05: UnitDef[] = [
           ar: "لو طبقت الأسئلة الثلاثة وقتها، من كنت لتختار بدلاً منه؟",
           en: "Had you applied the three questions then, who would you have chosen instead?",
         },
+      },
+      {
+        id: "act.tl.01.6",
+        kind: "best_response",
+        skillId: "skill.delegation",
+        stage: 1,
+        context: {
+          ar: [
+            "الأستاذة ريم عودة، شريكة في مكتب تجاري متوسط الحجم، تراجع بنفسها كل عقد قبل إرساله للعملاء، حتى تلك التي يصوغها محامون بخبرة خمس سنوات.",
+            "حين اقترحت زميلتها أن تُسند المراجعة النهائية لمحامٍ أقدم، أجابت ريم: «أنا التي أعرف بالضبط الصياغة التي اعتاد عليها عملاؤنا. لو خرجت بدوني، لن تصل لنفس المستوى.»",
+          ],
+          en: [
+            "Partner Reem Oudeh, at a mid-sized commercial firm, personally reviews every contract before it goes to clients — even ones drafted by lawyers with five years' experience.",
+            "When a colleague suggested handing final review to a senior associate, Reem said: \"I'm the one who knows exactly the phrasing our clients expect. If it went out without me, it wouldn't reach the same level.\"",
+          ],
+        },
+        prompt: {
+          ar: "أي رد داخلي يعالج فعلاً السبب الذي يجعل ريم تتمسك بهذه المراجعة؟",
+          en: "Which internal response actually addresses the real reason Reem is holding onto this review?",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "«المعيار الذي أريده ليس شيئاً في رأسي فقط؛ لو حوّلته إلى نموذج مراجعة مكتوب ودرّبت عليه محامياً واحداً، سيصبح قادراً على تحقيقه دون أن أكون حاضرة في كل مرة.»",
+              en: "\"The standard I want isn't just in my head. If I turn it into a written review checklist and train one lawyer on it, they'll be able to meet it without me present every time.\"",
+            },
+            correct: true,
+            rationale: {
+              ar: "يعالج السبب الحقيقي: خوف ريم من أن النتيجة لن تطابق معيارها الشخصي. يحوّل معياراً ضمنياً إلى أداة قابلة للتعليم، فيزول سبب تمسكها لا مجرد تأجيله.",
+              en: "Addresses the real reason: Reem's fear that the result won't match her own standard. It turns an implicit standard into a teachable tool, so the reason she's holding on actually dissolves rather than just being postponed.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "«سأخبر العملاء أن فريق المكتب بأكمله يعمل على ملفاتهم، حتى يُنسب الفضل للجميع لا لي وحدي.»",
+              en: "\"I'll tell clients the whole firm team works on their files, so the credit goes to everyone, not just me.\"",
+            },
+            rationale: {
+              ar: "يعالج الخوف من فقدان الفضل، وهو سبب مختلف لم تذكره ريم؛ ما قالته فعلاً هو قلقها بشأن مستوى الصياغة لا نسب الفضل، فهذا الرد لا يلامس تمسكها الحقيقي.",
+              en: "Addresses fear of losing credit — a different reason Reem never raised. What she actually said was a worry about drafting quality, not credit, so this response never touches her real block.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "«سأراجعها بنفسي هذه المرة فقط، لأن شرح كل تفصيل من معياري للمحامي الأقدم سيستغرق وقتاً أطول من مراجعتها بنفسي.»",
+              en: "\"I'll review it myself just this once, since explaining every detail of my standard to the senior associate would take longer than reviewing it myself.\"",
+            },
+            rationale: {
+              ar: "يستسلم للتمسك بدل معالجته، ويفترض سبباً - ضيق الوقت - لم يظهر في كلام ريم؛ ريم تحدثت عن مستوى الصياغة لا عن الوقت اللازم للشرح.",
+              en: "Surrenders to the resistance instead of countering it, and assumes a reason — time pressure — that never appears in what Reem said; she spoke about drafting quality, not the time explanation would cost.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "«سأحاول أن أثق بفريقي أكثر في المرة القادمة.»",
+              en: "\"I'll try to trust my team more next time.\"",
+            },
+            rationale: {
+              ar: "نية عامة بلا أداة أو خطوة ملموسة؛ لا تغيّر شيئاً فعلياً في المرة القادمة التي يظهر فيها القلق نفسه بشأن مستوى الصياغة.",
+              en: "A general intention with no concrete tool or step; it changes nothing the next time the same worry about drafting quality resurfaces.",
+            },
+          },
+        ],
       },
     ],
     summaryCard: {

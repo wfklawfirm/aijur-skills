@@ -911,4 +911,592 @@ export const FIRM_OPERATIONS_SKILLS: SkillDef[] = [
     reviewStatus: "ai_suggested",
     prerequisiteSkillIds: ["skill.knowledge-management"],
   },
+  {
+    id: "skill.service-productization",
+    domainId: "dom.firm-operations",
+    name: { ar: "تحويل الخدمة المتكرّرة إلى منتج ثابت", en: "Productizing a Recurring Service" },
+    synonyms: [
+      "fixed-scope offering",
+      "packaged service",
+      "flat-fee service design",
+      "خدمة معلَّبة بسعر ثابت",
+    ],
+    definition: {
+      ar: "أخذ نوع خدمة يقدّمه المكتب مرارًا، وتحويله إلى عرض له اسم ونطاق ثابت وسعر محدَّد وسلسلة خطوات موثَّقة يستطيع أي محامٍ في الفريق تنفيذها، بدل تفصيل النطاق والسعر من الصفر في كل مرّة.",
+      en: "Taking a service type the firm delivers repeatedly and turning it into a named offering with a fixed scope, a set price and a documented step sequence any lawyer on the team can execute, instead of re-scoping and re-pricing it from scratch each time.",
+    },
+    levels: [
+      {
+        level: 0,
+        definition: {
+          ar: "لم تُجمَع بعد أدلة على قدرة المتدرّب على تحويل خدمة متكرّرة إلى عرض ثابت.",
+          en: "No evidence has been collected yet on the learner's ability to turn a recurring service into a fixed offering.",
+        },
+        observableBehaviors: [],
+        commonMistakes: [],
+        successCriteria: [],
+        evidenceRequired: [],
+      },
+      {
+        level: 1,
+        definition: {
+          ar: "يقدّم الخدمة نفسها مرارًا لكن يعيد تسعيرها ووصفها من الصفر مع كل موكّل جديد.",
+          en: "Delivers the same service repeatedly but re-prices and re-describes it from scratch with each new client.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يكتب عرض أتعاب مختلف الصياغة لكل موكّل يطلب مراجعة عقد إيجار تجاري، رغم أن الخطوات متشابهة في كل مرّة.",
+            en: "Writes a differently worded fee proposal for every client requesting a commercial lease review, even though the steps are similar each time.",
+          },
+          {
+            ar: "يقدّر الوقت اللازم لتأسيس شركة بالتخمين في كل ملف جديد.",
+            en: "Estimates the time needed for a company formation by guesswork on every new file.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يعتبر كل موكّل حالة فريدة كليًا حتى حين تتشابه المسألة القانونية جوهريًا.",
+            en: "Treats every client as entirely unique even when the underlying legal matter is substantially the same.",
+          },
+          {
+            ar: "لا يلاحظ أنه يقدّم الخدمة نفسها عدّة مرّات في الشهر لأنه لم يسمِّها بعد.",
+            en: "Doesn't notice he delivers the same service several times a month, because he has never named it.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "الخدمة سُلِّمت للموكّل رغم غياب نموذج ثابت لها.",
+            en: "The service was delivered to the client, even without a fixed template for it.",
+          },
+          {
+            ar: "لم يرفض تكرار العمل حتى لو استغرق وقتًا أطول من مرّة سابقة مشابهة.",
+            en: "Did not refuse repeat work even when it took longer than a similar past instance.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "عرضا أتعاب لنوع الخدمة نفسه بصياغة وسعر مختلفين كليًا.",
+            en: "Two fee proposals for the same service type with entirely different wording and pricing.",
+          },
+        ],
+      },
+      {
+        level: 2,
+        definition: {
+          ar: "يلاحظ أنه يكرّر نوع خدمة معيّنًا، ويبدأ بتجميع الخطوات التي يتبعها فعليًا كل مرّة في ملاحظات شخصية غير موحَّدة بعد.",
+          en: "Notices he is repeating a particular service type, and starts jotting down the steps he actually follows each time in personal notes not yet standardised.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يكتب لنفسه قائمة بالخطوات الست التي ينفّذها عادة عند فحص شركة قبل استثمار فيها.",
+            en: "Writes himself a list of the six steps he usually runs when doing due diligence before an investment.",
+          },
+          {
+            ar: "يلاحظ أن ثلاثة موكّلين طلبوا الشهر نفسه صياغة عقد عمل قياسي، فيبدأ بحفظ مسوَّدته الأخيرة كمرجع.",
+            en: "Notices three clients asked the same month for a standard employment contract draft, and starts saving his latest draft as a reference.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يحتفظ بالملاحظات لنفسه دون تحويلها إلى شيء يستخدمه غيره.",
+            en: "Keeps the notes to himself without turning them into something a colleague could use.",
+          },
+          {
+            ar: "يجمع الخطوات لكن لا يربطها بعد بسعر ثابت أو نطاق محدَّد.",
+            en: "Gathers the steps but does not yet tie them to a fixed price or defined scope.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "قائمة خطوات مكتوبة موجودة لنوع خدمة واحد على الأقل يتكرّر تقديمه.",
+            en: "A written step list exists for at least one service type that recurs.",
+          },
+          {
+            ar: "الخطوات تعكس ما يُنفَّذ فعليًا لا ما يُفترَض نظريًا.",
+            en: "The steps reflect what actually happens, not a theoretical assumption.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "قائمة خطوات شخصية مكتوبة لخدمة متكرّرة واحدة.",
+            en: "A personal written step list for one recurring service.",
+          },
+        ],
+      },
+      {
+        level: 3,
+        definition: {
+          ar: "يحوّل الخدمة إلى عرض له اسم ونطاق ثابت وسعر محدَّد مسبقًا، ويقدّمه للموكّل بهذه الصفة بدل عرض أتعاب مفاوَض عليه من جديد كل مرّة.",
+          en: "Turns the service into a named offering with a fixed scope and a price set in advance, and presents it to the client as such, instead of a fresh fee negotiation each time.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يعرض على الموكّل \"مراجعة عقد التوريد الأساسية\" بسعر ثابت ونطاق يحدّد بالضبط ما يشمله وما لا يشمله.",
+            en: "Offers the client a 'core supply-contract review' at a fixed price with a scope stating exactly what is and isn't included.",
+          },
+          {
+            ar: "يرفض توسيع نطاق العرض الثابت دون سعر إضافي حين يطلب موكّل عملًا يتجاوزه.",
+            en: "Declines to expand the fixed offering's scope without an additional fee when a client asks for work beyond it.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يحدّد سعرًا ثابتًا لكن يترك النطاق غامضًا فيتنازع مع الموكّل لاحقًا حول ما يشمله.",
+            en: "Sets a fixed price but leaves the scope vague, leading to a later dispute with the client over what it covers.",
+          },
+          {
+            ar: "يسمّي العرض لكن يستمر بتسعيره ساعة بساعة داخليًا فعليًا.",
+            en: "Names the offering but keeps pricing it hour-by-hour internally in practice.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "العرض له اسم ونطاق مكتوب وسعر ثابت مقدَّم للموكّل كوحدة واحدة.",
+            en: "The offering has a name, a written scope and a fixed price presented to the client as one unit.",
+          },
+          {
+            ar: "الموكّل وافق على العرض بصفته الثابتة دون تفاوض بند بند.",
+            en: "The client accepted the offering as fixed, without negotiating it clause by clause.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "وثيقة عرض خدمة مسمّاة بنطاق وسعر ثابتين قُدِّمت لموكّل فعلي.",
+            en: "A named service-offering document with a fixed scope and price presented to an actual client.",
+          },
+        ],
+      },
+      {
+        level: 4,
+        definition: {
+          ar: "يوثّق سلسلة خطوات العرض الثابت بتفصيل يمكّن زميلًا آخر من تنفيذه بالجودة نفسها دون إشراف مباشر منه.",
+          en: "Documents the fixed offering's step sequence in enough detail that another colleague can execute it at the same quality level without his direct supervision.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يكتب دليلًا خطوة بخطوة لتنفيذ \"مراجعة عقد التوريد الأساسية\" يستخدمه محامٍ آخر لأول مرّة دون مساعدته.",
+            en: "Writes a step-by-step guide for executing the 'core supply-contract review' that another lawyer uses for the first time without his help.",
+          },
+          {
+            ar: "يرفق بالدليل نموذج تقرير الخدمة الجاهز الذي يُملأ حسب كل ملف.",
+            en: "Attaches to the guide the ready service-report template that gets filled in per matter.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يكتب دليلًا يفترض معرفة ضمنية لا يملكها زميل جديد.",
+            en: "Writes a guide that assumes implicit knowledge a new colleague doesn't have.",
+          },
+          {
+            ar: "يحتفظ بخطوة حرجة في ذهنه دون توثيقها لأنها \"بديهية\" له.",
+            en: "Keeps a critical step in his head without documenting it because it feels 'obvious' to him.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "زميل غير مطّلع سابقًا نفَّذ العرض من الدليل وحده بجودة مقبولة.",
+            en: "A colleague with no prior exposure executed the offering from the guide alone at acceptable quality.",
+          },
+          {
+            ar: "الدليل يغطّي كل خطوة من استلام الطلب إلى تسليم النتيجة.",
+            en: "The guide covers every step from taking the request to delivering the result.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "الدليل الخطوة-بخطوة، ونتيجة تنفيذه من زميل لم يشارك في وضعه.",
+            en: "The step-by-step guide, and the outcome of a colleague executing it who was not involved in writing it.",
+          },
+        ],
+      },
+      {
+        level: 5,
+        definition: {
+          ar: "يبني أكثر من عرض ثابت لخدمات مختلفة يتكرّر تقديمها، ويراجع أسعارها ونطاقها دوريًا بناءً على ما يستهلكه تنفيذها فعليًا لا بناءً على شعور عام.",
+          en: "Builds more than one fixed offering for different recurring services, and periodically revises their prices and scope based on what execution actually consumes, not a general impression.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يقارن الوقت الفعلي الذي استغرقه تنفيذ عشرة ملفات من العرض الثابت بالسعر المحدَّد له، ويعدّل السعر تبعًا لذلك.",
+            en: "Compares the actual time ten matters under the fixed offering took against its set price, and adjusts the price accordingly.",
+          },
+          {
+            ar: "يطلق عرضًا ثابتًا ثانيًا لخدمة أخرى متكرّرة بعد نجاح العرض الأول.",
+            en: "Launches a second fixed offering for another recurring service after the first one proves out.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يترك سعر العرض ثابتًا لسنوات دون مراجعته رغم تغيّر تكلفة تنفيذه.",
+            en: "Leaves the offering's price unchanged for years despite the cost of execution changing.",
+          },
+          {
+            ar: "يطلق عروضًا كثيرة دفعة واحدة دون التحقّق من نجاح أوّلها.",
+            en: "Launches many offerings at once without confirming the first one works.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "أكثر من عرض ثابت واحد قائم ومستخدَم فعليًا.",
+            en: "More than one fixed offering exists and is actually in use.",
+          },
+          {
+            ar: "سعر عرض واحد على الأقل عُدِّل استنادًا إلى بيانات تنفيذ فعلية.",
+            en: "The price of at least one offering was revised based on actual execution data.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "وثائق عرضين ثابتين مختلفين، وسجلّ مراجعة سعر أحدهما بالبيانات.",
+            en: "Documentation of two different fixed offerings, and a record of one price revision backed by data.",
+          },
+        ],
+      },
+      {
+        level: 6,
+        definition: {
+          ar: "يجعل تحويل الخدمات المتكرّرة إلى عروض ثابتة نهجًا معلَنًا في المكتب، ويقيس أثره على الوقت المستهلَك في التسعير والنطاق مقارنة بالعمل المفصَّل من الصفر.",
+          en: "Makes turning recurring services into fixed offerings a declared approach for the firm, and measures its effect on time spent on pricing and scoping compared to work re-built from scratch.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يقترح على الإدارة قائمة بالخدمات الأكثر تكرارًا في المكتب المرشَّحة لتصبح عروضًا ثابتة.",
+            en: "Proposes to management a list of the firm's most-repeated services as candidates for fixed offerings.",
+          },
+          {
+            ar: "يقيس الفارق بين الوقت المصروف على تسعير ملف مفصَّل من الصفر ووقت تسعير ملف تحت عرض ثابت.",
+            en: "Measures the gap between time spent pricing a matter built from scratch and pricing one under a fixed offering.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يفرض تحويل كل خدمة إلى عرض ثابت حتى المسائل شديدة التباين التي لا تحتمل نطاقًا موحَّدًا.",
+            en: "Forces every service into a fixed offering, even highly variable matters that resist a uniform scope.",
+          },
+          {
+            ar: "يقيس عدد العروض الثابتة المُطلَقة لا الأثر الفعلي على الوقت والربحية.",
+            en: "Measures the number of fixed offerings launched rather than the actual effect on time and profitability.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "نهج تحويل الخدمات المتكرّرة إلى عروض ثابتة معتمَد ومطبَّق عبر أكثر من ممارس في المكتب.",
+            en: "The approach of turning recurring services into fixed offerings is adopted and applied by more than one practitioner in the firm.",
+          },
+          {
+            ar: "تقرير يقارن الوقت المستهلَك في التسعير والنطاق قبل النهج وبعده.",
+            en: "A report compares time spent on pricing and scoping before and after the approach.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "قائمة الخدمات المرشَّحة المعروضة على الإدارة.",
+            en: "The list of candidate services presented to management.",
+          },
+          {
+            ar: "تقرير يقارن الوقت المستهلَك في التسعير قبل النهج وبعده.",
+            en: "A report comparing time spent on pricing before and after the approach.",
+          },
+        ],
+      },
+    ],
+    sourceIds: ["src.built-to-sell", "src.managing-professional-service-firm", "src.small-firm-roadmap"],
+    confidence: 0.82,
+    reviewStatus: "ai_suggested",
+    prerequisiteSkillIds: ["skill.workflow-design"],
+  },
+  {
+    id: "skill.client-feedback-metrics",
+    domainId: "dom.firm-operations",
+    name: { ar: "مؤشّرات رضا الموكّلين وإغلاق الحلقة", en: "Client Feedback Metrics and Closing the Loop" },
+    synonyms: [
+      "client satisfaction tracking",
+      "feedback loop",
+      "voice of the client",
+      "قياس تجربة الموكّل",
+    ],
+    definition: {
+      ar: "قراءة مؤشّرات تجربة الموكّل بشكل منهجي لا اعتمادًا على انطباع متفرّق، ومقاومة الدافع للدفاع عن النفس عند إشارة سلبية، وتحويل ما يُقال فعلًا إلى تعديل ملموس في طريقة العمل.",
+      en: "Reading client-experience signals systematically rather than relying on scattered impressions, resisting the urge to get defensive at a negative signal, and turning what is actually said into a concrete change in how the work is done.",
+    },
+    levels: [
+      {
+        level: 0,
+        definition: {
+          ar: "لم تُجمَع بعد أدلة على تعامل المتدرّب مع مؤشّرات رضا الموكّلين.",
+          en: "No evidence has been collected yet on the learner's handling of client feedback signals.",
+        },
+        observableBehaviors: [],
+        commonMistakes: [],
+        successCriteria: [],
+        evidenceRequired: [],
+      },
+      {
+        level: 1,
+        definition: {
+          ar: "يسمع تعليقات الموكّلين بالصدفة أثناء العمل، ولا يوجد أي سبيل منتظم لجمعها أو تذكّرها.",
+          en: "Hears client comments incidentally during the work, with no regular way to collect or remember them.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يعلّق موكّل هاتفيًا أن التحديثات بطيئة، فيعتذر المحامي شفهيًا وينسى الملاحظة بعد المكالمة.",
+            en: "A client remarks on a call that updates are slow; the lawyer apologizes verbally and forgets the comment once the call ends.",
+          },
+          {
+            ar: "لا يعرف المكتب كم موكّلًا غادر إلى مكتب آخر خلال السنة الماضية ولماذا.",
+            en: "The firm doesn't know how many clients moved to another firm over the past year, or why.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يعتبر أن غياب شكوى مباشرة يعني رضا الموكّل.",
+            en: "Treats the absence of a direct complaint as proof of client satisfaction.",
+          },
+          {
+            ar: "ينسى تعليقًا سلبيًا سمعه بمجرّد انتهاء المكالمة لأنه لم يُدوَّن.",
+            en: "Forgets a negative comment the moment the call ends because it was never written down.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "لم ينكر أو يتجاهل تعليقًا سلبيًا سمعه مباشرة من الموكّل.",
+            en: "Did not deny or dismiss a negative comment heard directly from the client.",
+          },
+          {
+            ar: "استمرّت العلاقة مع الموكّل رغم غياب أي متابعة منهجية.",
+            en: "The client relationship continued despite no systematic follow-up.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "وصف لموقف سمع فيه المحامي تعليق موكّل دون تدوينه أو متابعته.",
+            en: "A description of an occasion the lawyer heard a client comment without writing it down or following up.",
+          },
+        ],
+      },
+      {
+        level: 2,
+        definition: {
+          ar: "يبدأ بتدوين تعليقات الموكّلين حين تُذكَر، لكن لا يوجد سؤال منتظم يُطرَح على الجميع ولا مقياس ثابت يُقارَن عبر الملفّات.",
+          en: "Starts writing down client comments when they come up, but there is no standard question asked of everyone and no fixed metric compared across matters.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يسجّل في ملاحظاته أن موكّلًا وصف التواصل بـ\"الجيد لكن المتأخر أحيانًا\".",
+            en: "Notes in his file that a client described the communication as 'good but sometimes late.'",
+          },
+          {
+            ar: "يسأل بعض الموكّلين عن رأيهم بنهاية الملف وينسى سؤال آخرين.",
+            en: "Asks some clients for their view at the end of the matter and forgets to ask others.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يسأل الموكّلين المرتاحين فقط لأن سؤال الموكّل الغاضب \"محرج\".",
+            en: "Only asks satisfied clients, because asking an unhappy one feels 'awkward.'",
+          },
+          {
+            ar: "يجمع التعليقات لكن لا يقارنها بملفّات أخرى ليعرف إن كانت الملاحظة متكرّرة.",
+            en: "Collects the comments but never compares them across matters to see if the observation recurs.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "تعليقات موكّلين مدوَّنة فعليًا ولو بشكل غير منتظم.",
+            en: "Client comments are actually written down, even if irregularly.",
+          },
+          {
+            ar: "السؤال طُرِح على أكثر من موكّل واحد.",
+            en: "The question was put to more than a single client.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "ملاحظات مدوَّنة لتعليقات ثلاثة موكّلين على الأقل.",
+            en: "Written notes of comments from at least three clients.",
+          },
+        ],
+      },
+      {
+        level: 3,
+        definition: {
+          ar: "يطرح سؤال تقييم ثابتًا على كل موكّل بعد مرحلة رئيسية أو إغلاق الملف، ويسجّل الإجابة كرقم أو تصنيف قابل للمقارنة، لا كملاحظة نثرية فقط.",
+          en: "Asks a fixed evaluation question to every client after a major stage or matter closure, and records the answer as a number or category that can be compared, not just a prose note.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يرسل لكل موكّل عند إغلاق الملف سؤالًا موحَّدًا بمقياس من واحد إلى خمسة عن سهولة التعامل مع المكتب.",
+            en: "Sends every client a standard one-to-five scale question at closure about how easy the firm was to deal with.",
+          },
+          {
+            ar: "يجمع نتائج ثلاثة أشهر في جدول واحد يظهر المتوسط لكل نوع خدمة.",
+            en: "Compiles three months of results into one table showing the average by service type.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يطرح السؤال لكن لا يسجّل الإجابات في مكان موحَّد قابل للمقارنة لاحقًا.",
+            en: "Asks the question but doesn't record answers in one place that can be compared later.",
+          },
+          {
+            ar: "يكتفي بالرقم دون سؤال متابعة يشرح سبب رقم منخفض.",
+            en: "Settles for the number alone without a follow-up question explaining a low score.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "السؤال ذاته يُطرَح على كل موكّل بانتظام لا على البعض فقط.",
+            en: "The same question is asked of every client regularly, not just some of them.",
+          },
+          {
+            ar: "الإجابات مسجَّلة بشكل قابل للمقارنة عبر الملفّات.",
+            en: "Answers are recorded in a form that can be compared across matters.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "جدول نتائج تقييم موحَّد لأكثر من ملف.",
+            en: "A table of standardised evaluation results across more than one matter.",
+          },
+        ],
+      },
+      {
+        level: 4,
+        definition: {
+          ar: "حين تصل إشارة سلبية، يقاوم الدافع الأول للدفاع عن نفسه أو تبرير القرار، ويسأل أسئلة توضيحية قبل الاستنتاج، فيصل لفهم دقيق لما حدث فعلًا من منظور الموكّل.",
+          en: "When a negative signal arrives, resists the first instinct to defend himself or justify the decision, and asks clarifying questions before concluding, arriving at an accurate picture of what actually happened from the client's side.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يتلقّى تقييمًا منخفضًا حول سرعة الرد فيسأل الموكّل عن مثال محدَّد بدل شرح سبب انشغاله.",
+            en: "Receives a low score on response speed and asks the client for a specific example instead of explaining why he was busy.",
+          },
+          {
+            ar: "يكتشف بعد أسئلة توضيحية أن ما بدا شكوى عن الأتعاب كان في الواقع شكوى عن غياب شرح مسبق لها.",
+            en: "Discovers, after clarifying questions, that what looked like a fee complaint was actually about the fee never having been explained in advance.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يردّ بشرح مطوَّل لأسباب قراره بدل الاستماع أولًا لتفصيل الشكوى.",
+            en: "Responds with a lengthy explanation of his reasoning instead of first listening to the detail of the complaint.",
+          },
+          {
+            ar: "يصنّف التقييم المنخفض بأنه \"موكّل صعب المزاج\" دون التحقّق من محتواه.",
+            en: "Dismisses the low score as coming from a 'difficult client' without checking its substance.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "طرح أسئلة توضيحية فعلية قبل أي تفسير أو دفاع عن القرار.",
+            en: "Actually asked clarifying questions before offering any explanation or defence of the decision.",
+          },
+          {
+            ar: "الفهم النهائي لسبب الإشارة السلبية مطابق لما قصده الموكّل فعلًا.",
+            en: "The final understanding of the negative signal's cause matches what the client actually meant.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "سجلّ حوار مع موكّل يظهر انتقالًا من إشارة سلبية إلى فهم دقيق عبر أسئلة توضيحية.",
+            en: "A record of a client exchange showing the move from a negative signal to an accurate understanding through clarifying questions.",
+          },
+        ],
+      },
+      {
+        level: 5,
+        definition: {
+          ar: "يحوّل نمطًا متكرّرًا في التغذية الراجعة إلى تعديل ملموس في إجراء العمل، ويبلّغ الموكّلين الذين أثاروا الملاحظة أن التعديل حدث بسببهم.",
+          en: "Turns a recurring pattern in feedback into a concrete change to how the work is done, and tells the clients who raised the point that the change happened because of them.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يلاحظ أن ثلاثة موكّلين متتاليين اشتكوا من غياب تحديث أسبوعي، فيضع قاعدة إرسال تحديث كل أسبوع لكل ملف نشط.",
+            en: "Notices three consecutive clients complained about the lack of a weekly update, and establishes a rule to send one for every active matter.",
+          },
+          {
+            ar: "يكتب لأحد الموكّلين الذين أثاروا الملاحظة أن المكتب عدَّل إجراءه بناءً على ملاحظته تحديدًا.",
+            en: "Writes to one of the clients who raised the point that the firm changed its procedure specifically because of that feedback.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يعالج شكوى موكّل واحد بشكل فردي دون التحقّق إن كانت نمطًا يتكرّر مع آخرين.",
+            en: "Handles one client's complaint individually without checking whether it's a pattern recurring with others.",
+          },
+          {
+            ar: "يعدّل الإجراء داخليًا دون إبلاغ الموكّل الذي أثار الملاحظة أصلًا.",
+            en: "Changes the procedure internally without telling the client whose feedback originally prompted it.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "تعديل إجرائي فعلي تمّ ربطه بنمط متكرّر في التغذية الراجعة.",
+            en: "An actual procedural change was tied to a recurring feedback pattern.",
+          },
+          {
+            ar: "موكّل واحد على الأقل أُبلغ أن ملاحظته أدّت إلى التعديل.",
+            en: "At least one client was told his feedback led to the change.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "وثيقة التعديل الإجرائي، ورسالة إبلاغ موكّل بأن ملاحظته كانت السبب.",
+            en: "The document of the procedural change, and a message telling a client his feedback was the cause.",
+          },
+        ],
+      },
+      {
+        level: 6,
+        definition: {
+          ar: "يجعل قياس تجربة الموكّل ومراجعتها دوريًا معيارًا مؤسَّسيًا في المكتب، ويربط اتجاه المؤشّر عبر الزمن بتعديلات إجرائية محدَّدة بدل الاكتفاء بجمع الأرقام.",
+          en: "Makes systematic, periodic measurement of client experience an institutional standard for the firm, and ties the metric's trend over time to specific procedural changes rather than just collecting numbers.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يقدّم للإدارة تقريرًا فصليًا يربط ارتفاع مؤشّر الرضا بتعديل محدَّد أُدخل قبل ثلاثة أشهر.",
+            en: "Presents management a quarterly report linking a rise in the satisfaction metric to a specific change introduced three months earlier.",
+          },
+          {
+            ar: "يعتمد مع الإدارة إجراءً يفرض مراجعة كل تقييم منخفض خلال أسبوع من وروده.",
+            en: "Adopts a procedure with management requiring every low score to be reviewed within a week of arriving.",
+          },
+        ],
+        commonMistakes: [
+          {
+            ar: "يعرض متوسط المؤشّر العام دون ربطه بأي تعديل إجرائي محدَّد.",
+            en: "Presents the overall average metric without tying it to any specific procedural change.",
+          },
+          {
+            ar: "يجمع المؤشّر دون خطة واضحة لما يحدث حين ينخفض.",
+            en: "Collects the metric with no clear plan for what happens when it drops.",
+          },
+        ],
+        successCriteria: [
+          {
+            ar: "نظام قياس رضا الموكّلين معتمَد ومطبَّق بانتظام عبر المكتب.",
+            en: "A client-satisfaction measurement system is adopted and regularly applied across the firm.",
+          },
+          {
+            ar: "تقرير دوري يربط اتجاه المؤشّر بتعديلات إجرائية محدَّدة.",
+            en: "A periodic report ties the metric's trend to specific procedural changes.",
+          },
+        ],
+        evidenceRequired: [
+          {
+            ar: "نظام القياس المعتمد وسجلّ نتائجه عبر أكثر من دورة قياس.",
+            en: "The adopted measurement system and its results log across more than one measurement cycle.",
+          },
+          {
+            ar: "تقرير يربط اتجاه المؤشّر بتعديل إجرائي محدَّد.",
+            en: "A report linking the metric's trend to a specific procedural change.",
+          },
+        ],
+      },
+    ],
+    sourceIds: ["src.client-centered-law-firm", "src.legal-ops-kpis", "src.smarter-collaboration"],
+    confidence: 0.83,
+    reviewStatus: "ai_suggested",
+    prerequisiteSkillIds: ["skill.output-quality-control"],
+  },
 ];

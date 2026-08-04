@@ -178,6 +178,7 @@ export const BD_UNITS_06_10: UnitDef[] = [
       { kind: "activity", id: "s.bd.06.a3", activityId: "act.bd.06.3", mode: "guided" },
       { kind: "activity", id: "s.bd.06.a4", activityId: "act.bd.06.4", mode: "independent" },
       { kind: "activity", id: "s.bd.06.a5", activityId: "act.bd.06.5", mode: "independent" },
+      { kind: "activity", id: "s.bd.06.a6", activityId: "act.bd.06.6", mode: "independent" },
       { kind: "summary", id: "s.bd.06.summary", summaryCardId: "card.bd.06" },
       {
         kind: "apply_tomorrow",
@@ -425,6 +426,80 @@ export const BD_UNITS_06_10: UnitDef[] = [
           ar: "ما المعلومة الواحدة المفيدة التي يمكن أن تشاركها معها هذا الأسبوع دون أي طلب؟",
           en: "What single useful piece of information could you share with them this week, with no ask?",
         },
+      },
+      {
+        id: "act.bd.06.6",
+        kind: "ordering",
+        skillId: "skill.staying-top-of-mind",
+        secondarySkillIds: ["skill.relationship-building"],
+        stage: 3,
+        weight: 2,
+        context: {
+          ar: [
+            "تعرفت الأستاذة دانا على نور صبّاغ، مديرة الموارد البشرية في مجموعة أمواج للتجزئة، قبل ستة أشهر ولم تطلب منها شيئًا بعد. تخطط دانا لبناء تواصل يمتد أربعة أشهر ينتهي باقتراح مراجعة دليل الموظفين.",
+          ],
+          en: [
+            "Dana met Nour Sabbagh, HR director at Amwaj Retail Group, six months ago and hasn't asked her for anything yet. Dana plans a four-month contact sequence ending with a proposal to review the employee handbook.",
+          ],
+        },
+        prompt: {
+          ar: "رتّب نقاط التواصل الأربع بالترتيب الصحيح لتنفيذها.",
+          en: "Order the four touchpoints in the correct sequence to execute them.",
+        },
+        hint: {
+          ar: "ابدأ بأخف قيمة تُرسل عبر قناة سريعة، وانتهِ بالطلب المحدد الوحيد في النهاية.",
+          en: "Start with the lightest-value note sent over a quick channel; end with the one specific ask at the very end.",
+        },
+        accessibleAlternative: {
+          ar: "اختر رقم الترتيب (١ إلى ٤) من قائمة منسدلة بجانب كل نقطة تواصل بدل السحب.",
+          en: "Pick the position number (1 to 4) from a dropdown beside each touchpoint instead of dragging.",
+        },
+        items: [
+          {
+            id: "i1",
+            label: {
+              ar: "بريد إلكتروني قصير يلخّص تعديلًا جديدًا في قانون العمل يمسّ سياسات التوظيف، دون أي طلب.",
+              en: "A short email summarizing a new labor-law amendment affecting hiring policy, with no ask.",
+            },
+            rationale: {
+              ar: "بداية مناسبة عبر قناة رسمية لمحتوى يحتاج تفصيلًا؛ يثبت متابعة حقيقية لقطاعها منذ أول تواصل.",
+              en: "A fitting start over a formal channel for content that needs detail; proves genuine attention to her sector from the very first contact.",
+            },
+          },
+          {
+            id: "i2",
+            label: {
+              ar: "رسالة واتساب قصيرة تهنئها بخبر افتتاح فرع جديد لمجموعتها، رأته دانا في الأخبار.",
+              en: "A short WhatsApp message congratulating her on the group's new branch opening, which Dana saw in the news.",
+            },
+            rationale: {
+              ar: "نبرة أخف وأقرب تناسب قناة سريعة، وتبقيها حاضرة دون أن تحوّل الرسالة إلى مراسلة رسمية ثقيلة.",
+              en: "A lighter, warmer tone fits a quick channel, keeping Dana present without turning the note into a heavy formal message.",
+            },
+          },
+          {
+            id: "i3",
+            label: {
+              ar: "مكالمة هاتفية قصيرة للاطمئنان على سير العمل، دون ذكر أي خدمة أو طلب إطلاقًا.",
+              en: "A short phone call just to check how things are going, with no mention of any service or ask at all.",
+            },
+            rationale: {
+              ar: "بعد رسالتين مكتوبتين، مكالمة صوتية تبني دفئًا شخصيًا أعمق، وتبقى بلا طلب حفاظًا على نسبة العطاء العالية.",
+              en: "After two written notes, a voice call builds deeper personal warmth, and still carries no ask, keeping the give-to-ask ratio high.",
+            },
+          },
+          {
+            id: "i4",
+            label: {
+              ar: "بريد إلكتروني يقترح مكالمة عشرين دقيقة الخميس القادم لمراجعة دليل الموظفين بعد التعديل الجديد.",
+              en: "An email proposing a twenty-minute call next Thursday to review the employee handbook in light of the new amendment.",
+            },
+            rationale: {
+              ar: "الطلب الوحيد يأتي أخيرًا وبقناة رسمية وموعد محدد، بعد ثلاث لفتات عطاء بلا طلب رسّخت الثقة أولًا.",
+              en: "The single ask comes last, over a formal channel with a set date, after three no-ask gestures had already built the trust.",
+            },
+          },
+        ],
       },
     ],
     summaryCard: {
@@ -1044,6 +1119,7 @@ export const BD_UNITS_06_10: UnitDef[] = [
       { kind: "activity", id: "s.bd.08.a3", activityId: "act.bd.08.3", mode: "independent" },
       { kind: "simulation", id: "s.bd.08.sim", scenarioId: "scn.asking-for-referral" },
       { kind: "activity", id: "s.bd.08.a4", activityId: "act.bd.08.4", mode: "independent" },
+      { kind: "activity", id: "s.bd.08.a5", activityId: "act.bd.08.5", mode: "independent" },
       { kind: "summary", id: "s.bd.08.summary", summaryCardId: "card.bd.08" },
       {
         kind: "apply_tomorrow",
@@ -1217,6 +1293,99 @@ export const BD_UNITS_06_10: UnitDef[] = [
           ar: "ما الجملة الافتتاحية التي ستستخدمها في المرة القادمة التي تطلب فيها إحالة فعلياً؟",
           en: "What opening line will you actually use next time you ask for a referral?",
         },
+      },
+      {
+        id: "act.bd.08.5",
+        kind: "categorization",
+        skillId: "skill.referral-generation",
+        stage: 3,
+        weight: 2,
+        context: {
+          ar: [
+            "تطلق دانا خدمة جديدة بأتعاب مقطوعة لمراجعة الامتثال السنوي للشركات الصغيرة، وتراجع قائمة عملائها لتقرر بمن تبدأ.",
+          ],
+          en: [
+            "Dana is launching a new fixed-fee annual compliance-review service for small companies, and is reviewing her client list to decide who to approach first.",
+          ],
+        },
+        prompt: {
+          ar: "صنّف كل عميل: هل سيجرّب الخدمة الجديدة أولًا ويرشّحها لغيره، أم سينتظر حتى تثبت نجاحها مع آخرين؟",
+          en: "Sort each client: will they try the new service first and recommend it onward, or wait until it's proven with others?",
+        },
+        hint: {
+          ar: "اسأل: هل بادر هذا العميل بتجربة أفكار جديدة سابقًا، أم طلب دائمًا مرجعًا أو دليل نجاح أولًا؟",
+          en: "Ask: has this client jumped at new ideas before, or always asked for a reference or track record first?",
+        },
+        accessibleAlternative: {
+          ar: "اختر التصنيف من أزرار «يجرّب أولًا» / «ينتظر الإثبات» أسفل كل عميل بدل السحب.",
+          en: "Choose \"Tries first\" / \"Waits for proof\" from buttons under each client instead of dragging.",
+        },
+        buckets: [
+          { id: "early", label: { ar: "يجرّب أولًا", en: "Tries first" } },
+          { id: "proven", label: { ar: "ينتظر الإثبات", en: "Waits for proof" } },
+        ],
+        items: [
+          {
+            id: "c1",
+            label: {
+              ar: "كريم فارس، صاحب متجر إلكتروني سريع النمو، جرّب دائمًا كل اقتراح جديد قدّمته له دانا فور طرحه.",
+              en: "Karim Fares, owner of a fast-growing online store, has always tried every new suggestion Dana raised the moment she raised it.",
+            },
+            bucketId: "early",
+            rationale: {
+              ar: "سجل تجربة سريعة لأفكار جديدة يجعله مرشحًا طبيعيًا للتجربة الأولى والترويج لها لاحقًا.",
+              en: "A track record of quickly trying new ideas makes him a natural first tester, and likely advocate afterward.",
+            },
+          },
+          {
+            id: "c2",
+            label: {
+              ar: "منى رزق، صاحبة مصنع عائلي، تطلب دائمًا مرجعًا أو دليل نجاح فعليًا قبل الموافقة على أي خدمة جديدة.",
+              en: "Mona Rizk, owner of a family manufacturing business, always asks for a reference or proven track record before agreeing to any new service.",
+            },
+            bucketId: "proven",
+            rationale: {
+              ar: "نمطها الثابت هو التحقق أولًا؛ عرض خدمة غير مجرّبة عليها الآن سيقابَل بتردد لا حماس.",
+              en: "Her consistent pattern is to verify first; pitching an untested service to her now will meet hesitation, not enthusiasm.",
+            },
+          },
+          {
+            id: "c3",
+            label: {
+              ar: "سليم عبّود، مؤسس حاضنة شركات ناشئة، معروف بأنه أول من يجرّب أي أداة أو خدمة جديدة ويتحدث عنها علنًا.",
+              en: "Salim Abboud, founder of a startup accelerator, is known for trying any new tool or service first and talking about it publicly.",
+            },
+            bucketId: "early",
+            rationale: {
+              ar: "حبه المعلن لتجربة الجديد ووصوله الواسع يجعلانه قناة طبيعية لنشر الخدمة الجديدة بسرعة.",
+              en: "His public enthusiasm for trying new things, plus his wide reach, make him a natural fast channel for spreading the new service.",
+            },
+          },
+          {
+            id: "c4",
+            label: {
+              ar: "هالة نصيف، المديرة المالية لشركة عقارية راسخة، تفضّل دائمًا مزوّدين مجرّبين منذ سنوات.",
+              en: "Hala Nassif, CFO of an established real-estate firm, always prefers vendors that have been proven over years.",
+            },
+            bucketId: "proven",
+            rationale: {
+              ar: "تفضيلها الثابت للمجرَّب يعني أن أفضل توقيت لمقاربتها هو بعد أن تثبت الخدمة نفسها مع آخرين.",
+              en: "Her consistent preference for the proven means the right time to approach her is after the service has already proven itself elsewhere.",
+            },
+          },
+          {
+            id: "c5",
+            label: {
+              ar: "يارا ديب، صاحبة متجر أزياء، أحالت لدانا ثلاثة عملاء بمبادرتها بعد تجربة إيجابية سابقة معها.",
+              en: "Yara Deeb, a boutique owner, has referred three clients to Dana on her own initiative after a past positive experience.",
+            },
+            bucketId: "early",
+            rationale: {
+              ar: "سجل إحالة فعلي بمبادرة شخصية يثبت أنها تثق برأي دانا وتروّج له دون أن يُطلب منها.",
+              en: "An actual track record of self-initiated referrals proves she trusts Dana's judgment and promotes it without being asked.",
+            },
+          },
+        ],
       },
     ],
     summaryCard: {
@@ -1894,6 +2063,7 @@ export const BD_UNITS_06_10: UnitDef[] = [
       { kind: "activity", id: "s.bd.10.a3", activityId: "act.bd.10.3", mode: "independent" },
       { kind: "simulation", id: "s.bd.10.sim", scenarioId: "scn.converting-warm-contact" },
       { kind: "activity", id: "s.bd.10.a4", activityId: "act.bd.10.4", mode: "independent" },
+      { kind: "activity", id: "s.bd.10.a5", activityId: "act.bd.10.5", mode: "independent" },
       { kind: "summary", id: "s.bd.10.summary", summaryCardId: "card.bd.10" },
       {
         kind: "apply_tomorrow",
@@ -2072,6 +2242,124 @@ export const BD_UNITS_06_10: UnitDef[] = [
           ar: "ما الجملة الدقيقة التي ستستخدمها لاقتراح خطوة تالية منخفضة الضغط في المرة القادمة؟",
           en: "What exact sentence will you use to propose a low-pressure next step next time?",
         },
+      },
+      {
+        id: "act.bd.10.5",
+        kind: "branching_decision",
+        skillId: "skill.converting-interest-to-instructions",
+        stage: 4,
+        weight: 3,
+        prompt: {
+          ar: "بعد أن أرسلت لينا بركات، صاحبة بركات لحلول الطباعة، بريدك التمهيدي، تتصل بك لمناقشته. أدِر المحادثة حتى إغلاقها.",
+          en: "After you sent Lina Barakat, owner of Barakat Print Solutions, your introductory email, she calls to discuss it. Run the conversation through to its close.",
+        },
+        hint: {
+          ar: "أعد صياغة أي اعتراض كهدف مشترك بصيغة سؤال قبل الرد عليه، وأغلق دائمًا بموعد محدد لا بعبارة عامة.",
+          en: "Reframe any objection as a shared goal, phrased as a question, before answering it — and always close with a specific date, not a vague line.",
+        },
+        accessibleAlternative: {
+          ar: "الحوار متاح كنص متسلسل مع أزرار اختيار، دون أي مؤقت زمني.",
+          en: "The dialogue runs as sequential text with choice buttons, with no timer.",
+        },
+        startNodeId: "n1",
+        nodes: [
+          {
+            id: "n1",
+            text: {
+              ar: "تقول لينا: «كل هذا يبدو مفيدًا، بس صراحة مش متأكدة إن الأتعاب تستاهل نزاعًا بهذا الحجم الصغير.»",
+              en: "Lina says: 'This all sounds helpful, but honestly, I'm not sure the fees are worth it for a dispute this small.'",
+            },
+            choices: [
+              {
+                id: "c1a",
+                label: {
+                  ar: "«يبدو أن أهم شيء لك هو إبقاء الكلفة متناسبة مع حجم النزاع - هل يساعد لو قسّمنا الأتعاب على مرحلتين مرتبطتين بما ننجزه فعليًا؟»",
+                  en: "'Sounds like keeping the cost proportional to the dispute's size matters most to you — would it help if we split the fee into two stages tied to what we actually resolve?'",
+                },
+                nextNodeId: "n2",
+                quality: "strong",
+                rationale: {
+                  ar: "تعيد صياغة الاعتراض كهدف مشترك بصيغة سؤال قبل اقتراح حل، فيشعر الطرف الآخر بأنه فُهم لا بأنه يُقاوَم.",
+                  en: "It reframes the objection as a shared goal, phrased as a question, before proposing a fix — so the other side feels understood, not resisted.",
+                },
+              },
+              {
+                id: "c1b",
+                label: {
+                  ar: "«أتعابنا تنافسية جدًا مقارنة بمكاتب أخرى، وأنا واثقة أنك ستحصلين على قيمة ممتازة.»",
+                  en: "'Our fees are actually very competitive compared to other firms, and I'm confident you're getting excellent value.'",
+                },
+                nextNodeId: "n2",
+                quality: "weak",
+                rationale: {
+                  ar: "دفاع مباشر عن السعر دون إعادة صياغة قلقها الفعلي، فيتحول الحوار إلى جدال حول الرقم لا حول ما يهمها.",
+                  en: "A direct defense of the price without reframing her actual concern turns the conversation into an argument over the number, not what matters to her.",
+                },
+              },
+              {
+                id: "c1c",
+                label: {
+                  ar: "«لا تقلقي، أقدر أخفّض الأتعاب فورًا لأي رقم يناسبك.»",
+                  en: "'Don't worry, I can lower the fee right now to whatever works for you.'",
+                },
+                nextNodeId: "n2",
+                quality: "critical_mistake",
+                rationale: {
+                  ar: "تنازل فوري عن السعر دون فهم القلق الحقيقي يقوّض قيمة الخدمة نفسها ويفتح الباب لمساومة مستمرة لاحقًا.",
+                  en: "Caving on price instantly, without understanding the real concern, undermines the service's value and invites ongoing haggling later.",
+                },
+              },
+            ],
+          },
+          {
+            id: "n2",
+            text: {
+              ar: "تبدو لينا مقتنعة أكثر وتقول: «طيب، هذا الطرح منطقي أكثر.» كيف تُنهين المكالمة؟",
+              en: "Lina sounds more convinced and says: 'Okay, that makes more sense.' How do you end the call?",
+            },
+            choices: [
+              {
+                id: "c2a",
+                label: {
+                  ar: "«ممتاز، إن كان عندك أي سؤال إضافي أخبريني وقتما تحبين.»",
+                  en: "'Great, just let me know whenever you have any more questions.'",
+                },
+                nextNodeId: null,
+                quality: "weak",
+                rationale: {
+                  ar: "إغلاق عام بلا موعد أو خطوة محددة يترك الملف معلّقًا دون أي التزام فعلي من الطرفين.",
+                  en: "A vague close with no date or specific step leaves the file hanging, with no real commitment from either side.",
+                },
+              },
+              {
+                id: "c2b",
+                label: {
+                  ar: "«رائع. هل نحدد مكالمة نصف ساعة الخميس الساعة الثالثة لمراجعة اتفاقية التمثيل للمرحلة الأولى؟»",
+                  en: "'Great. Shall we set a thirty-minute call this Thursday at three to go over the engagement letter for stage one?'",
+                },
+                nextNodeId: null,
+                quality: "strong",
+                rationale: {
+                  ar: "تنتهي بنقطة قرار محددة وموعد فعلي ووثيقة اسمها، فتحوّل اهتمامها إلى التزام قابل للتنفيذ.",
+                  en: "It ends with a specific decision point, an actual date, and a named document — turning her interest into an executable commitment.",
+                },
+              },
+              {
+                id: "c2c",
+                label: {
+                  ar: "«لا تقلقي إطلاقًا، أنا واثقة إننا سنحقق لك النتيجة اللي تبغينها بسرعة.»",
+                  en: "'Don't worry at all, I'm confident we'll get you the outcome you want quickly.'",
+                },
+                nextNodeId: null,
+                quality: "critical_mistake",
+                rationale: {
+                  ar: "وعد بنتيجة قانونية مضمونة مخالفة أخلاقية خطيرة، ويهدم الثقة بالكامل إن لم تتحقق النتيجة كما وُعد بها.",
+                  en: "Promising a guaranteed legal outcome is a serious ethical breach, and it wrecks trust entirely if the result doesn't match the promise.",
+                },
+              },
+            ],
+          },
+        ],
       },
     ],
     summaryCard: {

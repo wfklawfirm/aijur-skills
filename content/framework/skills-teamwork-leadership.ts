@@ -440,4 +440,405 @@ export const TEAMWORK_LEADERSHIP_SKILLS: SkillDef[] = [
     confidence: 0.78,
     reviewStatus: "ai_suggested",
   },
+  {
+    id: "skill.informal-organization-navigation",
+    domainId: "dom.teamwork-leadership",
+    name: { ar: "قراءة التنظيم غير الرسمي", en: "Reading the Informal Organization" },
+    synonyms: [
+      "corridor conversations",
+      "reading the room outside the meeting",
+      "informal information channels",
+      "before-the-meeting positioning",
+      "قراءة أجواء المكتب",
+    ],
+    definition: {
+      ar: "الانتباه إلى أن القرارات الحقيقية والثقة والمعلومات كثيرًا ما تتشكّل خارج جدول الأعمال الرسمي — في الممر، على مائدة غداء، أو في مناسبة قبل الاجتماع أو حوله — والاستعداد لهذه اللحظات غير الرسمية بوعي وقصد، بوصفها مهارة يمكن لأي شخص تعلّمها لا تعويضًا عن طبيعة شخصية معيّنة.",
+      en: "Recognizing that real decisions, trust and information routinely take shape outside the formal agenda — in a corridor exchange, over a shared meal, at an event before or around the official meeting — and deliberately preparing for these informal moments as a learnable skill available to anyone, not a compensation for a particular personality type.",
+    },
+    levels: [
+      {
+        level: 0,
+        definition: {
+          ar: "لم تُجمَع بعد أدلة على قدرة المتدرّب على قراءة التنظيم غير الرسمي.",
+          en: "No evidence has been collected yet on the learner's ability to read the informal organization.",
+        },
+        observableBehaviors: [],
+        commonMistakes: [],
+        successCriteria: [],
+        evidenceRequired: [],
+      },
+      {
+        level: 1,
+        definition: {
+          ar: "يتعامل مع اللحظات غير الرسمية كوقت ضائع أو ثرثرة لا صلة لها بالعمل، ويصل إلى الاجتماع مستعدًا فقط لبنوده المعلنة.",
+          en: "Treats informal moments as wasted time or idle chatter with no bearing on work, and arrives at meetings prepared only for the stated agenda.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يصل إلى اجتماع لجنة القبول في الوقت المحدد تمامًا ويتجنّب الحديث الجانبي قبل بدئه.",
+            en: "Arrives at an admissions-committee meeting exactly on time and avoids any side conversation before it starts.",
+          },
+          {
+            ar: "يغادر فور انتهاء الاجتماع الرسمي دون التوقف مع الزملاء الذين بقوا يتبادلون الانطباعات في الممر.",
+            en: "Leaves the moment the formal meeting ends, without staying with colleagues who linger in the corridor exchanging real reactions.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يستبعد الحديث غير الرسمي كليًا معتبرًا إياه ثرثرة لا تستحق الانتباه.", en: "Filters out informal talk entirely, treating it as gossip not worth attention." },
+          { ar: "يفاجأ بأن قرارًا أُعلن في الاجتماع كان قد حُسم فعليًا قبله بمحادثة جانبية لم يكن حاضرًا لها.", en: "Is surprised that a decision announced in the meeting had actually been settled beforehand in a side conversation he was not part of." },
+        ],
+        successCriteria: [
+          { ar: "حضر الاجتماع مستعدًا لبنوده الرسمية.", en: "Attended the meeting prepared for its formal agenda." },
+          { ar: "لم يتسبب غياب الوعي بالقنوات غير الرسمية بأي تعارض أو خطأ فعلي.", en: "The lack of awareness of informal channels did not itself cause any actual conflict or mistake." },
+        ],
+        evidenceRequired: [
+          { ar: "ملاحظة أو سجلّ يُظهر حضورًا للاجتماع الرسمي دون أي تفاعل غير رسمي قبله أو بعده.", en: "An observation or record showing attendance at the formal meeting with no informal engagement before or after it." },
+        ],
+      },
+      {
+        level: 2,
+        definition: {
+          ar: "يلاحظ بعد وقوع الأمر أن معلومة أو قرارًا تشكّل خارج الاجتماع الرسمي، لكنه لا يبادر بعد إلى الاستعداد لتلك اللحظات أو استثمارها.",
+          en: "Notices after the fact that information or a decision took shape outside the formal meeting, but does not yet proactively prepare for or make use of such moments.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يلاحظ بعد الاجتماع أن زميلين اتفقا على نهج التفاوض أثناء استراحة القهوة، ويذكر ذلك لزميل آخر لاحقًا.",
+            en: "Notices after the meeting that two colleagues had already agreed on the negotiation approach during the coffee break, and mentions it to another colleague afterward.",
+          },
+          {
+            ar: "يقبل دعوة إلى غداء مع زملاء من قسم آخر لكنه يقضي الوقت في حديث عام دون الإصغاء لما يهمّهم فعليًا.",
+            en: "Accepts an invitation to lunch with colleagues from another department, but spends the time on general chat rather than listening for what actually matters to them.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يلاحظ النمط لكنه يعتبره أمرًا لا يمكن تغييره بدل شيء يمكن الاستعداد له.", en: "Notices the pattern but treats it as unavoidable rather than something to prepare for." },
+          { ar: "عند دعوته إلى لقاء غير رسمي، يتحدث عن أولوياته هو دون أن يصغي لما يشغل الآخرين.", en: "When invited to an informal setting, talks mostly about his own priorities without listening for what occupies the others." },
+        ],
+        successCriteria: [
+          { ar: "يستطيع تحديد حالة واحدة على الأقل تشكّل فيها قرار خارج الاجتماع الرسمي.", en: "Can identify at least one instance where a decision formed outside the formal meeting." },
+          { ar: "يشارك عند دعوته إلى لقاء غير رسمي بدل تجنّبه.", en: "Participates when invited to an informal setting instead of avoiding it." },
+        ],
+        evidenceRequired: [
+          { ar: "ملاحظة أو تدوين يحدّد قناة معلومات غير رسمية أثّرت في نتيجة رسمية.", en: "A reflection or note identifying an informal information channel that shaped a formal outcome." },
+        ],
+      },
+      {
+        level: 3,
+        definition: {
+          ar: "يخلق أو ينضم عمدًا إلى فرص غير رسمية صغيرة — الوصول مبكرًا، البقاء بعد الاجتماع، قبول دعوة — بتوقيت مقصود مرتبط بقرار قادم يهمّه.",
+          en: "Deliberately creates or joins small informal opportunities — arriving early, staying after, accepting an invitation — timed intentionally around an upcoming decision that matters to him.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يصل قبل عشر دقائق من اجتماع الشركاء تحديدًا ليلتقط الحديث الجانبي عن استراتيجية التعامل مع موكّل كبير.",
+            en: "Arrives ten minutes early to a partners' meeting specifically to catch the side conversation about strategy for a major client.",
+          },
+          {
+            ar: "يقترح على زميل تناول القهوة قبل اجتماع لجنة مشتركة للتفاهم على الموقف مسبقًا.",
+            en: "Suggests grabbing coffee with a colleague before a joint committee meeting, to align positions beforehand.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يبالغ في هندسة الحديث الجانبي فيبدو الأمر واضح الغرض والحساب للآخرين.", en: "Over-engineers the small talk, so it comes across as transparently calculated to others." },
+          { ar: "يستخدم الوقت غير الرسمي للترويج لأولوياته فقط دون إصغاء حقيقي.", en: "Uses the informal time solely to promote his own agenda, without genuine listening." },
+        ],
+        successCriteria: [
+          { ar: "خلق عمدًا فرصة غير رسمية واحدة على الأقل مرتبطة بقرار محدّد قادم.", en: "Deliberately created at least one informal opportunity connected to a specific upcoming decision." },
+          { ar: "دخل الاجتماع الرسمي بمعلومة أو تفاهم اكتسبه بشكل غير رسمي.", en: "Entered the formal meeting with information or alignment gained informally." },
+        ],
+        evidenceRequired: [
+          { ar: "سجلّ أو خطة تُظهر تفاعلًا غير رسمي مقصودًا قبل نقطة قرار محدّدة.", en: "A log or plan showing intentional informal engagement ahead of a specific decision point." },
+        ],
+      },
+      {
+        level: 4,
+        definition: {
+          ar: "يقرأ خريطة التأثير غير الرسمية — من يتحدث إلى من، ومن يملك تأثيرًا فعليًا على صانع القرار خارج التسلسل الرسمي — ويتموضع وفقها دون مناورة، وينقل ما يتعلّمه للفريق بدل احتكاره.",
+          en: "Reads the informal influence map — who talks to whom, and who holds real influence over the decision-maker outside the formal hierarchy — and positions himself accordingly without manipulation, sharing what he learns with the team rather than hoarding it.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يلاحظ أن رأي محامية مبتدئة يزن أكثر مما يوحي مسمّاها الوظيفي عند الشريك المشرف، فيستشيرها قبل رفع مقترح إليه.",
+            en: "Notices that a junior associate's opinion carries more weight with the supervising partner than her title suggests, and consults her before a proposal goes up to him.",
+          },
+          {
+            ar: "يشارك معلومة اكتسبها بشكل غير رسمي مع الفريق كاملًا بدل الاحتفاظ بها لنفسه.",
+            en: "Shares information gained informally with the whole team afterward, rather than keeping it for personal advantage.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يستخدم معرفته بالشبكة غير الرسمية لتجاوز زملاء أو تهميشهم بدل بناء وضوح مشترك.", en: "Uses knowledge of the informal network to bypass or sideline colleagues instead of building shared clarity." },
+          { ar: "يفترض أن خريطة التأثير ثابتة فلا يلاحظ تغيّرها بعد تبدّل في تركيبة الفريق.", en: "Assumes the influence map is static and fails to notice it has shifted after a change in team composition." },
+        ],
+        successCriteria: [
+          { ar: "يحدّد بدقة علاقة تأثير غير رسمية واحدة على الأقل تختلف عن الهيكل التنظيمي المعلن.", en: "Accurately identifies at least one informal influence relationship distinct from the declared org chart." },
+          { ar: "يستخدم تلك المعرفة بشفافية دون حرمان آخرين من معلومة ذات صلة بالقرار.", en: "Uses that knowledge transparently, without excluding others from decision-relevant information." },
+        ],
+        evidenceRequired: [
+          { ar: "حالة موثّقة تُظهر تحديدًا دقيقًا للتأثير غير الرسمي واستخدامًا شفافًا له.", en: "A documented case showing accurate identification of informal influence and transparent use of it." },
+        ],
+      },
+      {
+        level: 5,
+        definition: {
+          ar: "يبني عادة شخصية ثابتة لخلق وصول إلى اللحظات غير الرسمية حتى لو لم تكن طبيعته الشخصية تميل إليها، ويحافظ عليها مع مجموعة متنوّعة من الزملاء لا فقط أصحاب النفوذ.",
+          en: "Builds a sustained personal habit of deliberately creating access to informal moments even when his own temperament does not naturally lean that way, and maintains it across a varied group of colleagues, not only the influential ones.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يخصّص لقاء قهوة غير رسميًا أسبوعيًا مع زميل مختلف كل مرة، خارج دائرة معارفه المعتادة.",
+            en: "Sets a recurring weekly informal coffee with a different colleague each time, outside his usual circle.",
+          },
+          {
+            ar: "بعد مناسبة عمل خارج جدول الأعمال، يتابع فرديًا مع من كان تفاعلهم مهمًا بدل ترك المعرفة تخبو.",
+            en: "After an off-agenda work event, follows up individually with those the interaction mattered with, instead of letting the connection lapse.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يحوّل العادة إلى مهمة على قائمة إنجاز يحضرها دون تفاعل حقيقي يبني ثقة فعلية.", en: "Turns the habit into a checklist item, showing up without real engagement that builds actual trust." },
+          { ar: "يقصر الجهد على من يملكون سلطة أو نفوذ ويهمل الزملاء الأقل ظهورًا.", en: "Limits the effort to those with power or influence and neglects less visible colleagues." },
+        ],
+        successCriteria: [
+          { ar: "نمط موثّق ومستمر من التفاعل غير الرسمي عبر مستويات وأقسام مختلفة.", en: "A sustained, documented pattern of informal engagement across different levels and departments." },
+          { ar: "يصفه الزملاء بأنه شخص يستحق إشراكه في اللحظات غير الرسمية، لا مجرد حاضر فيها.", en: "Colleagues describe him as someone worth including in informal moments, not merely present in them." },
+        ],
+        evidenceRequired: [
+          { ar: "سجلّ ممتد عبر عدة أشهر يُظهر تفاعلًا غير رسمي مستدامًا مع زملاء متنوّعين.", en: "A record spanning several months showing sustained informal engagement with varied colleagues." },
+        ],
+      },
+      {
+        level: 6,
+        definition: {
+          ar: "يدرّب زملاءه، وخصوصًا الأكثر ميلًا للانطواء أو الجدد، على الاستعداد للحظات غير الرسمية واستثمارها، ويقترح ممارسات مكتبية توسّع الوصول إليها بدل حصرها بمن يملكون شبكة علاقات جاهزة، ويقيس أثر ذلك.",
+          en: "Coaches colleagues, especially more introverted or newer ones, on preparing for and making use of informal moments, and proposes firm practices that widen access to them instead of limiting them to those who already have a ready-made network, measuring the effect.",
+        },
+        observableBehaviors: [
+          {
+            ar: "ينظّم جلسة قصيرة للمتدربين الجدد عن كيفية تحضير نقاط حديث بسيطة قبل تجمّع مكتبي غير رسمي.",
+            en: "Runs a short session for new trainees on preparing a few simple talking points before an informal office gathering.",
+          },
+          {
+            ar: "يقترح على الإدارة تخصيص وقت غير مبرمج قبل اجتماعات اللجان حتى يحصل الموظفون الجدد بلا شبكة علاقات جاهزة على فرصة وصول مماثلة.",
+            en: "Proposes to management that unstructured time be built in before committee meetings, so new staff without an existing network get comparable access.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يصمّم الممارسة على مقاس تفضيلاته الشخصية دون مراعاة اختلاف مستوى الارتياح لدى الآخرين.", en: "Designs the practice around his own preferences without accounting for others' different comfort levels." },
+          { ar: "يقيس عدد الحاضرين في المناسبات غير الرسمية بدل قياس ما إذا تحسّن وصول الزملاء الجدد إلى المعلومة فعليًا.", en: "Measures attendance at informal events rather than whether newer colleagues actually gained better access to information." },
+        ],
+        successCriteria: [
+          { ar: "ممارسة مقترحة معتمدة ومستخدمة فعليًا تقلّص الفجوة بين ذوي الشبكة الجاهزة وغيرهم.", en: "A proposed practice is adopted and actually used, narrowing the gap between those with a ready network and those without." },
+          { ar: "تدريب يُظهر تحسّنًا ملموسًا في قدرة من دُرّبوا على الاستعداد للحظات غير الرسمية.", en: "Coaching shows a measurable improvement in mentees' ability to prepare for informal moments." },
+        ],
+        evidenceRequired: [
+          { ar: "وثيقة الممارسة المقترحة أو محضر جلسات التدريب.", en: "The document for the proposed practice or a record of the coaching sessions." },
+          { ar: "تقرير دوري بأثرها على عدالة الوصول إلى المعلومة غير الرسمية.", en: "A periodic report on its effect on equitable access to informal information." },
+        ],
+      },
+    ],
+    sourceIds: ["src.introverted-leader"],
+    confidence: 0.72,
+    reviewStatus: "ai_suggested",
+  },
+  {
+    id: "skill.equitable-work-access",
+    domainId: "dom.teamwork-leadership",
+    name: { ar: "التوزيع العادل لفرص العمل عالي القيمة", en: "Equitable Access to High-Value Work" },
+    synonyms: [
+      "fair distribution of stretch assignments",
+      "bias in visible work allocation",
+      "equitable mentoring access",
+      "who gets picked for the good work",
+      "عدالة توزيع الفرص",
+    ],
+    definition: {
+      ar: "ملاحظة أن تركيبة الفريق قد تبدو متنوّعة ومتوازنة على الورق بينما لا تزال المهامّ الظاهرة والمُكسِبة للمهارات والفرص عالية القيمة تذهب بشكل غير متناسب لمن يشبهون صاحب القرار، والتصحيح المتعمّد لهذا النمط عند توزيع المهامّ الصعبة والمهامّ الظاهرة وفرص التوجيه.",
+      en: "Noticing that a team's composition can look diverse and balanced on paper while the visible, skill-building, high-value work still goes disproportionately to people who resemble whoever is choosing, and deliberately correcting for that pattern when handing out stretch assignments, visible tasks and mentoring opportunities.",
+    },
+    levels: [
+      {
+        level: 0,
+        definition: {
+          ar: "لم تُجمَع بعد أدلة على قدرة المتدرّب على التوزيع العادل لفرص العمل عالي القيمة.",
+          en: "No evidence has been collected yet on the learner's ability to allocate high-value work equitably.",
+        },
+        observableBehaviors: [],
+        commonMistakes: [],
+        successCriteria: [],
+        evidenceRequired: [],
+      },
+      {
+        level: 1,
+        definition: {
+          ar: "يسند المهامّ الظاهرة والفرص التطويرية لمن يخطر على باله أولًا أو لمن يرتاح إليه أكثر، دون ملاحظة أي نمط متكرر في اختياراته.",
+          en: "Hands visible tasks and developmental opportunities to whoever comes to mind first or feels most comfortable, without noticing any recurring pattern in his choices.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يسند تحضير جلسة أمام موكّل مهم مرارًا لنفس المحاميَين اللذين يشتركان معه في خلفية مشابهة، دون أن يلاحظ التكرار.",
+            en: "Repeatedly assigns preparation for an important client hearing to the same two associates who happen to share his own background, without registering the repetition.",
+          },
+          {
+            ar: "عندما يُسأل عن سبب عدم إسناد مهمة بارزة لمحامية معيّنة، يجيب \"لم يخطر ببالي\" دون أي تقييم فعلي.",
+            en: "When asked why a particular associate was not given a high-profile task, answers 'she just didn't come to mind,' with no actual assessment behind it.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يفترض أن تنوّع تركيبة الفريق يعني تلقائيًا عدالة توزيع الفرص الفعلية.", en: "Assumes the team's diverse composition automatically means the real opportunities are being distributed fairly." },
+          { ar: "ينفي وجود أي نمط دون أن يراجع فعليًا من حصل على أي مهمة خلال الفترة الماضية.", en: "Denies any pattern exists without actually reviewing who received which assignments over the recent period." },
+        ],
+        successCriteria: [
+          { ar: "أُنجزت المهامّ الموزّعة دون تقصير ظاهر.", en: "The assigned tasks were completed without any apparent shortfall." },
+          { ar: "لم يستبعد أحدًا عمدًا أو بقصد مسبق.", en: "Did not deliberately or intentionally exclude anyone." },
+        ],
+        evidenceRequired: [
+          { ar: "سجلّ إسناد مهامّ عبر فترة يُظهر تكرار اختيار المجموعة نفسها دون أي تحليل مصاحب.", en: "An assignment log over a period showing repeated selection of the same narrow group with no accompanying analysis." },
+        ],
+      },
+      {
+        level: 2,
+        definition: {
+          ar: "يلاحظ، عند التوجيه إليه أو عند مراجعة قائمة، أن الفرص انحازت نحو مجموعة متشابهة، لكنه لا يبادر بعد إلى المراجعة أو التصحيح من تلقاء نفسه.",
+          en: "Notices, when prompted or after reviewing a list, that opportunities have skewed toward a similar group, but does not yet proactively review or self-correct without being prompted.",
+        },
+        observableBehaviors: [
+          {
+            ar: "عند مراجعة سجلّ الفصل بعد سؤال من إدارة الموارد البشرية، يلاحظ أن أربعًا من خمس عروض أمام الموكّلين ذهبت لمحامين رغم أن نصف الفريق من المحاميات.",
+            en: "Reviewing a quarter's log after HR raises the question, notices that four out of five client presentations went to male lawyers though half the team is women.",
+          },
+          {
+            ar: "يقول \"لم أنتبه لهذا سابقًا\" عندما يُعرض عليه النمط، دون أن يتصرف بعد بناءً عليه.",
+            en: "Says 'I hadn't noticed this before' when shown the pattern, but does not yet act on it.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يلاحظ النمط مرة واحدة دون أن يبني عادة لمراجعته لاحقًا.", en: "Notices the pattern once but does not build a habit of checking it going forward." },
+          { ar: "يعزو النمط بالكامل لكون البعض \"طلب\" المهمة بدل من عُرضت عليه أصلًا.", en: "Attributes the pattern entirely to who 'asked' for the work rather than who was offered it in the first place." },
+        ],
+        successCriteria: [
+          { ar: "يستطيع تحديد حالة واحدة على الأقل تم فيها رصد الانحياز بعد المراجعة.", en: "Can name at least one instance where the skew was identified upon review." },
+          { ar: "لا يقلّل من شأن النتيجة أو ينكرها عند عرض الدليل عليه.", en: "Does not dismiss or minimize the finding when shown the evidence." },
+        ],
+        evidenceRequired: [
+          { ar: "سجلّ إسناد تمت مراجعته مع إقرار المتدرّب بوجود انحياز محدّد فيه.", en: "A reviewed assignment log with the learner's acknowledgment of an identified imbalance in it." },
+        ],
+      },
+      {
+        level: 3,
+        definition: {
+          ar: "يراجع نمط توزيعه للمهامّ بمبادرة منه قبل أن يُشار إليه، ويجري تصحيحًا واحدًا على الأقل بشكل متعمّد — عرض مهمة صعبة على شخص خارج الدائرة المعتادة.",
+          en: "Proactively reviews his own assignment pattern before it is pointed out, and makes at least one deliberate correction — offering a stretch task to someone outside the usual circle.",
+        },
+        observableBehaviors: [
+          {
+            ar: "قبل إسناد قيادة مفاوضة عقد قادمة، يراجع من تولّى أدوارًا ظاهرة مماثلة خلال الأشهر الستة الماضية ويعرضها عمدًا على محامية كفؤة لم تحظَ بالفرصة بعد.",
+            en: "Before assigning the lead role on an upcoming contract negotiation, checks who has had similar visible roles in the past six months and deliberately offers it to a capable associate who hasn't had the chance.",
+          },
+          {
+            ar: "يحتفظ بملاحظة بسيطة عن من حصل على أي مهامّ ظاهرة، ليراجع بها عاداته.",
+            en: "Keeps a simple running note of who has received which visible tasks, to check against his own habits.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يجري تصحيحًا رمزيًا واحدًا ويعتبر المسألة محلولة بدل الاستمرار في العادة.", en: "Makes a single symbolic correction and considers the issue solved rather than sustaining the habit." },
+          { ar: "يسند المهمة الصعبة لشخص جديد لكن بدعم أقل من المعتاد، فيهيّئه للفشل لا للنجاح.", en: "Assigns the stretch task to a new person but with less support than usual, setting them up to struggle rather than succeed." },
+        ],
+        successCriteria: [
+          { ar: "حالة موثّقة واحدة على الأقل من عرض مهمة عالية القيمة خارج النمط المعتاد بمبادرة ذاتية.", en: "At least one documented instance of proactively offering a high-value task outside the usual pattern." },
+          { ar: "حصل من مُنح الفرصة على نفس مستوى الدعم والتوجيه الذي يحصل عليه أي شخص آخر.", en: "The person given the opportunity received the same level of support and clear briefing as anyone else would." },
+        ],
+        evidenceRequired: [
+          { ar: "سجلّ يُظهر تصحيحًا استباقيًا ودليلًا على أن المهمة أُعدّت للنجاح لا كإجراء رمزي فقط.", en: "A record showing a proactive correction and evidence the assignment was set up to succeed, not merely symbolic." },
+        ],
+      },
+      {
+        level: 4,
+        definition: {
+          ar: "يبني عادة أو أداة لتتبّع من يحصل على المهامّ الظاهرة وفرص التوجيه، ويستشيرها فعليًا قبل اتخاذ القرار، ويشرح أساس اختياره عند سؤاله بدل الاكتفاء بالراحة الشخصية.",
+          en: "Builds a habit or tool for tracking who gets access to visible work, stretch assignments and mentoring, actually consults it before deciding, and explains the basis for his choices when asked, rather than defaulting to personal comfort.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يحتفظ بسجلّ فصلي بسيط لآخر الفرص عالية الظهور التي عُرضت، ويراجعه قبل إسناد الفرصة التالية.",
+            en: "Maintains a simple quarterly log of the last several high-visibility opportunities offered, and consults it before assigning the next one.",
+          },
+          {
+            ar: "عند سؤاله عن سبب اختيار محامٍ معيّن لمقعد التوجيه، يقدّم إجابة مرتبطة باحتياج تطويري أو جهوزية ظاهرة، لا مجرد الألفة.",
+            en: "When asked why a particular associate was chosen for a mentoring slot, gives a reasoned answer tied to a development need or demonstrated readiness, not simple familiarity.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يبني أداة التتبّع لكن لا يستشيرها فعليًا قبل القرار فتتحوّل إلى إجراء شكلي.", en: "Builds the tracking tool but does not actually consult it before deciding, so it becomes symbolic paperwork." },
+          { ar: "يستخدم الأداة لتبرير قراراته بعد اتخاذها بدل الاستعانة بها لتوجيهها مسبقًا.", en: "Uses the tool to justify decisions after the fact rather than to inform them beforehand." },
+        ],
+        successCriteria: [
+          { ar: "عادة تتبّع فعلية قائمة ويُستشهد بها فعليًا قبل قرارات الإسناد.", en: "A working tracking habit is in place and demonstrably consulted before assignment decisions." },
+          { ar: "أساس الاختيار قابل للشرح ومرتبط بالتطوير أو الجدارة لا بالألفة أو الراحة.", en: "The basis for choices is explainable and tied to development or merit rather than comfort or familiarity." },
+        ],
+        evidenceRequired: [
+          { ar: "سجلّ متابَع وحالة واحدة على الأقل شُرح فيها القرار بالاستناد إليه.", en: "A maintained log plus at least one instance of a decision explained by reference to it." },
+        ],
+      },
+      {
+        level: 5,
+        definition: {
+          ar: "يوسّع الممارسة إلى ما هو أبعد من قراراته الفردية ليشكّل كيفية توزيع الفريق ككل للمهامّ الظاهرة — يضع معايير معلنة للفرص، ويناوب من يتصدّر الأدوار البارزة، ويراجع النمط على مستوى الفريق عبر الزمن لا اختياراته وحدها.",
+          en: "Widens the practice beyond his own individual choices to shape how the team as a whole allocates visible work — sets explicit criteria for stretch opportunities, rotates who takes lead roles, and reviews the pattern across the team over time, not only his own decisions.",
+        },
+        observableBehaviors: [
+          {
+            ar: "يستحدث نظام مناوبة بسيطًا لمن يقود الجلسات أمام الموكّلين في فريق التقاضي، ويراجَع كل فصل للتأكد من توازنه.",
+            en: "Introduces a simple rotation system for who leads client-facing hearings across the litigation team, checked quarterly for balance.",
+          },
+          {
+            ar: "يضع معايير واضحة ومعلنة لمن يُرشَّح لبرنامج التوجيه، بدل الاعتماد على \"من يخطر بالبال\" كما كان سابقًا.",
+            en: "Sets and shares explicit criteria for who is considered for a mentoring program, replacing the previous informal 'whoever comes to mind.'",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يفرض مناوبة جامدة تتجاهل فروقًا حقيقية في الجهوزية، فيخلق انحيازًا جديدًا.", en: "Imposes a rigid rotation that ignores genuine differences in readiness, creating a new unfairness." },
+          { ar: "يضع معايير ثم لا يراجع أبدًا ما إذا كانت تُطبَّق فعليًا.", en: "Sets criteria but never revisits whether they are actually being followed." },
+        ],
+        successCriteria: [
+          { ar: "نظام على مستوى الفريق لتوزيع المهامّ الظاهرة قائم ومُستخدَم، لا مجرد عادة فردية.", en: "A team-level system for allocating visible work exists and is used, not just an individual habit." },
+          { ar: "المراجعة الدورية تُظهر أن التوزيع أصبح أقل انحيازًا بشكل قابل للقياس.", en: "Periodic review shows the distribution has become measurably less skewed." },
+        ],
+        evidenceRequired: [
+          { ar: "توثيق النظام على مستوى الفريق ومقارنة بين توزيع الفرص قبله وبعده.", en: "Documentation of the team-level system and a before/after comparison of assignment distribution." },
+        ],
+      },
+      {
+        level: 6,
+        definition: {
+          ar: "يدرّب مشرفين وشركاء آخرين على ملاحظة هذا النمط وتصحيحه، ويقترح على إدارة المكتب ممارسات معلنة لتوزيع المهامّ عالية القيمة، ويقيس أثرها على تطوير واستبقاء من كانوا يحصلون على فرص أقل.",
+          en: "Coaches other supervisors and partners on recognizing and correcting this pattern, proposes firm-level practices for allocating high-value work, and measures their effect on the development and retention of those who previously had less access.",
+        },
+        observableBehaviors: [
+          {
+            ar: "ينظّم جلسة قصيرة لرؤساء فرق آخرين عن كيفية مراجعة أنماط الإسناد لديهم بحثًا عن انحياز.",
+            en: "Runs a short session for other team leads on how to check their own assignment patterns for skew.",
+          },
+          {
+            ar: "يقترح على إدارة المكتب ممارسة موحّدة لتسجيل ومراجعة من يحصل على المهامّ عالية الظهور أمام الموكّلين على مستوى المكتب كاملًا.",
+            en: "Proposes to firm management a standard practice for logging and periodically reviewing who receives high-visibility client work across the whole firm.",
+          },
+        ],
+        commonMistakes: [
+          { ar: "يقدّم الممارسة كإجراء امتثال شكلي بدل مساعدة الرؤساء الآخرين على فهم النمط فعليًا.", en: "Presents the practice as a compliance checkbox rather than helping other leads genuinely understand the underlying pattern." },
+          { ar: "يقيس مدى تبنّي أداة التتبّع بدل قياس ما إذا تغيّر التوزيع الفعلي للفرص.", en: "Measures adoption of the tracking tool rather than whether the actual distribution of opportunity has changed." },
+        ],
+        successCriteria: [
+          { ar: "ممارسة على مستوى المكتب معتمدة ومستخدمة من فرق أخرى لا فريقه وحده.", en: "A firm-level practice is adopted and used by other teams, not only the learner's own." },
+          { ar: "تقرير يربط الممارسة بتحسّن قابل للقياس في تنوّع من يحصل على الفرص عالية القيمة.", en: "A report links the practice to a measurable improvement in the range of people receiving high-value opportunities." },
+        ],
+        evidenceRequired: [
+          { ar: "وثيقة الممارسة المقترحة على مستوى المكتب وتقرير دوري بأثرها على عدالة توزيع الفرص.", en: "Documentation of the proposed firm-level practice and a periodic report on its effect on the equitable distribution of opportunity." },
+        ],
+      },
+    ],
+    sourceIds: ["src.smarter-collaboration"],
+    confidence: 0.75,
+    reviewStatus: "ai_suggested",
+  },
 ];

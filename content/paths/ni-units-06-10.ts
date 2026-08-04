@@ -678,6 +678,7 @@ export const NI_UNITS_06_10: UnitDef[] = [
       { kind: "activity", id: "s.ni.07.a3", activityId: "act.ni.07.3", mode: "guided" },
       { kind: "activity", id: "s.ni.07.a4", activityId: "act.ni.07.4", mode: "independent" },
       { kind: "activity", id: "s.ni.07.a5", activityId: "act.ni.07.5", mode: "independent" },
+      { kind: "activity", id: "s.ni.07.a6", activityId: "act.ni.07.6", mode: "independent" },
       { kind: "summary", id: "s.ni.07.summary", summaryCardId: "card.ni.07" },
       {
         kind: "apply_tomorrow",
@@ -1012,6 +1013,90 @@ export const NI_UNITS_06_10: UnitDef[] = [
       },
       {
         id: "act.ni.07.5",
+        kind: "categorization",
+        skillId: "skill.handling-pressure-tactics",
+        secondarySkillIds: ["skill.negotiation"],
+        stage: 3,
+        weight: 2,
+        context: {
+          ar: [
+            "مؤسسة الرواد للمقاولات تطالب شركة تلال الرياض العقارية بتعويض عن تأخير تسليم الدفعة الثالثة من مشروع سكني.",
+            "في الجلسة الأولى، يردّ محامي تلال الرياض بعدة عبارات متتالية دون أن يتوقف عند أيٍّ منها طويلاً.",
+          ],
+          en: [
+            "Al-Rowad Contracting is claiming compensation from Tilal Al-Riyadh Real Estate for delayed delivery of the third phase of a residential project.",
+            "In the first session, Tilal Al-Riyadh's lawyer replies with several statements in a row, without pausing long on any one of them.",
+          ],
+        },
+        prompt: {
+          ar: "صنّف كل عبارة: هل هي تكتيك إجرائي يعطّل الوصول إلى صلب المطالبة، أم اعتراض جوهري حقيقي عليها؟",
+          en: "Sort each statement: is it a procedural move that blocks discussion from ever reaching the claim's substance, or a genuine objection to the claim itself?",
+        },
+        hint: {
+          ar: "الاعتراض الإجرائي يمنعك من الوصول إلى الرقم أو الوقائع أصلاً، دون أن ينكرها أو يفنّدها. الاعتراض الجوهري يتعامل مباشرة مع وقائع التأخير أو بنود العقد.",
+          en: "A procedural move stops you from ever reaching the figures or the facts, without actually denying or rebutting them. A substantive objection engages directly with the delay's facts or the contract's terms.",
+        },
+        accessibleAlternative: {
+          ar: "اختر التصنيف من أزرار «تكتيك إجرائي» / «اعتراض جوهري» أسفل كل عبارة بدل السحب.",
+          en: "Choose \"Procedural move\" / \"Substantive objection\" from buttons under each statement instead of dragging.",
+        },
+        buckets: [
+          { id: "procedural", label: { ar: "تكتيك إجرائي", en: "Procedural move" } },
+          { id: "substantive", label: { ar: "اعتراض جوهري", en: "Substantive objection" } },
+        ],
+        items: [
+          {
+            id: "c1",
+            label: {
+              ar: "«مطالبتكم سابقة لأوانها؛ مهلة الثلاثين يوماً للإخطار المنصوص عليها في العقد لم تنقضِ بعد، فلا مجال لمناقشة أي رقم الآن.»",
+              en: "\"Your claim is premature; the contract's thirty-day notice period hasn't expired yet, so there's no room to discuss any figure now.\"",
+            },
+            bucketId: "procedural",
+            rationale: {
+              ar: "لا ينكر التأخير ولا يناقش مدته؛ يستخدم مسألة توقيت الإخطار لإغلاق النقاش قبل أن يبدأ. حتى إن كانت المهلة حقيقية، الرد الصحيح اختبارها لا القبول بأنها تُسقط المطالبة كلها.",
+              en: "It doesn't deny the delay or discuss its length; it uses a notice-timing point to shut the conversation down before it starts. Even if the notice period is real, the right response is to test it, not accept that it disposes of the whole claim.",
+            },
+          },
+          {
+            id: "c2",
+            label: {
+              ar: "«أثبتوا أولاً أن التأخير لم ينتج عن ظرف استثنائي بموجب المادة 12، وبعدها نتحدث عن أي رقم.»",
+              en: "\"First prove the delay wasn't caused by an exceptional circumstance under Article 12, and then we can talk about any figure.\"",
+            },
+            bucketId: "procedural",
+            rationale: {
+              ar: "ينقل عبء الإثبات إلى الطرف الآخر قبل أي نقاش في الوقائع أو الرقم، وهو ما يؤجّل الجوهر لا يردّ عليه. تسميته هنا كتكتيك تفتح الباب لسؤال: من يحمل هذا العبء فعلاً بموجب العقد؟",
+              en: "It shifts the burden of proof onto the other side before any discussion of facts or figures — deferring the substance rather than answering it. Naming it here as a move opens the door to a real question: who actually carries that burden under the contract?",
+            },
+          },
+          {
+            id: "c3",
+            label: {
+              ar: "«التأخير المسجَّل في محضر الموقع الموقّع من الطرفين 45 يوماً فقط، لا 90 يوماً كما ورد في مطالبتكم.»",
+              en: "\"The delay recorded in the site log signed by both parties is only 45 days, not the 90 days stated in your claim.\"",
+            },
+            bucketId: "substantive",
+            rationale: {
+              ar: "يواجه الرقم مباشرة بمستند محدد يمكن التحقق منه؛ هذا نزاع حقيقي على الوقائع، لا محاولة لتفادي مناقشتها.",
+              en: "It confronts the figure head-on with a specific, verifiable document; this is a genuine dispute over the facts, not an attempt to avoid discussing them.",
+            },
+          },
+          {
+            id: "c4",
+            label: {
+              ar: "«العقد يستثني صراحة أي تأخير ناتج عن تأخر توريد حديد التسليح من المورّد الذي اخترتموه أنتم.»",
+              en: "\"The contract explicitly excludes any delay caused by late delivery of rebar from the supplier you yourselves selected.\"",
+            },
+            bucketId: "substantive",
+            rationale: {
+              ar: "يستند إلى بند تعاقدي محدد ويربطه بسبب فعلي للتأخير؛ دفاع على أساس الموضوع، لا عائق أمام الوصول إليه.",
+              en: "It relies on a specific contractual clause and ties it to an actual cause of the delay; a defense on the merits, not a barrier to reaching them.",
+            },
+          },
+        ],
+      },
+      {
+        id: "act.ni.07.6",
         kind: "reflection",
         skillId: "skill.handling-pressure-tactics",
         stage: 3,
@@ -1252,6 +1337,7 @@ export const NI_UNITS_06_10: UnitDef[] = [
       { kind: "activity", id: "s.ni.08.a3", activityId: "act.ni.08.3", mode: "independent" },
       { kind: "simulation", id: "s.ni.08.sim", scenarioId: "scn.negotiation-hostile-counterpart" },
       { kind: "activity", id: "s.ni.08.a4", activityId: "act.ni.08.4", mode: "independent" },
+      { kind: "activity", id: "s.ni.08.a5", activityId: "act.ni.08.5", mode: "independent" },
       { kind: "summary", id: "s.ni.08.summary", summaryCardId: "card.ni.08" },
       {
         kind: "apply_tomorrow",
@@ -1487,6 +1573,135 @@ export const NI_UNITS_06_10: UnitDef[] = [
       },
       {
         id: "act.ni.08.4",
+        kind: "branching_decision",
+        skillId: "skill.handling-pressure-tactics",
+        secondarySkillIds: ["skill.negotiation", "skill.staying-within-mandate"],
+        stage: 4,
+        weight: 2,
+        context: {
+          ar: [
+            "بعد خمسة أسابيع من التفاوض، اتفق مصنع الخليج للألمنيوم وشركة مرافئ الشرق للمقاولات كتابياً على تسوية مطالبة دفعات متأخرة بمبلغ 480,000 ريال سعودي.",
+            "قبل يوم واحد من موعد التوقيع، يتصل ممثل مرافئ الشرق.",
+          ],
+          en: [
+            "After five weeks of negotiation, Al-Khaleej Aluminum Factory and Marafi Al-Sharq Contracting agreed in writing to settle an overdue-payments claim for 480,000 SAR.",
+            "One day before the signing date, Marafi Al-Sharq's representative calls.",
+          ],
+        },
+        prompt: {
+          ar: "أدِر الحوار إلى نهايته. اختر في كل لحظة ما ستقوله فعلاً حين يحاول الطرف الآخر تعديل اتفاق سابق في اللحظة الأخيرة.",
+          en: "Run the dialogue to its end. At each moment choose what you would actually say when the other side tries to revise a prior agreement at the last minute.",
+        },
+        hint: {
+          ar: "اسأل في كل لحظة: هل هناك معلومة جديدة فعلية، أم أن الضغط مبني فقط على الوقت المنقضي والموعد النهائي؟",
+          en: "At each moment ask: is there an actual new fact here, or is the pressure built only on elapsed time and a looming deadline?",
+        },
+        accessibleAlternative: {
+          ar: "الحوار متاح كنصّ متسلسل مع أزرار اختيار، دون أي سحب أو مؤقّت زمني.",
+          en: "The dialogue runs as sequential text with choice buttons, with no dragging and no timer.",
+        },
+        startNodeId: "n1",
+        nodes: [
+          {
+            id: "n1",
+            text: {
+              ar: "«بعد مراجعة داخلية أخيرة، تبيّن أن جزءاً من الفواتير يشمل أعمالاً غير موثّقة بالكامل، لذلك لا يمكننا الالتزام بالمبلغ المتفق عليه الأسبوع الماضي — نقترح خفضه إلى 70% منه. علماً أننا أمضينا خمسة أسابيع على هذا الملف، ومجلس الإدارة يجتمع غداً صباحاً لإقفاله نهائياً.»",
+              en: "\"After a final internal review, it turns out part of the invoices covers work that isn't fully documented, so we can't commit to the amount agreed last week — we're proposing to cut it to 70% of it. Bear in mind we've spent five weeks on this file, and the board meets tomorrow morning to close it once and for all.\"",
+            },
+            choices: [
+              {
+                id: "c1a",
+                label: {
+                  ar: "«أودّ الاطلاع تحديداً على الأعمال التي تعتبرونها غير موثّقة. لم يتغيّر شيء في السجلات منذ توقيعنا على المبلغ الأسبوع الماضي — فما الجديد فعلياً؟»",
+                  en: "'I'd like to see specifically which work you consider undocumented. Nothing in the records has changed since we agreed on the amount last week — so what has actually changed?'",
+                },
+                nextNodeId: "n2",
+                quality: "strong",
+                rationale: {
+                  ar: "يختبر مضمون «المعلومة الجديدة» المزعومة بسؤال محدد، دون أن يستسلم للرقم الجديد أو يرفضه بلا سبب. لا شيء يبرر التراجع عن اتفاق موقّع سوى وقائع فعلية جديدة.",
+                  en: "Tests the substance of the claimed 'new information' with a specific question, without either caving to the new figure or rejecting it for no reason. Nothing justifies walking back a signed agreement except genuinely new facts.",
+                },
+              },
+              {
+                id: "c1b",
+                label: {
+                  ar: "«بما أننا قريبون من الإغلاق ولا نريد إضاعة خمسة أسابيع من العمل، فلنقبل الخفض إلى 70% وننهي الملف اليوم.»",
+                  en: "'Since we're close to closing and don't want to waste five weeks of work, let's accept the cut to 70% and finish the file today.'",
+                },
+                nextNodeId: "n2",
+                quality: "critical_mistake",
+                rationale: {
+                  ar: "استسلام مبني كلياً على الوقت المنقضي والموعد النهائي، دون أي تحقق من صحة «المراجعة الداخلية». يعلّم الطرف الآخر أن هذا الأسلوب ينجح، وسيتكرر في كل ملف قادم.",
+                  en: "A capitulation built entirely on elapsed time and the looming deadline, with no verification of the claimed 'internal review.' It teaches the other side this move works, and it will be repeated in every future file.",
+                },
+              },
+              {
+                id: "c1c",
+                label: {
+                  ar: "«هذا تلاعب واضح ولن نناقشه؛ إما التوقيع على المبلغ الأصلي غداً أو نلجأ للقضاء فوراً.»",
+                  en: "'That's clearly manipulation and we won't discuss it; either sign the original amount tomorrow or we go straight to court.'",
+                },
+                nextNodeId: "n2",
+                quality: "weak",
+                rationale: {
+                  ar: "اتهام مباشر يُغلق الباب قبل التحقق من الوقائع، ويحوّل خلافاً قد يكون قابلاً للحل الهادئ إلى مواجهة قضائية فورية، رغم أن هدف الموكّل الفعلي هو تحصيل المبلغ لا خوض دعوى.",
+                  en: "A direct accusation that closes the door before the facts are checked, turning a dispute that might be calmly resolved into an immediate courtroom fight, even though the client's actual goal is collecting the money, not litigating.",
+                },
+              },
+            ],
+          },
+          {
+            id: "n2",
+            text: {
+              ar: "بعد صمت قصير، يقول الممثل: «في الواقع، المستندات لم تتغيّر، لكن إدارتنا تفضّل تخفيض المبلغ بسبب ضغوط سيولة لديها هذا الشهر.»",
+              en: "After a short silence, the representative says: 'Actually, the documents haven't changed — our management just prefers a lower amount because of cash-flow pressure this month.'",
+            },
+            choices: [
+              {
+                id: "c2a",
+                label: {
+                  ar: "«أفهم ضغط السيولة، لكنه لا يغيّر المبلغ المتفق عليه على أساس وقائع موثّقة. يمكننا أن نبحث جدولة الدفع على دفعتين خلال ستين يوماً، لا خفض القيمة نفسها.»",
+                  en: "'I understand the cash-flow pressure, but it doesn't change an amount agreed on documented facts. We can look at spreading payment over two instalments across sixty days — not cutting the amount itself.'",
+                },
+                nextNodeId: null,
+                quality: "strong",
+                rationale: {
+                  ar: "يفصل بوضوح بين تفضيل داخلي للطرف الآخر (لا صلة له بصحة المبلغ) وبين وقائع جديدة فعلية (لا توجد)، ويحافظ على قيمة الاتفاق الموقّع بينما يعرض مرونة حقيقية في التوقيت لا في المبدأ.",
+                  en: "Clearly separates the other side's internal preference (irrelevant to the amount's validity) from genuinely new facts (there are none), preserves the value of the signed agreement, while offering real flexibility on timing rather than on principle.",
+                },
+              },
+              {
+                id: "c2b",
+                label: {
+                  ar: "«لا مجال لأي نقاش إضافي؛ التوقيع غداً على المبلغ الكامل أو نعتبر التفاوض منتهياً.»",
+                  en: "'There's no room for any further discussion; sign the full amount tomorrow or we consider the negotiation over.'",
+                },
+                nextNodeId: null,
+                quality: "weak",
+                rationale: {
+                  ar: "موقف مفهوم بعد كشف أن لا أساس فعلياً للمطلب، لكن رفض أي نقاش إضافي — حتى في التوقيت — يفوّت حلاً بسيطاً كان سيحقق الهدف نفسه (تحصيل كامل المبلغ) دون مواجهة غير ضرورية.",
+                  en: "An understandable stance once it's clear the demand has no real basis, but refusing any further discussion — even on timing — misses a simple solution that would achieve the same goal (collecting the full amount) without an unnecessary confrontation.",
+                },
+              },
+              {
+                id: "c2c",
+                label: {
+                  ar: "«حفاظاً على العلاقة، نوافق على خفض بسيط إلى 90% من المبلغ.»",
+                  en: "'To preserve the relationship, we'll agree to a modest cut to 90% of the amount.'",
+                },
+                nextNodeId: null,
+                quality: "critical_mistake",
+                rationale: {
+                  ar: "بعد أن تأكد أن لا معلومة جديدة وراء الطلب، أي تنازل عن المبلغ الموقّع مكافأة مباشرة لتكتيك الوقت المنقضي والموعد النهائي، ويُنذر بتكرار المحاولة نفسها في كل استحقاق قادم.",
+                  en: "Once it's confirmed there is no new information behind the request, any concession off the signed amount directly rewards the sunk-time-and-deadline tactic, and signals it will be tried again at every future payment.",
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: "act.ni.08.5",
         kind: "reflection",
         skillId: "skill.handling-pressure-tactics",
         secondarySkillIds: ["skill.staying-within-mandate"],

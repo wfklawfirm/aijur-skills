@@ -36,7 +36,7 @@ curriculum across eight paths.
 | **Auth** | Functional | Email/password with scrypt hashing (`src/lib/auth/password.ts`, N=2^15, memory-hard KDF), HMAC-signed session cookies (`src/lib/auth/session.ts`), no OAuth/SSO of any kind. Routes: `sign-in`, `sign-up`, `forgot-password`, `reset-password/[token]`, `verify-email/[token]` under `src/app/(app)/[locale]/`. Self-service password reset (`src/lib/actions/password-reset{,-core}.ts`) is single-use, hashed, 1-hour-expiring, session-revoking tokens delivered by email. Email verification (`src/lib/actions/email-verification{,-core}.ts`) is real now — a link is sent at signup and resendable from the profile page — but deliberately doesn't gate anything (see `docs/SECURITY.md` §7 for why); `emailVerifiedAt` is only ever set by an actual confirmed click. Real email delivery for both flows needs `EMAIL_PROVIDER=resend`+`RESEND_API_KEY` configured; with no provider set, links are logged to the server console instead of emailed. |
 | **RBAC / multi-tenancy** | Functional | `src/lib/auth/rbac.ts` defines 11 permissions, 4 system roles (learner/author/reviewer/admin) and 5 org roles (owner/admin/manager/author/member); `assertTenant()` enforces org isolation on every scoped query. Schema has `organizations`, `memberships`, `teams` tables. `assertTenant()` now has real call sites for all three org permissions: `org.members.manage`/`org.reports` (`src/lib/actions/org-core.ts` — list/add/role-change/remove members, an org report) and `org.assign` (`src/lib/actions/teams-core.ts` — team create/rename/delete, member-team assignment). `memberships.competencyProfileId` remains schema-only with no action surface. Covered by `tests/rbac.test.ts` (the primitive, mock users), `tests/org-tenant-isolation.test.ts` (9 tests), and `tests/teams-tenant-isolation.test.ts` (10 tests) — two seeded organizations each. |
 | **Onboarding** | Functional | `src/app/(app)/[locale]/onboarding/onboarding-flow.tsx` + `src/lib/actions/onboarding.ts`; feeds into a diagnostic (`src/app/(app)/[locale]/diagnostic/page.tsx`, `content/diagnostics.ts` — 1 diagnostic, 8 items). |
-| **Content authoring/framework** | Functional, fully populated across all 10 domains | `content/types.ts` defines the full authoring contract (domains, skills w/ 7 mastery levels each, rubrics, scenarios, paths/chapters/units, 17 activity kinds, diagnostics). 10 domains, 61 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 399 activities all authored (`content/framework/*.ts` plus domain companion files — see §4). All 61 skills are `reviewStatus: ai_suggested` — none have progressed to `sme_reviewed` or `approved`. |
+| **Content authoring/framework** | Functional, fully populated across all 10 domains | `content/types.ts` defines the full authoring contract (domains, skills w/ 7 mastery levels each, rubrics, scenarios, paths/chapters/units, 17 activity kinds, diagnostics). 10 domains, 70 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 418 activities all authored (`content/framework/*.ts` plus domain companion files — see §4). All 70 skills are `reviewStatus: ai_suggested` — none have progressed to `sme_reviewed` or `approved`. |
 | **Learning engine** | Functional | `src/lib/learning/{mastery,progression,grading,review,responses,dashboard}.ts` — deterministic grading for choice/ordering/matching/fill-blank activities, AI-rubric grading for written work, a mastery ledger (0–6 levels) backed by `masteryRecords`/`evidence` tables, and a spaced-review scheduler (`reviewSchedule` table, tested in `tests/mastery.test.ts` and the review-selection suite). |
 | **AI layer + offline fallback** | Functional | `src/lib/ai/provider.ts`: single `runAgent()` entry point, provider chain (anthropic → openai → offline, configurable via env), every call recorded to `aiModelRuns` (provider, model, prompt/rubric version, input hash, tokens, cost, latency, confidence) for audit/reproducibility. **Every agent (`simulation.ts`, `evaluation.ts`, `coaching.ts`) ships a rule-based `offline` implementation with the same Zod output schema**, so the app runs with zero API keys — confirmed by `.env.example` defaulting `AI_PRIMARY_PROVIDER=offline`. Prompt-injection defence via `asData()` wraps untrusted learner/client text in a fenced block. |
 | **Admin Content Studio** | Functional | 7 admin screens under `src/app/(app)/[locale]/admin/`: dashboard, sources, skills, rubrics, scenarios, units, review-queue, ingestion. `ingestion` page is explicitly a monitoring view over `ingestionSuggestions`/`humanReviews` tables, not an automated pipeline (see comment at `admin/ingestion/page.tsx:12`). An 8th screen, `admin/organization`, is shown only to users with an org role holding `org.members.manage` or `org.reports` (owner/admin/manager) — member list/add/role-change/remove plus a per-org report that respects `organizations.privacyPolicy.managersSeeScores`, and (for callers additionally holding `org.assign`) team create/rename/delete and member-to-team assignment. A 9th, `admin/adaptive-content`, is the Adaptive Content Intelligence monitor described below. |
@@ -70,7 +70,7 @@ Checked directly rather than assumed:
 - **Automated content ingestion pipeline**: the admin `ingestion` page is a review
   queue over pre-seeded `ingestionSuggestions`, not a live document-to-content
   pipeline; the comment in the source file calls it a "placeholder" for that reason.
-- **Content review workflow completion**: all 61 skills sit at `reviewStatus:
+- **Content review workflow completion**: all 70 skills sit at `reviewStatus:
   "ai_suggested"` — the SME review → approved pipeline that `content/types.ts` models
   (`draft → ai_suggested → sme_reviewed → approved → archived`) has not been exercised
   past the first stage for any skill. This is the one item in this section that
@@ -96,14 +96,14 @@ Counts pulled by loading `content/index.ts`'s `CONTENT` bundle directly:
 | Object | Count |
 |---|---|
 | Domains | 10 |
-| Skills | 61 (all `reviewStatus: ai_suggested`) |
+| Skills | 70 (all `reviewStatus: ai_suggested`) |
 | Rubrics | 18 |
 | Scenarios (simulations) | 18 |
 | Source records | 33 |
 | Paths | 8 |
 | Diagnostics | 1 (8 items) |
 | Units (total, across all paths) | 80 |
-| Activities (total) | 399 |
+| Activities (total) | 418 |
 | Legal-English phrase-bank entries | 96 |
 
 **Path-level detail:**
@@ -125,14 +125,14 @@ Counts pulled by loading `content/index.ts`'s `CONTENT` bundle directly:
 |---|---|---|
 | Client Relations | 9 | 20 |
 | Professional Communication | 3 | 20 |
-| Professional Judgment & Ethics | 4 | 10 |
+| Professional Judgment & Ethics | 5 | 10 |
 | Legal English | 10 | 10 |
 | Negotiation & Influence | 6 | 10 |
 | Self-Management | 6 | 10 |
-| Teamwork & Leadership | 6 | 10 |
-| Business Development | 6 | 10 |
-| Firm & Matter Operations | 7 | 10 |
-| Digital Tools & AI | 4 | 10 |
+| Teamwork & Leadership | 8 | 10 |
+| Business Development | 9 | 10 |
+| Firm & Matter Operations | 9 | 10 |
+| Digital Tools & AI | 5 | 10 |
 
 **All 10 of 10 domains now have real unit content** (two of them only via the
 cross-listed paths above). As of this update, "framework-only domain" no longer
@@ -230,6 +230,65 @@ coincidence — renamed from "Fadia Homsi" to "Fadia Rahal" for clarity).
 Verified with a real `db:seed` run (skills 58→61, rubrics 16→18, scenarios
 16→18, paths 7→8, units 70→80, activities 351→399).
 
+A later pass in this same build added 9 more skills without adding any new
+domain, path, or unit — a deliberate, narrower scope than the ten-domain
+build described above. `skill.whole-matter-awareness` (`dom.professional-
+judgment`) covers keeping a full picture of a client's matter even when
+assigned only a narrow slice of it. Three landed in Business Development —
+`skill.value-quantification` (converting a proposed engagement's benefits
+into an explicit monetary estimate rather than a vague pitch),
+`skill.answering-hard-questions` (volunteering honest answers to the
+questions a prospective client is too embarrassed to ask, especially cost
+and the firm's own limits), and `skill.practice-differentiation`
+(deliberately choosing what makes an offering distinctive rather than
+generically competent). Two landed in Firm & Matter Operations —
+`skill.service-productization` (turning a recurring service into a
+named, fixed-scope, fixed-price offering) and `skill.client-feedback-
+metrics` (reading client-experience signals systematically instead of by
+scattered impression, and closing the loop). Two landed in Teamwork &
+Leadership — `skill.informal-organization-navigation` (preparing
+deliberately for the corridor conversations and pre-meeting moments where
+real decisions and trust often actually form) and `skill.equitable-work-
+access` (correcting for who actually gets the visible, skill-building
+work, not just how the team looks on paper). One landed in Digital Tools
+& AI — `skill.ai-collaborative-partner` (a deliberate division of labor
+with AI tools rather than either avoiding them or trusting their output
+unverified). Each is distinct from its domain's pre-existing skills by checked overlap,
+not just by name: e.g. Business Development's pre-existing skills cover
+staying top-of-mind (`skill.staying-top-of-mind`), generating referrals
+(`skill.referral-generation`), and converting interest into an actual
+engagement (`skill.converting-interest-to-instructions`) — none of which
+overlaps `skill.value-quantification`'s *how to price/frame a pitch* or
+`skill.answering-hard-questions`'s *what to proactively disclose before
+being asked*. All 9 carry the same full bilingual
+0–6 mastery ladder and `sourceIds` referencing the reference library as
+every other skill; none has progressed past `reviewStatus: "ai_suggested"`.
+Separately, 5 pre-existing skills — `skill.avoiding-guarantees`,
+`skill.professional-ethics`, `skill.expectation-management` (all in
+`content/framework/skills.ts`), and `skill.persuasive-argument`,
+`skill.reading-the-counterpart` (in `content/framework/skills-negotiation-
+influence.ts`) — had their existing mastery levels deepened with new
+`observableBehaviors`/`commonMistakes`/`successCriteria`/`evidenceRequired`
+fields; this changed no ids and added no new skill, rubric, or level.
+
+The same pass added 19 new activities (399→418, confirmed directly against
+`CONTENT.paths[*].units[*].activities` — see `content/index.ts`) into
+existing units across the Business Development, Client Communication,
+Negotiation & Influence, Teamwork & Leadership, Firm Operations, and
+Digital Tools & AI path files; the Legal English and Self-Management path
+files were not touched. This was a deliberate scope decision, not an
+oversight: rather than authoring 9 new dedicated units or paths for the 9
+new skills (a much larger undertaking than this pass was scoped for), each
+new skill was instead woven into an existing unit's `skillIds`, and where
+that unit had room under the house style's 4–6-activities-per-unit cap, one
+new activity exercising it was added. The unit count is unchanged at 80 —
+no new units or paths exist for these 9 skills, so their content coverage
+is real but shallow (present inside other units' `skillIds`, not the
+subject of a unit of their own) in a way that is more pronounced than the
+"depth, not breadth" caveat already logged elsewhere in this document for
+the original 61. A `db:seed` run after this pass reported `skills 70`,
+`activities 418`, `units 80` — the counts stated throughout this document.
+
 Every content change in this session was verified the same way: `npx tsc --noEmit`
 for shape-correctness against `content/types.ts`, then a real `npm run db:seed` run
 against the live dev database (a stronger signal than typechecking alone, since
@@ -320,7 +379,7 @@ in production content, just at low volume for some kinds (e.g. only 1
   (Anthropic/OpenAI) was attempted and failed, falling back to offline; not set
   when no remote provider was ever configured at all — is now surfaced to the
   learner (see the fixed half of the item below).
-- **All content is unreviewed by a human SME.** Every one of the 61 skills is stuck
+- **All content is unreviewed by a human SME.** Every one of the 70 skills is stuck
   at `reviewStatus: "ai_suggested"` — the review pipeline exists in the schema and
   admin UI (`review-queue` page, `contentReviews` table) but has not been exercised
   to `approved` for anything yet. Treat all current content as pre-SME-review.
@@ -619,6 +678,33 @@ in production content, just at low volume for some kinds (e.g. only 1
   the wiring is verified by typecheck/build/e2e passing with the new field
   threaded through, not by observing it fire, since firing it would require a
   configured-then-failing remote provider that this environment doesn't have.
+- **A real stale-state UI bug was found and fixed in the unit player.**
+  `<StepView>` inside `unit-player.tsx` was rendered with no `key` prop, so
+  React reused the same component instance across a step transition. For
+  most step-type changes this was invisible, but when a unit advanced from
+  one `activity` step directly into another `activity` step, React kept
+  the previous instance mounted and only re-rendered its props — so the
+  just-answered activity's verdict banner ("Correct"/"Incorrect") and its
+  disabled/revealed option state visually leaked into the next,
+  unanswered activity for a moment before local state caught up. Fixed by
+  adding `key={step.id}` to `<StepView>`, matching the pattern
+  `diagnostic-flow.tsx` already used correctly for the same kind of step
+  transition. A dedicated new e2e regression test (`tests/e2e/learner-
+  content.spec.ts`, `describe("Activity step transitions")`) drives a unit
+  from one answered activity into the next and asserts the new step
+  renders unanswered — confirmed to fail against the pre-fix code and pass
+  against the fix (see §6 for the run history).
+- **The self-service "export my data" feature was removed from the Profile
+  page, by explicit product decision.** The Profile page's "Export my
+  data" button (`src/app/(app)/[locale]/profile/profile-settings.tsx`),
+  its backing `exportMyData()` server action
+  (`src/lib/actions/profile.ts`), and the `profile.exportData` dictionary
+  key in both `ar.ts`/`en.ts` were all deleted — grep for
+  `exportData`/`exportMyData` across `src/` now returns nothing. This
+  narrows self-service capability (a learner can no longer pull their own
+  data), a deliberate tradeoff to keep export access restricted rather
+  than self-serve. No equivalent admin-side export exists yet — that is an
+  open item, not something this change built.
 - **Billing is schema-only.** The `subscriptions` table has no integration behind it;
   building a real paywall/seat-management flow is greenfield work, not a wire-up.
 - **Ingestion is human-curated, not automated.** `content/sources/registry.ts` (33
@@ -653,10 +739,10 @@ usability gap with its own new e2e regression test (§5, `docs/SECURITY.md`
 |---|---|---|
 | Typecheck | `npx tsc --noEmit` | **Clean.** Exit 0, no output. |
 | Lint | `npm run lint` (`eslint .`) | **Clean.** No errors or warnings reported. |
-| Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **162 / 162 passing**, 43 suites, 0 failed, 0 skipped, 0 todo. Runtime ~18s. (Includes `tests/adaptive-content.test.ts`, added with the Adaptive Professional Journey Engine — see `docs/ADAPTIVE_ENGINE_ARCHITECTURE.md`.) |
-| Content seed | `npm run db:reset` | **Succeeds.** 10 domains, 61 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 399 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
+| Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **162 / 162 passing**, 43 suites, 0 failed, 0 skipped, 0 todo. Runtime ~18s. (Includes `tests/adaptive-content.test.ts`, added with the Adaptive Professional Journey Engine — see `docs/ADAPTIVE_ENGINE_ARCHITECTURE.md`. Unchanged by this session's 9-new-skill / unit-player-key-prop pass — no unit-level surface was touched.) |
+| Content seed | `npm run db:reset` | **Succeeds.** 10 domains, 70 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 418 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
 | Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** No build errors, all routes generated (mix of static/SSG/dynamic). |
-| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **123 / 123 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **21 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus three (`scn.guarantee-request`, `scn.flagging-a-quality-issue`, `scn.catching-an-ai-hallucination`, from three different domains) also proven reaching their natural `maxTurns` end** (21 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR + the global language switcher (6 tests — see below), axe-core accessibility (5 tests), and **a real keyboard-only navigation test** (sign-in driven entirely via `Tab`/keyboard input, no mouse events, 1 test, updated to account for the switcher's real tab stop). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. Re-run after adding the Home page's "Daily challenge" adaptive-hook card (§2): still 120/120 passing at that point, confirming the card didn't regress any existing Home-page-touching flow. Re-run again after making the language switcher global (§2): **caught a real regression** — the switcher's new tab stop shifted the sign-in keyboard-navigation test's expected tab order, since it sits (correctly, per WCAG 2.4.3 meaningful sequence) first in both DOM and tab order, right after the skip link. Fixed by updating the test to assert the new, legitimate tab stop rather than routing the switcher out of tab order to preserve the old assertion. Added 3 dedicated new tests confirming the switcher actually navigates to the equivalent URL, flips `<html dir>`, and that its cookie is honoured on a later locale-less visit. Final count: 123/123. |
+| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **124 / 124 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **21 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus three (`scn.guarantee-request`, `scn.flagging-a-quality-issue`, `scn.catching-an-ai-hallucination`, from three different domains) also proven reaching their natural `maxTurns` end** (21 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR + the global language switcher (6 tests — see below), axe-core accessibility (5 tests), **a real keyboard-only navigation test** (sign-in driven entirely via `Tab`/keyboard input, no mouse events, 1 test, updated to account for the switcher's real tab stop), and **a new "Activity step transitions" regression test** (`tests/e2e/learner-content.spec.ts`, 1 test) guarding the unit-player `key`-prop fix described in §5. Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. Re-run after adding the Home page's "Daily challenge" adaptive-hook card (§2): still 120/120 passing at that point, confirming the card didn't regress any existing Home-page-touching flow. Re-run again after making the language switcher global (§2): **caught a real regression** — the switcher's new tab stop shifted the sign-in keyboard-navigation test's expected tab order, since it sits (correctly, per WCAG 2.4.3 meaningful sequence) first in both DOM and tab order, right after the skip link. Fixed by updating the test to assert the new, legitimate tab stop rather than routing the switcher out of tab order to preserve the old assertion. Added 3 dedicated new tests confirming the switcher actually navigates to the equivalent URL, flips `<html dir>`, and that its cookie is honoured on a later locale-less visit, bringing the count to 123/123. Re-run again after the 9-new-skill content pass and the unit-player `key`-prop fix: **caught the real stale-state-leak bug described in §5** — the new "Activity step transitions" test drove a unit from one answered `activity` step straight into the next and asserted the new step rendered unanswered; against the pre-fix code it failed (the previous step's verdict banner and disabled options were still visible), and passed once `key={step.id}` was added to `<StepView>` in `unit-player.tsx`. Final count: 124/124. |
 
 `npm run verify` (typecheck → lint → test → build) would pass end to end based on the
 individual results above — all four stages were run and all four are green as of this

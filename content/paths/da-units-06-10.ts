@@ -2043,6 +2043,7 @@ export const DA_UNITS_06_10: UnitDef[] = [
       { kind: "activity", id: "s.da.10.a1", activityId: "act.da.10.1", mode: "quick" },
       { kind: "activity", id: "s.da.10.a2", activityId: "act.da.10.2", mode: "guided" },
       { kind: "activity", id: "s.da.10.a3", activityId: "act.da.10.3", mode: "independent" },
+      { kind: "activity", id: "s.da.10.a5", activityId: "act.da.10.5", mode: "guided" },
       { kind: "simulation", id: "s.da.10.sim", scenarioId: "scn.declining-to-use-a-tool" },
       { kind: "activity", id: "s.da.10.a4", activityId: "act.da.10.4", mode: "independent" },
       { kind: "summary", id: "s.da.10.summary", summaryCardId: "card.da.10" },
@@ -2242,6 +2243,76 @@ export const DA_UNITS_06_10: UnitDef[] = [
             rationale: {
               ar: "تجنب النقاش يترك الطلب الخطر معلقاً بلا رفض واضح، فقد يُنفَّذ لاحقاً دون علمك.",
               en: "Avoiding the discussion leaves the risky request hanging with no clear refusal, and it may happen later without your knowledge.",
+            },
+          },
+        ],
+      },
+      {
+        id: "act.da.10.5",
+        kind: "find_mistake",
+        skillId: "skill.protecting-data-in-digital-tools",
+        stage: 4,
+        weight: 2,
+        context: {
+          ar: [
+            "ريما فخري محامية مسؤولة عن ملف تدقيق نافٍ لعقار تسعى شركة سنابل للتطوير العقاري لشرائه. طوال المشروع، تشارك عبر قناة مشتركة على منصة «مسار» المعتمدة من المكتب تحديثات روتينية: قوائم المستندات المطلوبة ومواعيد التسليم.",
+            "تضم القناة، إلى جانب فريق مكتبها، مكتب تقييم خارجي وفريق مراجعة مستندات تابعاً لمزوّد خدمة يعمل من خارج البلاد.",
+            "اليوم، أعدّت ريما مذكرة تحلل فيها عيوباً محتملة في سند الملكية واحتمال نشوء نزاع قضائي بشأنها، ورفعتها في القناة نفسها 'ليطّلع الجميع على آخر المستجدات في مكان واحد'.",
+          ],
+          en: [
+            "Rima Fakhry is the lawyer running due diligence on a property Sanabel Real Estate Development wants to buy. Throughout the project, she's shared routine updates — required document lists, delivery dates — in a shared channel on the firm's approved 'Masar' platform.",
+            "Besides her own firm's team, the channel includes an outside valuation firm and a document-review team from an offshore service provider.",
+            "Today, Rima drafted a memo analyzing possible defects in the property title and the risk of a resulting legal dispute, and posted it in that same channel 'so everyone can see the latest in one place.'",
+          ],
+        },
+        prompt: {
+          ar: "ما الخطأ الجوهري في تصرف ريما؟",
+          en: "What's the core mistake in what Rima did?",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "وضعت مذكرة تحمل تحليلها القانوني للمخاطر ورأيها كمحامية في نفس القناة التي يطّلع عليها مكتب التقييم وفريق المراجعة الخارجي، وكلاهما خارج علاقة الاستشارة القانونية مع الموكل.",
+              en: "She placed a memo containing her legal risk analysis and professional opinion in the same channel the valuation firm and the offshore review team can read — both outside the legal-advice relationship with the client.",
+            },
+            correct: true,
+            rationale: {
+              ar: "التحديثات الروتينية لا تهدد الامتياز المهني، لكن مذكرة تحمل تحليلاً واستشارة قانونية أمر مختلف تماماً: بمجرد أن يطّلع عليها من هم خارج تلك العلاقة، يصبح ادعاء الطرف الآخر لاحقاً بأن الامتياز سقط عن هذا المستند تحديداً احتمالاً حقيقياً.",
+              en: "Routine status updates don't threaten privilege, but a memo carrying legal analysis and advice is different: once people outside that relationship can read it, the other side can later argue privilege over that specific document was given up.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "استخدمت قناة المنصة بدل إرسال المذكرة عبر بريد إلكتروني مشفّر.",
+              en: "She used the platform channel instead of sending the memo by encrypted email.",
+            },
+            rationale: {
+              ar: "وسيلة النقل ليست جوهر المشكلة؛ منصة معتمدة ومُهيّأة جيداً يمكن أن تكون آمنة بقدر البريد الإلكتروني. المشكلة الفعلية من يستطيع فتح القناة ذاتها، لا نوع التطبيق الذي حمل المذكرة.",
+              en: "The transmission method isn't the real problem; a properly configured approved platform can be just as secure as email. The actual issue is who can open that channel, not which app carried the memo.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "لم تضع وسماً بعبارة 'سري' على ملف المذكرة قبل رفعها.",
+              en: "She didn't tag the memo file 'confidential' before uploading it.",
+            },
+            rationale: {
+              ar: "وسم الملف عادة جيدة، لكنه لا يخلق الامتياز المهني ولا يحميه بمفرده؛ الامتياز يتوقف على من يستطيع فعلياً الاطلاع على مضمون الاستشارة، لا على تسمية الملف.",
+              en: "Tagging a file is good practice, but it doesn't create or preserve privilege by itself; privilege turns on who can actually read the substance of the advice, not on the file's label.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "لم تتحقق مسبقاً من أن عقد فريق المراجعة الخارجي يتضمن بنداً خاصاً بمعالجة البيانات.",
+              en: "She hadn't first confirmed the offshore review team's contract included a data-processing clause.",
+            },
+            rationale: {
+              ar: "بند معالجة البيانات مهم لحماية سرية المعلومات عموماً، لكنه لا يحل مشكلة إشراك جهات غير قانونية في تحليل استشاري قانوني تحديداً؛ هذه مسألة امتياز مهني منفصلة عن أي عقد بيانات مهما كان دقيقاً.",
+              en: "A data-processing clause matters for confidentiality generally, but it doesn't solve the problem of non-legal parties being included on a legal-advice analysis specifically; that's a separate privilege issue no data contract, however careful, resolves.",
             },
           },
         ],

@@ -4,7 +4,6 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/components/providers";
 import {
-  exportMyData,
   setAiConsent,
   signOutEverywhere,
   updateAccessibility,
@@ -94,16 +93,6 @@ export function ProfileSettings({
     setSavingConsent(true);
     await setAiConsent(next);
     setSavingConsent(false);
-  }
-
-  // --- export -----------------------------------------------------
-  const [exported, setExported] = React.useState<Awaited<ReturnType<typeof exportMyData>> | null>(null);
-  const [exporting, setExporting] = React.useState(false);
-  async function runExport() {
-    setExporting(true);
-    const data = await exportMyData();
-    setExported(data);
-    setExporting(false);
   }
 
   // --- delete account -----------------------------------------------------
@@ -204,23 +193,6 @@ export function ProfileSettings({
             <p className="text-supporting mt-1" aria-live="polite">
               {savingConsent ? dict.common.loading : consent ? dict.profile.consentGiven : dict.profile.consentWithheld}
             </p>
-          </div>
-
-          <div className="border-t border-[var(--border)] pt-4">
-            <Button variant="secondary" block onClick={runExport} loading={exporting}>
-              {dict.profile.exportData}
-            </Button>
-            {exported && (
-              <div className="mt-3 space-y-2">
-                <Callout tone="positive">{dict.common.saved}</Callout>
-                <details className="text-supporting">
-                  <summary className="cursor-pointer font-medium">{dict.common.showMore}</summary>
-                  <pre className="thin-scroll mt-2 max-h-64 overflow-auto whitespace-pre-wrap break-words text-xs">
-                    {JSON.stringify(exported, null, 2)}
-                  </pre>
-                </details>
-              </div>
-            )}
           </div>
 
           {organization && (

@@ -633,6 +633,7 @@ export const CC_UNITS_05_07: UnitDef[] = [
       "skill.client-follow-up",
       "skill.next-steps-closure",
       "skill.difficult-client-basics",
+      "skill.fee-conversations",
     ],
     stage: 3,
     estimatedMinutes: 11,
@@ -808,6 +809,7 @@ export const CC_UNITS_05_07: UnitDef[] = [
       { kind: "activity", id: "s.cc.06.a4", activityId: "act.cc.06.4", mode: "independent" },
       { kind: "simulation", id: "s.cc.06.sim", scenarioId: "scn.fee-pushback" },
       { kind: "activity", id: "s.cc.06.a5", activityId: "act.cc.06.5", mode: "independent" },
+      { kind: "activity", id: "s.cc.06.a6", activityId: "act.cc.06.6", mode: "independent" },
       { kind: "summary", id: "s.cc.06.summary", summaryCardId: "card.cc.06" },
       {
         kind: "apply_tomorrow",
@@ -1127,6 +1129,75 @@ export const CC_UNITS_05_07: UnitDef[] = [
           en: "What stopped you from sending that message that week? Write the real reason, not the polite one.",
         },
       },
+      {
+        id: "act.cc.06.6",
+        kind: "best_response",
+        skillId: "skill.fee-conversations",
+        secondarySkillIds: ["skill.expectation-management"],
+        stage: 3,
+        weight: 2,
+        context: {
+          ar: [
+            "الموكّلة رانيا عابد، مؤسّسة منصّة تجارة إلكترونية، تحتاج مراجعة اتفاقية مساهمين قبل إغلاق جولة تمويل خلال ثمانٍ وأربعين ساعة.",
+            "أنت الشريك المسؤول، وجدولك مزدحم. يمكنك إنجاز المراجعة بنفسك، أو تكليف محامٍ مبتدئ في المكتب بمراجعة أولية تحت إشرافك.",
+          ],
+          en: [
+            "Client Rania Abed, founder of an e-commerce platform, needs a shareholders’ agreement reviewed before a funding round closes in forty-eight hours.",
+            "You are the responsible partner, and your schedule is packed. You could do the review yourself, or assign a junior lawyer at the firm to a first pass under your supervision.",
+          ],
+        },
+        prompt: {
+          ar: "ما أفضل طريقة للتعامل مع هذا الضغط الزمني؟",
+          en: "What is the best way to handle this time pressure?",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "«أمامك خياران وأنا أعرضهما عليك بوضوح: أراجعها بنفسي شخصيًّا خلال يومين بسعري المعتاد وبعمق أكبر، أو يبدأ زميل أصغر مراجعة أولية اليوم بسعر أقلّ ثم أراجع خلاصته أنا، وهذا أسرع لكن أقلّ تفصيلًا في القراءة الأولى. أيّهما يناسب مهلتك؟»",
+              en: "“You have two options, and I’ll set them out clearly: I review it myself over two days at my usual rate, with deeper coverage; or a junior colleague does a first pass today at a lower rate and I review his findings, which is faster but less detailed on the first read. Which suits your deadline?”",
+            },
+            correct: true,
+            rationale: {
+              ar: "يعرض الفرق فعلًا لا شكلًا: من يقوم بالعمل، وماذا يعني ذلك للسرعة والعمق والسعر، ثم يترك القرار لصاحبة الملف بدل أن يتّخذه هو بصمت. هذا ما يحوّل ضغط الوقت إلى قرار تجاري تملكه رانيا، لا مقايضة خفية تتحمّل نتيجتها دون أن تعرفها.",
+              en: "It lays out a real difference, not a cosmetic one: who does the work, and what that means for speed, depth and price — then leaves the decision to the client instead of making it silently. This turns time pressure into a business decision Rania owns, not a hidden trade-off she bears the consequences of without knowing it existed.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "يُكلّف المحامي المبتدئ بالمراجعة كاملةً دون إخبار رانيا، ويرسل لها الملاحظات بتوقيعه هو ليصل الردّ في الوقت.",
+              en: "He assigns the junior lawyer the whole review without telling Rania, and sends her the comments under his own name to meet the deadline.",
+            },
+            rationale: {
+              ar: "هذا هو بالضبط ما يجب تجنّبه: تخفيض جودة الخدمة بصمت تحت ضغط الوقت، مع بقاء السعر والاسم على الرسالة كما لو أن شيئًا لم يتغيّر. رانيا تدفع لخبرة شريك وتحصل على مراجعة أولية دون أن تعرف ذلك أو توافق عليه.",
+              en: "This is exactly what should be avoided: quietly downgrading the service under time pressure while the price and the name on the message stay as if nothing changed. Rania is paying for a partner’s expertise and receiving a junior first pass without knowing it, or agreeing to it.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "يراجعها بنفسه كاملةً بسعره المعتاد، دون أن يذكر لها أن خيارًا أسرع وأرخص كان متاحًا عبر زميل مبتدئ.",
+              en: "He reviews it himself in full at his usual rate, without mentioning that a faster, cheaper route through a junior colleague was available.",
+            },
+            rationale: {
+              ar: "قد يكون هذا خيارًا مشروعًا فعلًا لملف بهذا الحجم، لكنه يُتّخذ نيابةً عن رانيا دون علمها بوجود بديل، وهي على وشك إغلاق جولة تمويل قد يهمّها فيها معرفة كل خيار يمسّ سيولتها هذا الأسبوع تحديدًا.",
+              en: "This may genuinely be the right choice for a file of this size, but it is made on Rania’s behalf without her knowing an alternative existed — and she is about to close a funding round, where knowing every option affecting her cash this week specifically may matter to her.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "يعتذر عن عدم القدرة على إنجاز المراجعة ضمن هذه المهلة، دون أن يقترح أي بديل داخل المكتب.",
+              en: "He apologises that the review cannot be done within this deadline, without suggesting any alternative within the firm.",
+            },
+            rationale: {
+              ar: "صادق لكنه غير مكتمل: توقّف عند العائق الأول دون البحث عن حلّ داخل موارد متاحة فعلًا. رانيا تُترك تبحث عن مكتب آخر تحت ضغط ثمانٍ وأربعين ساعة، بينما كان الحلّ موجودًا داخل المكتب نفسه.",
+              en: "Honest but incomplete: it stops at the first obstacle without searching for a solution within resources that actually exist. Rania is left hunting for another firm under a forty-eight-hour deadline, while the solution was available inside the same office.",
+            },
+          },
+        ],
+      },
     ],
     summaryCard: {
       id: "card.cc.06",
@@ -1217,6 +1288,7 @@ export const CC_UNITS_05_07: UnitDef[] = [
       "skill.expectation-management",
       "skill.plain-explanation",
       "skill.trust-building",
+      "skill.professional-ethics",
     ],
     stage: 4,
     estimatedMinutes: 12,
@@ -1392,6 +1464,7 @@ export const CC_UNITS_05_07: UnitDef[] = [
       { kind: "activity", id: "s.cc.07.a4", activityId: "act.cc.07.4", mode: "independent" },
       { kind: "simulation", id: "s.cc.07.sim", scenarioId: "scn.guarantee-request" },
       { kind: "activity", id: "s.cc.07.a5", activityId: "act.cc.07.5", mode: "independent" },
+      { kind: "activity", id: "s.cc.07.a6", activityId: "act.cc.07.6", mode: "independent" },
       { kind: "summary", id: "s.cc.07.summary", summaryCardId: "card.cc.07" },
       {
         kind: "apply_tomorrow",
@@ -1836,6 +1909,75 @@ export const CC_UNITS_05_07: UnitDef[] = [
           ar: "أعد كتابة تلك الجملة بالعناصر الخمسة، في خمسة أسطر. أيّ عنصر كان الأصعب عليك؟ الأرجح أنه «الضعيف».",
           en: "Rewrite that sentence using the five parts, in five lines. Which part was hardest? Most likely “weak”.",
         },
+      },
+      {
+        id: "act.cc.07.6",
+        kind: "best_response",
+        skillId: "skill.professional-ethics",
+        secondarySkillIds: ["skill.avoiding-guarantees"],
+        stage: 4,
+        weight: 2,
+        context: {
+          ar: [
+            "موكّلك سامر خير الله يستورد معدّات صناعية. اليوم يطلب منك صياغة عقد توريد بتاريخ يسبق التاريخ الفعلي بثلاثة أشهر، ليتجنّب غرامة تأخير جمركي.",
+            "زميلك الأقدم في المكتب يقترح حلًّا وسطًا: «اكتب العقد دون تاريخ محدّد، وخلّيه هو يعبّئه لاحقًا. هيك ما تكون أنت من كتب تاريخًا كاذبًا.»",
+          ],
+          en: [
+            "Your client Samer Khairallah imports industrial equipment. Today he asks you to draft a supply contract dated three months earlier than the real date, to avoid a customs late-penalty.",
+            "A more senior colleague at the firm suggests a middle path: “Write the contract with no fixed date, and let him fill it in later. That way you’re not the one who wrote a false date.”",
+          ],
+        },
+        prompt: {
+          ar: "ما أفضل ردّ؟",
+          en: "What is the best response?",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "«لا أستطيع أن أصيغ العقد بهذا الشكل، لا بتاريخ سابق ولا بتاريخ مفتوح لهذا الغرض تحديدًا — فالنيّة من ورائه واحدة. دعني أشرح لك المخاطرة الفعلية، ثم نبحث معًا مسارًا قانونيًّا للتعامل مع الغرامة.»",
+              en: "“I can’t draft the contract that way — not with an earlier date, and not with an open date for this specific purpose, because the intent behind it is the same either way. Let me walk you through the actual risk, then we look together for a lawful way to deal with the penalty.”",
+            },
+            correct: true,
+            rationale: {
+              ar: "يرفض الجوهر لا الصياغة الظاهرية فقط، فيغلق الباب أمام الحلّ «الوسط» الذي يحمل النيّة نفسها بثوب أنظف. ثم يستبدل الرفض بعرض عملي: شرح المخاطرة وبحث بديل مشروع، بدل أن يترك سامر بلا أي طريق.",
+              en: "It rejects the substance, not just the visible wording, closing the door on the “middle” fix that carries the same intent in cleaner clothes. The refusal is then paired with something practical: explaining the real risk and searching for a lawful alternative, rather than leaving Samer with no path at all.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "يكتب العقد دون تاريخ محدّد كما اقترح الزميل، لأن هذا لا يُعتبر كذبًا صريحًا من الناحية الشكلية.",
+              en: "He drafts the contract with no fixed date as the colleague suggested, since this is not, formally speaking, an outright lie.",
+            },
+            rationale: {
+              ar: "هذا هو الفخّ تحديدًا: صياغة تبدو مدافعة عن نفسها شكليًّا بينما تخدم الغرض المضلّل نفسه — تفادي غرامة عبر إيهام جهة رسمية بتاريخ غير حقيقي. النيّة هي ما يُقاس، لا غياب كلمة أو تاريخ محدّد على الورق.",
+              en: "This is exactly the trap: wording that looks formally defensible while serving the very same misleading purpose — evading a penalty by misleading an official body about the real date. It is the intent that gets judged, not the absence of one specific word or date on the page.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "يرفض الطلب فورًا وينهي التمثيل دون أي شرح أو اقتراح بديل.",
+              en: "He refuses immediately and ends the representation with no explanation or alternative offered.",
+            },
+            rationale: {
+              ar: "الرفض في محلّه، لكن الإنهاء الصامت يترك سامر يبحث عن محامٍ آخر أكثر استعدادًا للتساهل، دون أن يسمع مرّة واحدة لماذا الطلب خطر عليه هو تحديدًا لا على المكتب فقط. التوقّف عن التمثيل له أصول مهنية تحفظ حقّ الموكّل، لا مجرّد إغلاق الباب.",
+              en: "The refusal is right, but a silent exit leaves Samer free to find another lawyer more willing to bend, without ever hearing why the request is risky for him specifically, not just for the firm. Withdrawing from representation has professional steps that protect the client’s interests — it is not simply shutting the door.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "يصيغ العقد بالتاريخ الذي طلبه سامر، لأن هذا النوع من التعديلات شائع ولا يبدو أنه يضرّ أحدًا فعليًّا.",
+              en: "He drafts the contract with the date Samer requested, since this kind of adjustment is common and does not seem to actually harm anyone.",
+            },
+            rationale: {
+              ar: "شيوع الممارسة لا يُغيّر طبيعتها: مستند بتاريخ غير حقيقي يُقدَّم لجهة رسمية لتفادي غرامة يعرّض سامر لمساءلة أكبر من الغرامة نفسها، ويعرّض المحامي الذي صاغه لمسؤولية مباشرة عن مستند يعرف أنه مضلِّل.",
+              en: "How common a practice is does not change its nature: a document with a false date submitted to an official body to dodge a penalty exposes Samer to consequences worse than the penalty itself, and exposes the lawyer who drafted it to direct responsibility for a document he knew was misleading.",
+            },
+          },
+        ],
       },
     ],
     summaryCard: {

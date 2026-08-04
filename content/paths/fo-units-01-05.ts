@@ -1593,6 +1593,7 @@ export const FO_UNITS_01_05: UnitDef[] = [
       { kind: "activity", id: "s.fo.04.a3", activityId: "act.fo.04.3", mode: "guided" },
       { kind: "activity", id: "s.fo.04.a4", activityId: "act.fo.04.4", mode: "independent" },
       { kind: "activity", id: "s.fo.04.a5", activityId: "act.fo.04.5", mode: "independent" },
+      { kind: "activity", id: "s.fo.04.a6", activityId: "act.fo.04.6", mode: "independent" },
       { kind: "summary", id: "s.fo.04.summary", summaryCardId: "card.fo.04" },
       {
         kind: "apply_tomorrow",
@@ -1924,6 +1925,78 @@ export const FO_UNITS_01_05: UnitDef[] = [
           ar: "لو أضفت هذه الخطوة لقائمة تحقق مكتوبة، هل كانت لتسقط فعلاً؟",
           en: "Had you added that step to a written checklist, would it actually have slipped?",
         },
+      },
+      {
+        id: "act.fo.04.6",
+        kind: "best_response",
+        skillId: "skill.workflow-design",
+        stage: 2,
+        weight: 2,
+        context: {
+          ar: [
+            "مكتبكم يتولى عدة دعاوى إخلاء لصالح ملاك عقاريين، من بينهم شركة الواحة للاستثمار العقاري.",
+            "لاحظت المساعدة القانونية نمطًا متكررًا عبر هذه الملفات تحديدًا: كل عميل يتصل أو يراسل مرة كل أسبوعين تقريبًا يسأل: «هل حُدد موعد الجلسة؟» رغم عدم وجود جديد فعليًا في أغلب الأحيان.",
+          ],
+          en: [
+            "Your firm handles several eviction claims for landlord clients, including Al-Waha Real Estate Investment Company.",
+            "A legal assistant noticed a recurring pattern across exactly these files: nearly every client calls or emails roughly every two weeks asking, \"has a hearing date been set?\" — even when there's usually nothing new to report.",
+          ],
+        },
+        prompt: {
+          ar: "قبل اقتراح أي حل لتقليل هذه الاتصالات المتكررة، ما الخطوة الصحيحة أولاً؟",
+          en: "Before proposing any fix to reduce these recurring calls, what's the right first step?",
+        },
+        hint: {
+          ar: "لا تسأل «كيف نمتص هذه الاتصالات؟» بل «لماذا يشعر هؤلاء العملاء تحديدًا بالحاجة للاتصال؟»",
+          en: "Don't ask \"how do we absorb these calls?\" Ask \"why do these specific clients feel the need to call?\"",
+        },
+        options: [
+          {
+            id: "o1",
+            label: {
+              ar: "تحديد الحاجة الفعلية الكامنة وراء هذا النمط: ما الذي يجعل هؤلاء العملاء تحديدًا يشعرون بعدم اليقين كل أسبوعين، قبل اختيار أي أداة أو قناة جديدة.",
+              en: "Identifying the actual need behind the pattern: what makes these specific clients feel uncertain every two weeks, before picking any new tool or channel.",
+            },
+            correct: true,
+            rationale: {
+              ar: "أي حل يُبنى قبل معرفة السبب الفعلي يخاطر بمعالجة عرَض بدل المشكلة؛ هنا الحاجة على الأرجح هي غياب معلومة استباقية عن حالة الملف، لا نقص في وسيلة التواصل.",
+              en: "Any fix built before the real cause is known risks treating a symptom instead of the problem; here the need is likely a missing proactive update, not a shortage of contact channels.",
+            },
+          },
+          {
+            id: "o2",
+            label: {
+              ar: "إعداد صفحة أسئلة شائعة عامة عن مراحل دعاوى الإخلاء ومدتها المتوقعة، لإرسالها لكل من يتصل.",
+              en: "Building a general FAQ page about eviction case stages and typical duration, to send to anyone who calls.",
+            },
+            rationale: {
+              ar: "تجيب عن سؤال عام عن الإجراءات، لكنها لا تخبر العميل بحالة ملفه هو تحديدًا؛ الاتصالات ستستمر لأن الحاجة الفعلية — معرفة وضع قضيته بالذات — لم تُعالَج.",
+              en: "It answers a generic procedural question, but doesn't tell the client the status of their own file specifically; the calls will keep coming because the real need — knowing their own case's status — was never addressed.",
+            },
+          },
+          {
+            id: "o3",
+            label: {
+              ar: "توظيف موظف استقبال إضافي مخصص للرد على هذا النوع من الاتصالات المتكررة.",
+              en: "Hiring an extra receptionist dedicated to answering this kind of recurring call.",
+            },
+            rationale: {
+              ar: "يمتص أثر المشكلة بتكلفة دائمة دون إزالة سببها؛ العملاء سيستمرون بالاتصال بلا حدود لأن شيئًا لم يتغيّر في تجربتهم الفعلية مع الملف.",
+              en: "It absorbs the symptom at a permanent cost without removing its cause; clients will keep calling indefinitely because nothing has actually changed in their experience of the file.",
+            },
+          },
+          {
+            id: "o4",
+            label: {
+              ar: "تزويد كل عميل بموعد متوقع مؤكد لصدور قرار المحكمة لطمأنته وإيقاف الاتصالات.",
+              en: "Giving each client a confirmed expected date for the court's decision, to reassure them and stop the calls.",
+            },
+            rationale: {
+              ar: "لا يملك المكتب سلطة تحديد موعد المحكمة أو ضمانه؛ وعد كهذا يُخلّ بثقة العميل حين يتغير الموعد الفعلي، وهو أمر متكرر في العمل القضائي.",
+              en: "The firm has no authority to fix or guarantee a court date; a promise like this breaks the client's trust the moment the actual date shifts, which happens routinely in litigation.",
+            },
+          },
+        ],
       },
     ],
     summaryCard: {
