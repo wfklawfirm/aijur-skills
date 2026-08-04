@@ -62,11 +62,11 @@ scripts/seed.ts  Idempotent content + demo-account seeder.
 
 Read [`docs/PRODUCT_AUDIT.md`](./docs/PRODUCT_AUDIT.md) first — it states
 plainly what's built, what's deferred, and what the real content coverage is
-(6 of the 10 domains have real unit content across four paths — Client
+(7 of the 10 domains have real unit content across five paths — Client
 Relations, Communication, Professional Judgment & Ethics, Legal English,
-Negotiation & Influence, and Self-Management; the other 4 are
-framework-only: skills and mastery levels are defined, but no units have
-been written against them yet). Then:
+Negotiation & Influence, Self-Management, and Teamwork & Leadership; the
+other 3 are framework-only: skills and mastery levels are defined, but no
+units have been written against them yet). Then:
 
 | Doc | Covers |
 |---|---|

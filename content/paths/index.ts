@@ -8,6 +8,8 @@ import { NI_UNITS_01_05 } from "./ni-units-01-05";
 import { NI_UNITS_06_10 } from "./ni-units-06-10";
 import { SM_UNITS_01_05 } from "./sm-units-01-05";
 import { SM_UNITS_06_10 } from "./sm-units-06-10";
+import { TL_UNITS_01_05 } from "./tl-units-01-05";
+import { TL_UNITS_06_10 } from "./tl-units-06-10";
 
 export const CLIENT_COMMUNICATION_PATH: PathDef = {
   id: "path.client-communication-foundations",
@@ -267,9 +269,74 @@ export const SELF_MANAGEMENT_PATH: PathDef = {
   units: [...SM_UNITS_01_05, ...SM_UNITS_06_10],
 };
 
+export const TEAMWORK_LEADERSHIP_PATH: PathDef = {
+  id: "path.teamwork-leadership",
+  slug: "teamwork-leadership",
+  title: {
+    ar: "العمل الجماعي والقيادة",
+    en: "Teamwork and Leadership",
+  },
+  tagline: {
+    ar: "القيادة لا تنتظر منصبًا.",
+    en: "Leadership doesn't wait for a title.",
+  },
+  description: {
+    ar: "عشر وحدات تنقلك من تفويض مهمة بوضوح إلى إقناع زميل مشغول بإعطاء ملفك الأولوية: كيف تختار الشخص المناسب للمهمة المناسبة، وتكتب تعليمات قابلة للتنفيذ فورًا، وتتابع دون أن تُشعِر أحدًا بعدم الثقة، وتعطي ملاحظة محددة تُستخدم، وتتلقى ملاحظة دون دفاع، وتحدّث مشرفك قبل أن يسألك، وتطلب المساعدة قبل أن تتحول المشكلة لأزمة، وتختلف مع مشرفك باحترام دون خضوع صامت أو تمرّد، وتتحدث في الاجتماع بما يُسمَع، وتقود زميلاً لا سلطة لك عليه.",
+    en: "Ten units that take you from delegating a task clearly to persuading a busy peer to prioritize your file: choosing the right person for the right task, writing instructions that can be acted on immediately, checking in without signalling distrust, giving feedback that actually gets used, receiving feedback without getting defensive, updating your supervisor before they have to ask, asking for help before a problem becomes a crisis, disagreeing with your supervisor respectfully without silent compliance or insubordination, speaking in a meeting in a way that actually gets heard, and leading a colleague you have no authority over.",
+  },
+  track: "professional",
+  audience: ["trainee", "junior", "experienced", "manager"],
+  estimatedWeeks: 4,
+  domainIds: ["dom.teamwork-leadership"],
+  chapters: [
+    {
+      id: "ch.tl.delegating-clearly",
+      pathId: "path.teamwork-leadership",
+      order: 1,
+      title: { ar: "التفويض بوضوح", en: "Delegating clearly" },
+      description: {
+        ar: "الشخص المناسب للمهمة المناسبة، وتعليمات يمكن العمل بها فورًا، ومتابعة لا تُشعِر بعدم الثقة.",
+        en: "The right person for the right task, instructions that can be acted on immediately, and check-ins that don't signal distrust.",
+      },
+    },
+    {
+      id: "ch.tl.feedback-that-lands",
+      pathId: "path.teamwork-leadership",
+      order: 2,
+      title: { ar: "ملاحظات تُستخدم فعلاً", en: "Feedback that lands" },
+      description: {
+        ar: "ملاحظة محددة تصف السلوك وأثره، وتلقّي الملاحظة دون تبرير أو دفاع.",
+        en: "Specific feedback that names the behavior and its effect, and receiving feedback without justifying or getting defensive.",
+      },
+    },
+    {
+      id: "ch.tl.managing-up",
+      pathId: "path.teamwork-leadership",
+      order: 3,
+      title: { ar: "إدارة العلاقة مع المشرف", en: "Managing up" },
+      description: {
+        ar: "تحديث استباقي، وطلب مساعدة مبكر، واختلاف محترم مع من يشرف عليك.",
+        en: "Proactive updates, asking for help early, and a respectful disagreement with the person supervising you.",
+      },
+    },
+    {
+      id: "ch.tl.leading-without-authority",
+      pathId: "path.teamwork-leadership",
+      order: 4,
+      title: { ar: "القيادة بلا سلطة رسمية", en: "Leading without authority" },
+      description: {
+        ar: "التحدث في الاجتماع بما يُسمَع فعلاً، وإقناع زميل لا سلطة لك عليه بإعطاء طلبك الأولوية.",
+        en: "Speaking in a meeting in a way that's actually heard, and persuading a peer you have no authority over to prioritize your ask.",
+      },
+    },
+  ],
+  units: [...TL_UNITS_01_05, ...TL_UNITS_06_10],
+};
+
 export const PATHS: PathDef[] = [
   CLIENT_COMMUNICATION_PATH,
   LEGAL_ENGLISH_PATH,
   NEGOTIATION_INFLUENCE_PATH,
   SELF_MANAGEMENT_PATH,
+  TEAMWORK_LEADERSHIP_PATH,
 ];
