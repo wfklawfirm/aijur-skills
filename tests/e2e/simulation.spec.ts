@@ -183,4 +183,37 @@ test.describe("Simulation player", () => {
       "Firas, I get the time crunch, but I can't put the client's financial data into a tool the firm hasn't approved -- let's find a faster way through the approved channel instead, and I can help you triage what actually needs full verification before six.",
     );
   });
+
+  // Client Communication is the platform's original, most heavily authored
+  // path -- it ships four scenarios where every other domain ships two,
+  // and until now only its very first (scn.first-client-meeting) had ever
+  // been exercised. These three close out the remaining three, bringing
+  // every one of the platform's 18 scenarios to at least one proven
+  // simulation run.
+  test("a sixteenth scenario completes (Client Communication: guarantee request)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.guarantee-request",
+      '"Do you guarantee I\'ll win?"',
+      "I understand why you're asking, and I want to be straight with you -- I can't guarantee a result, no honest lawyer can. What I can do is walk you through exactly how we'd assess your case's real prospects.",
+    );
+  });
+
+  test("a seventeenth scenario completes (Client Communication: angry client)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.angry-client-delay",
+      "Three weeks with no word: an angry client",
+      "You're right to be upset -- three weeks of silence from us isn't acceptable, and I'm sorry. Let me tell you exactly what happened on the file and what I'm going to do about it starting today.",
+    );
+  });
+
+  test("an eighteenth scenario completes (Client Communication: fee pushback)", async ({ page }) => {
+    await runSimulationToCompletion(
+      page,
+      "scn.fee-pushback",
+      '"Another lawyer quoted me a third of this"',
+      "That's a fair question to raise, and I'd rather we talk it through than have you wonder about it. Can you tell me a bit about what the other quote covers, so we're actually comparing the same scope of work?",
+    );
+  });
 });
