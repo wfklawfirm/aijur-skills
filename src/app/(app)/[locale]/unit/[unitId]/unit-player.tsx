@@ -577,6 +577,7 @@ function ActivityStepView({
           {aiOutcome.score} / {aiOutcome.maxScore}
         </span>
       </Callout>
+      {aiOutcome.pendingReview && <Callout tone="warning">{dict.unit.pendingReview}</Callout>}
       <a href="#" className="text-sm font-semibold text-[var(--color-brand)] underline underline-offset-4">
         {dict.feedback.title}
       </a>

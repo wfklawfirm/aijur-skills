@@ -220,6 +220,7 @@ export const en: Dictionary = {
     correct: "Correct",
     incorrect: "Not the strongest",
     partial: "Partly right",
+    pendingReview: "Pending human review — this score is provisional and won't count toward your mastery record until it's confirmed.",
     yourAnswer: "Your answer",
     modelAnswer: "A strong version",
     weakAnswerLabel: "A weak version — and what's wrong with it",

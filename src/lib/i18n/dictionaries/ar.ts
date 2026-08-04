@@ -222,6 +222,7 @@ export const ar = {
     correct: "إجابة صحيحة",
     incorrect: "ليست الأفضل",
     partial: "صحيحة جزئيًا",
+    pendingReview: "قيد المراجعة البشرية — هذه الدرجة أولية ولن تُحتسب في سجل إتقانك حتى تُعتمد.",
     yourAnswer: "إجابتك",
     modelAnswer: "نموذج قوي",
     weakAnswerLabel: "نموذج ضعيف — وما الخطأ فيه",

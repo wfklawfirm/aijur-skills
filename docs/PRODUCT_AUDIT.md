@@ -64,14 +64,14 @@ Checked directly rather than assumed:
 - **Automated content ingestion pipeline**: the admin `ingestion` page is a review
   queue over pre-seeded `ingestionSuggestions`, not a live document-to-content
   pipeline; the comment in the source file calls it a "placeholder" for that reason.
-- **Content review workflow completion**: all 42 skills sit at `reviewStatus:
+- **Content review workflow completion**: all 47 skills sit at `reviewStatus:
   "ai_suggested"` — the SME review → approved pipeline that `content/types.ts` models
   (`draft → ai_suggested → sme_reviewed → approved → archived`) has not been exercised
   past the first stage for any skill.
-- **8 of 10 domains have no unit content** (see §4) — Negotiation & Influence,
-  Self-Management, Teamwork & Leadership, Business Development, Firm & Matter
-  Operations, and Digital Tools & AI have skills and mastery-level definitions but zero
-  authored units, activities, or scenarios.
+- **5 of 10 domains have no unit content** (see §4) — Self-Management, Teamwork &
+  Leadership, Business Development, Firm & Matter Operations, and Digital Tools & AI
+  have skills and mastery-level definitions but zero authored units, activities, or
+  scenarios.
 
 ## 4. Content coverage
 
@@ -152,10 +152,12 @@ in production content, just at low volume for some kinds (e.g. only 1
 
 ## 5. Known risks / rough edges
 
-- **Content breadth is the biggest gap.** The product is architected for 10 domains
-  and multiple paths per audience (student/trainee/junior/experienced/manager per
-  `PathDef.audience`), but only 2 paths and 20 units exist. Anyone piloting this
-  beyond the Client Communication track will hit an empty domain immediately.
+- **Content breadth is still a gap, though narrower than before.** The product is
+  architected for 10 domains and multiple paths per audience
+  (student/trainee/junior/experienced/manager per `PathDef.audience`), but only 3
+  paths and 30 units exist (Client Communication, Legal English, Negotiation &
+  Influence). Anyone piloting this beyond those three tracks will hit an empty
+  domain immediately.
 - **Offline AI is meaningfully lower-fidelity than a real model.** The
   `offline`-provider implementations in `src/lib/ai/agents/{simulation,evaluation,
   coaching}.ts` are deterministic, rule-based stand-ins with the same output schema
@@ -163,15 +165,23 @@ in production content, just at low volume for some kinds (e.g. only 1
   not a substitute for LLM-quality simulation dialogue or nuanced rubric scoring.
   `AgentResult.degraded` flags this distinction but nothing downstream currently
   surfaces "degraded" to the learner in a way this audit verified.
-- **All content is unreviewed by a human SME.** Every one of the 42 skills is stuck
+- **All content is unreviewed by a human SME.** Every one of the 47 skills is stuck
   at `reviewStatus: "ai_suggested"` — the review pipeline exists in the schema and
   admin UI (`review-queue` page, `contentReviews` table) but has not been exercised
   to `approved` for anything yet. Treat all current content as pre-SME-review.
 - **No automated e2e, visual regression, or accessibility test coverage.** The test
-  suite (`tests/*.test.ts`, 73 tests / 25 suites, all unit-level via Node's built-in
-  test runner) covers grading logic, mastery math, RBAC, i18n key parity, review
-  scheduling, and evaluation safety — there is no Playwright/Cypress suite, no visual
-  diffing, and no automated a11y audit (e.g. axe) anywhere in the repo.
+  suite (`tests/*.test.ts`, 106 tests / 31 suites, all unit/integration-level via
+  Node's built-in test runner) covers grading logic, mastery math, RBAC, tenant
+  isolation, rate limiting, audit logging, i18n key parity, review scheduling, and
+  evaluation safety — there is no Playwright/Cypress suite, no visual diffing, and
+  no automated a11y audit (e.g. axe) anywhere in the repo.
+- **AI-graded scores now visibly flag pending review, but "degraded" mode still
+  doesn't.** `unit-player.tsx`'s `aiResultNode` shows a dedicated callout
+  (`dict.unit.pendingReview`) whenever `SubmitActivityResult.pendingReview` is true,
+  so a learner sees plainly that a score is provisional and not yet counted toward
+  mastery — this closes half of the gap noted above about `AgentResult.degraded`
+  not surfacing anywhere; the `degraded` flag itself (offline-provider fallback
+  quality) still isn't shown to the learner, only the pending-review state is.
 - **Billing is schema-only.** The `subscriptions` table has no integration behind it;
   building a real paywall/seat-management flow is greenfield work, not a wire-up.
 - **Ingestion is human-curated, not automated.** `content/sources/registry.ts` (33
