@@ -9,6 +9,9 @@ import { users, profiles } from "@/lib/db/schema";
 import { hashPassword, verifyPassword, passwordProblems } from "@/lib/auth/password";
 import { createSession, destroySession, getSessionUser } from "@/lib/auth/session";
 import { checkRateLimit, getClientIp } from "@/lib/auth/rate-limit";
+import { createVerificationTokenCore } from "@/lib/actions/email-verification-core";
+import { sendEmail } from "@/lib/email/mailer";
+import { appOrigin } from "@/lib/http/origin";
 import { uid } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
 
@@ -83,7 +86,6 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
 
   const passwordHash = await hashPassword(password);
   const id = uid("user");
-  const now = Date.now();
 
   try {
     await db.insert(users).values({
@@ -93,11 +95,31 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
       name,
       locale: locale === "en" ? "en" : "ar",
       systemRole: "learner",
-      emailVerifiedAt: now,
+      // emailVerifiedAt intentionally left unset — real verification below,
+      // not assumed at signup. Onboarding/practice are not gated on it (see
+      // docs/SECURITY.md §7); this only affects what the profile page shows.
     });
     await db.insert(profiles).values({ userId: id });
   } catch {
     return { error: "server_error" };
+  }
+
+  // Best-effort — a mail-send failure must not block account creation. The
+  // learner can always ask for another link from the profile page.
+  try {
+    const token = await createVerificationTokenCore(id);
+    const origin = await appOrigin();
+    const link = `${origin}/${locale}/verify-email/${token}`;
+    const isAr = locale === "ar";
+    await sendEmail({
+      to: email,
+      subject: isAr ? "تأكيد بريدك الإلكتروني — AIJUR" : "Confirm your AIJUR email",
+      text: isAr
+        ? `مرحبًا ${name}،\n\nاضغط على الرابط التالي لتأكيد بريدك الإلكتروني خلال ٢٤ ساعة:\n${link}`
+        : `Hi ${name},\n\nUse this link to confirm your email within the next 24 hours:\n${link}`,
+    });
+  } catch (err) {
+    console.error("[signUp] failed to send verification email", err);
   }
 
   const ua = (await headers()).get("user-agent") ?? undefined;

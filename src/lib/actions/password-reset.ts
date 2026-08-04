@@ -1,12 +1,12 @@
 "use server";
 
-import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { checkRateLimit, getClientIp } from "@/lib/auth/rate-limit";
 import { sendEmail } from "@/lib/email/mailer";
+import { appOrigin } from "@/lib/http/origin";
 import { createResetTokenCore, redeemResetTokenCore } from "./password-reset-core";
 
 const REQUEST_EMAIL_LIMIT = { windowMs: 60 * 60 * 1000, max: 3 };
@@ -19,14 +19,6 @@ const requestSchema = z.object({
 
 export interface RequestResetState {
   submitted?: boolean;
-}
-
-async function appOrigin(): Promise<string> {
-  if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, "");
-  const h = await headers();
-  const proto = h.get("x-forwarded-proto") ?? "http";
-  const host = h.get("host") ?? "localhost:3000";
-  return `${proto}://${host}`;
 }
 
 /**

@@ -11,6 +11,7 @@ import {
   updateWeeklyGoal,
 } from "@/lib/actions/profile";
 import { signOutAction } from "@/lib/actions/auth";
+import { resendVerificationEmail } from "@/lib/actions/email-verification";
 import type { Locale } from "@/lib/i18n/config";
 import { SectionTitle } from "@/components/layout/app-shell";
 import { Card, CardBody } from "@/components/ui/card";
@@ -41,15 +42,28 @@ export function ProfileSettings({
   accessibility,
   aiConsentGranted,
   organization,
+  emailVerified,
 }: {
   locale: Locale;
   weeklyMinutesGoal: number;
   accessibility: Record<string, boolean>;
   aiConsentGranted: boolean;
   organization: OrganizationPolicy | null;
+  emailVerified: boolean;
 }) {
   const { dict, t } = useI18n();
   const router = useRouter();
+
+  // --- email verification -----------------------------------------------------
+  const [resending, setResending] = React.useState(false);
+  const [resendResult, setResendResult] = React.useState<"sent" | "rate_limited" | "already_verified" | null>(null);
+  async function handleResendVerification() {
+    setResending(true);
+    setResendResult(null);
+    const result = await resendVerificationEmail(locale);
+    setResendResult(result.alreadyVerified ? "already_verified" : result.sent ? "sent" : "rate_limited");
+    setResending(false);
+  }
 
   // --- weekly goal -----------------------------------------------------
   const [goal, setGoal] = React.useState(weeklyMinutesGoal);
@@ -105,6 +119,32 @@ export function ProfileSettings({
 
   return (
     <>
+      {!emailVerified && (
+        <Card>
+          <CardBody className="space-y-2">
+            <Callout tone="warning">{dict.auth.emailNotVerified}</Callout>
+            <Button variant="secondary" block onClick={handleResendVerification} loading={resending}>
+              {dict.auth.resendVerification}
+            </Button>
+            {resendResult === "sent" && (
+              <p className="text-supporting" aria-live="polite">
+                {dict.auth.verificationSent}
+              </p>
+            )}
+            {resendResult === "rate_limited" && (
+              <p className="text-supporting" aria-live="polite">
+                {dict.auth.verificationRateLimited}
+              </p>
+            )}
+            {resendResult === "already_verified" && (
+              <p className="text-supporting" aria-live="polite">
+                {dict.auth.emailVerified}
+              </p>
+            )}
+          </CardBody>
+        </Card>
+      )}
+
       <SectionTitle>{dict.profile.preferences}</SectionTitle>
       <Card>
         <CardBody className="space-y-3">

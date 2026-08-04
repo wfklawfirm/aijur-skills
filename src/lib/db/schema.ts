@@ -149,6 +149,23 @@ export const passwordResetTokens = sqliteTable(
   ],
 );
 
+export const emailVerificationTokens = sqliteTable(
+  "email_verification_tokens",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    /** Same shape as `passwordResetTokens.tokenHash` — see that comment. */
+    tokenHash: text("token_hash").notNull(),
+    expiresAt: integer("expires_at").notNull(),
+    usedAt: integer("used_at"),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    uniqueIndex("email_verification_tokens_hash_idx").on(t.tokenHash),
+    index("email_verification_tokens_user_idx").on(t.userId),
+  ],
+);
+
 export const profiles = sqliteTable("profiles", {
   userId: text("user_id")
     .primaryKey()

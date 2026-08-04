@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { organizations, profiles } from "@/lib/db/schema";
+import { organizations, profiles, users } from "@/lib/db/schema";
 import { getSessionUser } from "@/lib/auth/session";
 import { getDictionary } from "@/lib/i18n";
 import { isLocale, type Locale } from "@/lib/i18n/config";
@@ -18,14 +18,16 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
   const user = await getSessionUser();
   if (!user) redirect(`/${locale}/sign-in`);
 
-  const [profileRows, orgRows] = await Promise.all([
+  const [profileRows, orgRows, userRows] = await Promise.all([
     db.select().from(profiles).where(eq(profiles.userId, user.id)).limit(1),
     user.organization
       ? db.select().from(organizations).where(eq(organizations.id, user.organization.id)).limit(1)
       : Promise.resolve([] as (typeof organizations.$inferSelect)[]),
+    db.select({ emailVerifiedAt: users.emailVerifiedAt }).from(users).where(eq(users.id, user.id)).limit(1),
   ]);
   const profile = profileRows[0];
   const orgRow = orgRows[0];
+  const emailVerified = Boolean(userRows[0]?.emailVerifiedAt);
 
   const organization =
     user.organization && orgRow
@@ -59,6 +61,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
           accessibility={profile?.accessibility ?? {}}
           aiConsentGranted={Boolean(profile?.aiProcessingConsentAt)}
           organization={organization}
+          emailVerified={emailVerified}
         />
       </Page>
       <BottomNav showStudio={user.systemRole !== "learner"} />
