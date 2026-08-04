@@ -118,6 +118,18 @@ function normalise(s: string): string {
     .trim();
 }
 
+/**
+ * Kept as a matching literal union (not just `string`) so the Server Action
+ * insert sites (`progress.ts`/`simulation.ts`) can pass this straight into
+ * `evaluations.humanReviewReason` — the DB column declares this exact same
+ * union in `schema.ts` — without a lossy widen-then-narrow cast.
+ */
+export type HumanReviewReason =
+  | "unverified_evidence"
+  | "low_confidence"
+  | "capped_by_critical_mistake"
+  | "incomplete_rubric_coverage";
+
 export interface VerifiedEvaluation extends EvaluationOutput {
   overallScore: number;
   maxScore: number;
@@ -125,7 +137,7 @@ export interface VerifiedEvaluation extends EvaluationOutput {
   /** Criteria whose evidence could not be found in the learner's text. */
   unverifiedCriterionIds: string[];
   needsHumanReview: boolean;
-  humanReviewReason: string | null;
+  humanReviewReason: HumanReviewReason | null;
 }
 
 /**
@@ -176,7 +188,7 @@ export function verifyEvaluation(
   const fabricationRate = criteria.length === 0 ? 1 : unverified.length / criteria.length;
   const confidence = clamp(output.confidence * (1 - fabricationRate * 0.8) * coverage, 0, 1);
 
-  let humanReviewReason: string | null = null;
+  let humanReviewReason: HumanReviewReason | null = null;
   if (fabricationRate > 0.3) humanReviewReason = "unverified_evidence";
   else if (confidence < 0.5) humanReviewReason = "low_confidence";
   else if (criticalMistakeIds.length > 0 && overall <= 1) humanReviewReason = "capped_by_critical_mistake";

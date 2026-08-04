@@ -340,6 +340,7 @@ export const en: Dictionary = {
     unchanged: "Unchanged",
     confidence: "Assessment confidence",
     lowConfidence: "Low-confidence assessment — sent for human review.",
+    degraded: "This assessment used our offline fallback engine, not the primary AI model — quality may be lower than usual.",
     requestReview: "Request a human review",
     reviewRequested: "Sent for review",
     tryAgain: "Try again",
@@ -446,6 +447,13 @@ export const en: Dictionary = {
     suggestionReason: "Why this was suggested",
     noAutoPublish: "No suggestion is ever published automatically.",
     evaluationsPending: "Assessments awaiting human review",
+    queueReasonLabel: "Why this is queued",
+    queueReason: {
+      unverified_evidence: "The model quoted text that wasn't found in what the learner actually wrote.",
+      low_confidence: "The model's own confidence in this score was low.",
+      capped_by_critical_mistake: "A critical mistake capped the score — check the mistake is real.",
+      incomplete_rubric_coverage: "The model scored fewer criteria than the rubric defines.",
+    },
     organization: {
       title: "Organization",
       body: "Members and their roles in your organization — visible only to your organization's own owners, admins, and managers.",

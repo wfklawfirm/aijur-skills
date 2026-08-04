@@ -6,3 +6,8 @@ data/
 .env.local
 *.tsbuildinfo
 next-env.d.ts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+tests/e2e/.auth/

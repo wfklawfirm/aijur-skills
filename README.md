@@ -4,14 +4,16 @@ A mobile-first, Arabic-first (with full English support) platform that trains
 lawyers and law students in professional, operational, and Legal English
 communication skills — through original, scenario-based exercises and
 AI-assisted (and fully offline-capable) simulation and feedback, not
-recycled textbook chapters.
+recycled textbook chapters. All 10 competency domains now have real,
+authored unit content across 8 learning paths.
 
 This is a working MVP: real auth (with password reset and email
 verification), a real learning engine with an evidence-based mastery
 algorithm, a real AI evaluation pipeline with a non-model-dependent
 verification layer, an application-level CSRF guard, and a real admin
 Content Studio — all documented in [`docs/`](./docs) and grounded in a
-130-test unit suite.
+141-test unit suite plus a real-browser e2e/RTL/accessibility suite
+(`npm run test:e2e`).
 
 ## Quick start
 
@@ -40,6 +42,27 @@ npm run verify      # typecheck + lint + test + build, in that order
 Individually: `npm run typecheck`, `npm run lint`, `npm run test`,
 `npm run build`.
 
+```bash
+npm run test:e2e    # real Chromium against a real production build (Playwright)
+```
+
+Runs a real headless Chromium (see `playwright.config.ts` for the pinned
+executable path this sandboxed environment expects) against a real
+`next build && next start`, not `next dev` — dev mode's HMR was found to
+race with the very first cold navigation under headless automation. Covers:
+a full sign-up → onboarding → all 8 diagnostic items → `/home`, an
+authenticated learner reaching real content across all 8 authored paths
+(plus a last-unit spot check on two of them, to catch chapter-boundary bugs
+a first-unit-only check would miss), two full simulation runs from separate
+domains (start → message → early-end → evaluation), the admin human review
+queue (a real queued evaluation's full AI payload and queue reason render,
+not just a score badge), RTL/LTR layout direction for both locales, and
+axe-core accessibility scans (critical/serious severity gate, plus two
+structural rules — `page-has-heading-one` and `region`/`skip-link` — pinned
+to always-blocking after the real bugs they found were fixed). 24/24 tests
+passing. See `docs/PRODUCT_AUDIT.md` §5 for what it does and doesn't cover
+yet.
+
 ## Project layout
 
 ```
@@ -56,20 +79,22 @@ docs/           Ten architecture docs — start with PRODUCT_AUDIT.md for an
                  PRODUCT_ARCHITECTURE.md for the system map.
 tests/          Unit tests for the mastery algorithm, review scheduler,
                  grading, the AI evidence-verification safety layer, RBAC,
-                 and i18n dictionary parity.
+                 and i18n dictionary parity. tests/e2e/ has the real-browser
+                 Playwright suite (npm run test:e2e) — separate from the
+                 unit suite (npm run test), which never touches a browser.
 scripts/seed.ts  Idempotent content + demo-account seeder.
 ```
 
 ## Documentation
 
 Read [`docs/PRODUCT_AUDIT.md`](./docs/PRODUCT_AUDIT.md) first — it states
-plainly what's built, what's deferred, and what the real content coverage is
-(9 of the 10 domains have real unit content across seven paths — Client
-Relations, Communication, Professional Judgment & Ethics, Legal English,
-Negotiation & Influence, Self-Management, Teamwork & Leadership, Business
-Development, and Firm & Matter Operations; only Digital Tools & AI remains
-framework-only: skills and mastery levels are defined, but no units have been
-written against them yet). Then:
+plainly what's built and what's deferred. All 10 of 10 domains now have real
+unit content across 8 paths — Client Relations, Communication, Professional
+Judgment & Ethics, Legal English, Negotiation & Influence, Self-Management,
+Teamwork & Leadership, Business Development, Firm & Matter Operations, and
+Digital Tools & AI. What's still deferred is depth (one path per domain, not
+several) and human SME review (every skill is still `reviewStatus:
+ai_suggested` — see the audit for what that means). Then:
 
 | Doc | Covers |
 |---|---|

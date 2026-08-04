@@ -4,7 +4,6 @@ import type { Locale } from "@/lib/i18n/config";
 import { db } from "@/lib/db";
 import { paths, units } from "@/lib/db/schema";
 import { getReviewGateStatus } from "@/lib/actions/admin";
-import { getSessionUser } from "@/lib/auth/session";
 import { can } from "@/lib/auth/rbac";
 import type { PathDef, UnitDef } from "@content/types";
 import { Card, CardBody } from "@/components/ui/card";
@@ -12,6 +11,7 @@ import { Badge, MasteryMeter } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
 import { SectionTitle } from "@/components/layout/app-shell";
 import { GatePanel, type GateRow } from "../_components/gate-panel";
+import { requireContentAuthorOrRedirect } from "../_lib/guard";
 
 const LEGAL_ENGLISH_PATH_ID = "path.legal-english-client-communication";
 
@@ -20,14 +20,14 @@ export default async function AdminUnitsPage({ params }: { params: Promise<{ loc
   const loc = locale as Locale;
   const dict = getDictionary(loc);
 
-  const [user, pathRows, unitRows] = await Promise.all([
-    getSessionUser(),
+  const user = await requireContentAuthorOrRedirect(loc);
+  const [pathRows, unitRows] = await Promise.all([
     db.select().from(paths),
     db.select().from(units).orderBy(asc(units.order)),
   ]);
 
-  const canReview = !!user && can(user, "content.review");
-  const canPublish = !!user && can(user, "content.publish");
+  const canReview = can(user, "content.review");
+  const canPublish = can(user, "content.publish");
 
   const gatesByUnit = new Map<string, GateRow[]>(
     await Promise.all(

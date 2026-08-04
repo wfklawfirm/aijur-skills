@@ -72,7 +72,7 @@ export function DiagnosticFlow({
     return (
       <div className="flex flex-1 flex-col justify-between gap-10 py-8">
         <div className="space-y-4 text-center">
-          <p className="text-page-title">{dict.diagnostic.title}</p>
+          <h1 className="text-page-title">{dict.diagnostic.title}</h1>
           <p className="text-supporting">{dict.diagnostic.intro}</p>
         </div>
         <Button variant="primary" block onClick={() => setPhase("items")}>
@@ -118,7 +118,7 @@ export function DiagnosticFlow({
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-positive-tint)] text-[var(--color-positive)]">
           <CheckIcon size={24} />
         </span>
-        <p className="text-page-title">{dict.diagnostic.resultTitle}</p>
+        <h1 className="text-page-title">{dict.diagnostic.resultTitle}</h1>
         <p className="text-supporting">{dict.diagnostic.resultBody}</p>
       </div>
 

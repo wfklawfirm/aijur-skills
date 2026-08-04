@@ -14,6 +14,8 @@ import { BD_UNITS_01_05 } from "./bd-units-01-05";
 import { BD_UNITS_06_10 } from "./bd-units-06-10";
 import { FO_UNITS_01_05 } from "./fo-units-01-05";
 import { FO_UNITS_06_10 } from "./fo-units-06-10";
+import { DA_UNITS_01_05 } from "./da-units-01-05";
+import { DA_UNITS_06_10 } from "./da-units-06-10";
 
 export const CLIENT_COMMUNICATION_PATH: PathDef = {
   id: "path.client-communication-foundations",
@@ -465,6 +467,70 @@ export const FIRM_OPERATIONS_PATH: PathDef = {
   units: [...FO_UNITS_01_05, ...FO_UNITS_06_10],
 };
 
+export const DIGITAL_AI_PATH: PathDef = {
+  id: "path.digital-ai",
+  slug: "digital-tools-and-ai",
+  title: {
+    ar: "التقنية والذكاء الاصطناعي",
+    en: "Digital Tools and AI",
+  },
+  tagline: {
+    ar: "مسوّدة أولى مفيدة، لا مصدرًا للحقيقة.",
+    en: "A useful first draft, never a source of truth.",
+  },
+  description: {
+    ar: "عشر وحدات تنقلك من فهم ما تُحسن أدوات الذكاء الاصطناعي فعله إلى رفض استخدام أداة بثقة تحت الضغط: كيف تستخدم الأداة كمسوّدة أولى لا كمصدر، وتبني عادة التحقق قبل الاعتماد، وتكتشف مرجعًا ملفّقًا قبل خروجه، وتُبلغ عنه بوضوح دون تحميل الأداة المسؤولية أو إخفاء الخطأ، وتحمي بيانات الموكّل من أدوات غير معتمدة، وتعرف متى لا تُستخدم الأداة إطلاقًا مهما بلغ ضغط الوقت.",
+    en: "Ten units that take you from understanding what AI tools are actually good at to confidently declining to use one under pressure: using a tool as a first draft, not a source; building a verification habit before you rely on anything it produces; catching a fabricated reference before it goes out; disclosing it plainly without blaming the tool or staying silent; protecting client data from unapproved tools; and knowing when a tool should not be used at all, no matter the deadline.",
+  },
+  track: "professional",
+  audience: ["trainee", "junior", "experienced"],
+  estimatedWeeks: 4,
+  domainIds: ["dom.digital-ai"],
+  chapters: [
+    {
+      id: "ch.da.ai-as-a-first-draft",
+      pathId: "path.digital-ai",
+      order: 1,
+      title: { ar: "الذكاء الاصطناعي كمسوّدة أولى", en: "AI as a first draft" },
+      description: {
+        ar: "ما تُحسن الأداة فعله وما لا تُحسنه، ولماذا تُستخدم الأدوات المعتمدة من المكتب فقط.",
+        en: "What the tool is actually good at and what it isn't, and why only firm-approved tools are used for anything client-related.",
+      },
+    },
+    {
+      id: "ch.da.verifying-before-you-rely",
+      pathId: "path.digital-ai",
+      order: 2,
+      title: { ar: "التحقق قبل الاعتماد", en: "Verifying before you rely" },
+      description: {
+        ar: "قائمة تحقق ملموسة، ومراجعة كاملة لمرجع واحد من الاستشهاد إلى النتيجة.",
+        en: "A concrete verification checklist, and a full end-to-end check of a single citation.",
+      },
+    },
+    {
+      id: "ch.da.catching-and-disclosing-errors",
+      pathId: "path.digital-ai",
+      order: 3,
+      title: { ar: "اكتشاف الخطأ والإبلاغ عنه", en: "Catching and disclosing errors" },
+      description: {
+        ar: "علامات التلفيق المبكرة، ومذكّرة تصحيح واضحة، ومحادثة إبلاغ مباشرة قبل خروج المستند.",
+        en: "Early warning signs of fabrication, a clear correction note, and a direct disclosure conversation before the document goes out.",
+      },
+    },
+    {
+      id: "ch.da.protecting-data-and-knowing-limits",
+      pathId: "path.digital-ai",
+      order: 4,
+      title: { ar: "حماية البيانات ومعرفة الحدود", en: "Protecting data and knowing the limits" },
+      description: {
+        ar: "ما لا يدخل أبدًا إلى أداة غير معتمدة، ورفض مهني لطلب يخترق هذا الحد تحت الضغط.",
+        en: "What never goes into an unapproved tool, and a professional refusal when a request under pressure crosses that line.",
+      },
+    },
+  ],
+  units: [...DA_UNITS_01_05, ...DA_UNITS_06_10],
+};
+
 export const PATHS: PathDef[] = [
   CLIENT_COMMUNICATION_PATH,
   LEGAL_ENGLISH_PATH,
@@ -473,4 +539,5 @@ export const PATHS: PathDef[] = [
   TEAMWORK_LEADERSHIP_PATH,
   BUSINESS_DEVELOPMENT_PATH,
   FIRM_OPERATIONS_PATH,
+  DIGITAL_AI_PATH,
 ];

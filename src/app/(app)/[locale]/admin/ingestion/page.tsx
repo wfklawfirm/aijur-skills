@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Callout, EmptyState } from "@/components/ui/feedback";
 import { SectionTitle } from "@/components/layout/app-shell";
+import { requireContentAuthorOrRedirect } from "../_lib/guard";
 
 /**
  * There is no book-upload/parsing pipeline built yet. This page is an honest
@@ -18,6 +19,7 @@ export default async function AdminIngestionPage({ params }: { params: Promise<{
   const loc = locale as Locale;
   const dict = getDictionary(loc);
 
+  await requireContentAuthorOrRedirect(loc);
   const sources = await listSources();
   const pending = sources.filter((s) => s.analysisStatus === "pending");
 

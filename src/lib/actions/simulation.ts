@@ -10,6 +10,7 @@ import { evaluate, verifyEvaluation } from "@/lib/ai/agents/evaluation";
 import { coach } from "@/lib/ai/agents/coaching";
 import { uid } from "@/lib/utils";
 import type { Locale } from "@/lib/i18n/config";
+import { checkRateLimit } from "@/lib/auth/rate-limit";
 import { track } from "./analytics";
 import { applyPendingMasteryForEvaluation } from "./mastery-bridge";
 
@@ -18,6 +19,17 @@ async function consentGiven(userId: string): Promise<boolean> {
   return Boolean(rows[0]?.aiProcessingConsentAt);
 }
 
+/**
+ * Unlike the auth endpoints (signIn/signUp/requestPasswordReset), these
+ * three actions run the full AI provider chain (or, for `startSimulation`,
+ * just writes — but still one a spammed loop could hammer) plus multiple DB
+ * writes per call, with no throttle at all before this. Keyed by user id,
+ * not IP: these all require `requireUser()` already, so the caller's
+ * identity is real, not spoofable the way an IP is.
+ */
+const SIMULATION_START_LIMIT = { windowMs: 60 * 60 * 1000, max: 20 };
+const SIMULATION_MESSAGE_LIMIT = { windowMs: 15 * 60 * 1000, max: 60 };
+
 export async function startSimulation(
   scenarioId: string,
   unitId: string | null,
@@ -25,6 +37,9 @@ export async function startSimulation(
   modality: "text" | "voice",
 ): Promise<{ sessionId: string; opening: string }> {
   const user = await requireUser();
+  const startLimit = await checkRateLimit(`simulation:start:${user.id}`, SIMULATION_START_LIMIT);
+  if (!startLimit.allowed) throw new Error("Too many simulations started — please wait a while and try again.");
+
   const scenario = await getScenario(scenarioId);
   if (!scenario) throw new Error("Scenario not found");
 
@@ -67,6 +82,9 @@ const MAX_MESSAGE_LENGTH = 8000;
 
 export async function sendSimulationMessage(sessionId: string, message: string): Promise<SimulationTurnResult> {
   const user = await requireUser();
+  const messageLimit = await checkRateLimit(`simulation:message:${user.id}`, SIMULATION_MESSAGE_LIMIT);
+  if (!messageLimit.allowed) throw new Error("Too many messages sent — please wait a while and try again.");
+
   const trimmed = message.trim();
   if (trimmed.length === 0 || trimmed.length > MAX_MESSAGE_LENGTH) {
     throw new Error("Invalid message");
@@ -153,6 +171,14 @@ export interface SimulationEvaluationResult {
   nextTimeTry: string;
   confidence: number;
   needsHumanReview: boolean;
+  /**
+   * True when a configured remote provider was attempted for this
+   * evaluation and/or its coaching pass but failed, and the scorecard shown
+   * came from the deterministic offline fallback instead —
+   * `AgentResult.degraded` from `src/lib/ai/provider.ts`. Not set (false)
+   * when no remote provider was ever configured at all.
+   */
+  degraded: boolean;
 }
 
 /**
@@ -233,6 +259,7 @@ export async function finishSimulation(sessionId: string, locale: Locale): Promi
     confidence: verified.confidence,
     modelRunId: raw.runId,
     humanReviewStatus: verified.needsHumanReview ? "queued" : "not_required",
+    humanReviewReason: verified.humanReviewReason,
     pendingMastery: scenario.skillIds.map((skillId) => ({
       skillId,
       targetLevel: scenario.stage + 1,
@@ -266,6 +293,7 @@ export async function finishSimulation(sessionId: string, locale: Locale): Promi
     nextTimeTry: coaching.data.nextTimeTry,
     confidence: verified.confidence,
     needsHumanReview: verified.needsHumanReview,
+    degraded: raw.degraded || coaching.degraded,
   };
 }
 

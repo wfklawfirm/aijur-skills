@@ -6,12 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
 import { SectionTitle } from "@/components/layout/app-shell";
 import { analysisStatusTone, humanize, reviewStatusTone } from "../_lib/format";
+import { requireContentAuthorOrRedirect } from "../_lib/guard";
 
 export default async function AdminSourcesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const loc = locale as Locale;
   const dict = getDictionary(loc);
 
+  await requireContentAuthorOrRedirect(loc);
   const rows = await listSources();
 
   return (

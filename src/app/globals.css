@@ -28,7 +28,13 @@
   /* Text */
   --foreground: #111827;
   --foreground-secondary: #475569;
-  --foreground-muted: #64748b;
+  /* Was #64748b (4.47:1 on --background, just under WCAG AA's 4.5:1 for
+     normal-size text — .text-supporting/.text-label render as small as
+     12-13px, well under the "large text" 3:1 exception). Darkened to
+     5.1-5.5:1 against every surface token it's actually used on
+     (--background, --surface, --surface-muted), same hue, found and fixed
+     via the axe-core e2e a11y suite (tests/e2e/accessibility.spec.ts). */
+  --foreground-muted: #5b6a7e;
 
   /* Borders */
   --border: #e5e7eb;

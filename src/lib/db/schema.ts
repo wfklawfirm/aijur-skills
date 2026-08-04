@@ -568,6 +568,18 @@ export const evaluations = sqliteTable(
       "not_required" | "queued" | "in_review" | "upheld" | "overturned"
     >(),
     /**
+     * Why `verifyEvaluation()` queued this one — `null` for `not_required`.
+     * Computed at evaluation time (`src/lib/ai/agents/evaluation.ts`) but
+     * previously discarded before it reached storage, so a human reviewer
+     * had no way to tell "the model quoted text that isn't in what the
+     * learner wrote" (`unverified_evidence`) apart from "the model was just
+     * unsure" (`low_confidence`) — very different things to check for.
+     * Surfaced in the review queue (`admin/review-queue/page.tsx`).
+     */
+    humanReviewReason: text("human_review_reason").$type<
+      "unverified_evidence" | "low_confidence" | "capped_by_critical_mistake" | "incomplete_rubric_coverage"
+    >(),
+    /**
      * The skill(s) this evaluation's score is evidence for, captured at
      * evaluation time so mastery can be applied later without re-deriving it
      * from the (possibly since-changed) activity/scenario. One entry for a

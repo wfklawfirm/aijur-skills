@@ -11,8 +11,8 @@ import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 export default function NotFound() {
   const dict = getDictionary(DEFAULT_LOCALE);
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-4 px-6 text-center">
-      <p className="text-page-title">{dict.errors.notFound}</p>
+    <main id="main" className="flex min-h-dvh flex-col items-center justify-center gap-4 px-6 text-center">
+      <h1 className="text-page-title">{dict.errors.notFound}</h1>
       <p className="text-supporting max-w-sm">{dict.errors.notFoundBody}</p>
       <Link
         href={`/${DEFAULT_LOCALE}/home`}

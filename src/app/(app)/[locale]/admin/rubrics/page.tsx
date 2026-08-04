@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/feedback";
 import { SectionTitle } from "@/components/layout/app-shell";
 import { contentStatusTone } from "../_lib/format";
+import { requireContentAuthorOrRedirect } from "../_lib/guard";
 
 /**
  * Rubrics are foundational content, edited far less often than skills, units
@@ -18,6 +19,7 @@ export default async function AdminRubricsPage({ params }: { params: Promise<{ l
   const { locale } = await params;
   const loc = locale as Locale;
   const dict = getDictionary(loc);
+  await requireContentAuthorOrRedirect(loc);
 
   const rows = await db.select().from(rubrics);
 

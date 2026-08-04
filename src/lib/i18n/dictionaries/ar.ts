@@ -342,6 +342,7 @@ export const ar = {
     unchanged: "دون تغيير",
     confidence: "ثقة التقييم",
     lowConfidence: "تقييم منخفض الثقة — أُرسل لمراجعة بشرية.",
+    degraded: "استُخدم في هذا التقييم محرك الاحتياط دون اتصال، لا النموذج الأساسي — قد تكون الجودة أقل من المعتاد.",
     requestReview: "اطلب مراجعة بشرية",
     reviewRequested: "أُرسل للمراجعة",
     tryAgain: "أعد المحاولة",
@@ -448,6 +449,13 @@ export const ar = {
     suggestionReason: "سبب الاقتراح",
     noAutoPublish: "لا يُنشر أي اقتراح تلقائيًا.",
     evaluationsPending: "تقييمات تنتظر مراجعة بشرية",
+    queueReasonLabel: "سبب انتظار هذا التقييم للمراجعة",
+    queueReason: {
+      unverified_evidence: "استشهد النموذج بنص غير موجود فعليًا فيما كتبه المتعلّم.",
+      low_confidence: "كانت ثقة النموذج بهذه الدرجة منخفضة.",
+      capped_by_critical_mistake: "حدّ خطأ جسيم من الدرجة — تحقّق من صحة هذا الخطأ.",
+      incomplete_rubric_coverage: "قيّم النموذج معايير أقل مما يحدده معيار التقييم.",
+    },
     organization: {
       title: "المؤسسة",
       body: "الأعضاء وأدوارهم داخل مؤسستك — يظهر هذا القسم فقط لمالكي المؤسسة ومديريها والمشرفين فيها.",

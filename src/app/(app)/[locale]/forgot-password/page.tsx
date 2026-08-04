@@ -10,7 +10,7 @@ export default async function ForgotPasswordPage({ params }: { params: Promise<{
   return (
     <main id="main" className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-8 px-5 py-10">
       <header className="text-center">
-        <p className="text-page-title">{dict.auth.forgotPasswordTitle}</p>
+        <h1 className="text-page-title">{dict.auth.forgotPasswordTitle}</h1>
         <p className="text-supporting mt-2">{dict.auth.forgotPasswordBody}</p>
       </header>
       <ForgotPasswordForm locale={loc} />

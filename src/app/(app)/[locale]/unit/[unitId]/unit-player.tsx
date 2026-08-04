@@ -55,6 +55,13 @@ export function UnitPlayer({
   const L = useLocalized();
 
   const [stepIndex, setStepIndex] = React.useState(initialStepIndex);
+  // Local bookkeeping only -- completeUnit() no longer trusts this array for
+  // scoring (see its doc comment in src/lib/actions/progress.ts): the server
+  // reconstructs the real summary from the `attempts` it recorded, so a
+  // fabricated or stale client-side array can no longer skew a unit's score
+  // or completion state. Kept here in case a future UI wants an in-session
+  // running tally; nothing currently reads `results` besides this comment's
+  // neighbor at the completeUnit() call below, which now ignores it.
   const [results, setResults] = React.useState<UnitResult[]>([]);
   const [masteryChanges, setMasteryChanges] = React.useState<MasteryChange[]>([]);
   const [completing, setCompleting] = React.useState(false);
@@ -77,7 +84,7 @@ export function UnitPlayer({
   async function goNext() {
     if (isLastStep) {
       setCompleting(true);
-      const summary = await completeUnit(unit.id, results);
+      const summary = await completeUnit(unit.id);
       setCompletion(summary);
       setCompleting(false);
       return;
@@ -118,15 +125,14 @@ export function UnitPlayer({
           </span>
         }
       />
-      <div className="mx-auto w-full max-w-lg px-4 pt-3">
-        <StepDots
-          total={unit.steps.length}
-          current={stepIndex}
-          label={t(dict.unit.stepOf, { current: stepIndex + 1, total: unit.steps.length })}
-        />
-      </div>
-
-      <main className="mx-auto w-full max-w-lg flex-1 px-4 py-5">
+      <main id="main" className="mx-auto w-full max-w-lg flex-1 px-4 py-5">
+        <div className="pb-3">
+          <StepDots
+            total={unit.steps.length}
+            current={stepIndex}
+            label={t(dict.unit.stepOf, { current: stepIndex + 1, total: unit.steps.length })}
+          />
+        </div>
         <StepView
           step={step}
           unit={unit}
@@ -140,13 +146,13 @@ export function UnitPlayer({
       </main>
 
       {!isActivityStep && (
-        <div className="sticky bottom-0 border-t border-[var(--border)] bg-[var(--background)]/95 px-4 py-3 backdrop-blur safe-bottom">
+        <footer className="sticky bottom-0 border-t border-[var(--border)] bg-[var(--background)]/95 px-4 py-3 backdrop-blur safe-bottom">
           <div className="mx-auto max-w-lg">
             <Button variant="primary" block loading={completing} onClick={() => void goNext()}>
               {dict.common.continue}
             </Button>
           </div>
-        </div>
+        </footer>
       )}
 
       <Sheet
@@ -578,6 +584,7 @@ function ActivityStepView({
         </span>
       </Callout>
       {aiOutcome.pendingReview && <Callout tone="warning">{dict.unit.pendingReview}</Callout>}
+      {aiOutcome.degraded && <Callout tone="warning">{dict.feedback.degraded}</Callout>}
       <a href="#" className="text-sm font-semibold text-[var(--color-brand)] underline underline-offset-4">
         {dict.feedback.title}
       </a>
@@ -725,7 +732,7 @@ function CompletionScreen({
         label={dict.unit.completeTitle}
         caption={t(dict.unit.completeScore, { score: summary.score, max: summary.maxScore })}
       />
-      <p className="text-page-title text-center">{dict.unit.completeTitle}</p>
+      <h1 className="text-page-title text-center">{dict.unit.completeTitle}</h1>
 
       {masteryChanges.length > 0 && (
         <div className="w-full max-w-xs space-y-2">

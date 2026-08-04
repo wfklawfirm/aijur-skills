@@ -5,15 +5,19 @@ import { db } from "@/lib/db";
 import { attempts, evaluations, humanReviews, profiles, savedSummaries, unitProgress } from "@/lib/db/schema";
 import { requireUser } from "@/lib/auth/session";
 import { getRubric, getUnit } from "@/lib/content/service";
-import { gradeActivity, requiresAiGrading, summariseUnit } from "@/lib/learning/grading";
+import { gradeActivity, requiresAiGrading } from "@/lib/learning/grading";
 import { depthOf } from "@/lib/learning/mastery";
+import { computeUnitCompletionSummary } from "@/lib/learning/unit-completion";
 import { activityResponseSchema, type ActivityResponse } from "@/lib/learning/responses";
 import { evaluate, verifyEvaluation } from "@/lib/ai/agents/evaluation";
 import { coach } from "@/lib/ai/agents/coaching";
 import { uid } from "@/lib/utils";
+import { checkRateLimit } from "@/lib/auth/rate-limit";
 import { track } from "./analytics";
 import { applyPendingMasteryForEvaluation, recordEvidenceAndUpdateMastery } from "./mastery-bridge";
 import type { Locale } from "@/lib/i18n/config";
+
+const AI_GRADING_LIMIT = { windowMs: 15 * 60 * 1000, max: 30 };
 
 export interface SubmitActivityResult {
   kind: "graded" | "queued_for_ai";
@@ -29,6 +33,15 @@ export interface SubmitActivityResult {
    * their mastery record. The UI should show this as provisional.
    */
   pendingReview?: boolean;
+  /**
+   * True when a configured remote provider (Anthropic/OpenAI) was attempted
+   * for this evaluation and/or its coaching pass but failed, and the result
+   * shown came from the deterministic offline fallback instead —
+   * `AgentResult.degraded` from `src/lib/ai/provider.ts`. Not set (false) in
+   * the common case of no provider configured at all: choosing offline
+   * because nothing else was ever set up is not a degradation of anything.
+   */
+  degraded?: boolean;
 }
 
 /**
@@ -65,6 +78,13 @@ export async function submitActivity(args: {
     if (activity.kind !== "short_written" && activity.kind !== "email_rewrite") {
       throw new Error("Unexpected AI-graded kind");
     }
+    // Two AI calls per submission (evaluate() + coach()), unlike the
+    // deterministic kinds below which never leave this process. Unlike the
+    // auth endpoints (signIn/signUp), keyed by user id, not IP: this
+    // already requires requireUser(), so the caller's identity is real.
+    const aiGradingLimit = await checkRateLimit(`activity:ai-grade:${user.id}`, AI_GRADING_LIMIT);
+    if (!aiGradingLimit.allowed) throw new Error("Too many submissions — please wait a while and try again.");
+
     const rubric = await getRubric(activity.rubricId);
     if (!rubric) throw new Error("Rubric not found");
     const text = "text" in args.response ? args.response.text : "";
@@ -114,6 +134,7 @@ export async function submitActivity(args: {
       confidence: verified.confidence,
       modelRunId: raw.runId,
       humanReviewStatus: verified.needsHumanReview ? "queued" : "not_required",
+      humanReviewReason: verified.humanReviewReason,
       // Always "production": this branch only ever runs for short_written/
       // email_rewrite (see the guard above), and `depthOf()` maps both to
       // "production" — never "recognition", which `pendingMastery` doesn't
@@ -157,6 +178,7 @@ export async function submitActivity(args: {
       levelChanged,
       newLevel,
       pendingReview: verified.needsHumanReview,
+      degraded: raw.degraded || coaching.degraded,
       evaluationId,
     };
   }
@@ -216,12 +238,25 @@ export async function saveUnitStep(unitId: string, stepIndex: number): Promise<v
     .where(and(eq(unitProgress.userId, user.id), eq(unitProgress.unitId, unitId)));
 }
 
-export async function completeUnit(
-  unitId: string,
-  results: { score: number; maxScore: number; kind: string }[],
-): Promise<{ score: number; maxScore: number; passed: boolean }> {
+/**
+ * The final score comes from what the server actually recorded, never from
+ * the client. This used to take a `results: {score, maxScore, kind}[]`
+ * argument straight from the client and hand it to `summariseUnit()`
+ * unchecked — a `"use server"` export is an independently callable RPC
+ * endpoint, not just page-rendered data, so any signed-in caller could mark
+ * any unit "completed" with a fabricated perfect score, which
+ * `computePathStatuses()` uses to unlock the next unit and which an org's
+ * manager-facing report counts as `unitsCompleted`. It also meant a
+ * perfectly honest learner who navigated to a simulation step and back (a
+ * full page load, resetting the client's in-memory `results` array) had
+ * their earlier steps silently dropped from their own final score. Fixed by
+ * `computeUnitCompletionSummary()` (`src/lib/learning/unit-completion.ts`),
+ * which reconstructs the summary from `attempts` — what the server actually
+ * recorded per activity submission, keyed by this user and unit — instead.
+ */
+export async function completeUnit(unitId: string): Promise<{ score: number; maxScore: number; passed: boolean }> {
   const user = await requireUser();
-  const summary = summariseUnit(results);
+  const summary = await computeUnitCompletionSummary(user.id, unitId);
   const now = Date.now();
 
   await db

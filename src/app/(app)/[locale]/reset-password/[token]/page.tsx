@@ -14,7 +14,7 @@ export default async function ResetPasswordPage({
   return (
     <main id="main" className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-8 px-5 py-10">
       <header className="text-center">
-        <p className="text-page-title">{dict.auth.resetPasswordTitle}</p>
+        <h1 className="text-page-title">{dict.auth.resetPasswordTitle}</h1>
       </header>
       <ResetPasswordForm locale={loc} token={token} />
     </main>

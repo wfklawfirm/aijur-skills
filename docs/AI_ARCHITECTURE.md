@@ -584,6 +584,24 @@ evaluation-actions.tsx`), which calls `decideEvaluationReview()`
 `"overturned"` and inserts a row into `humanReviews` — a permanent record of
 who reviewed what and what they decided.
 
+`humanReviewReason` — the same value `verifyEvaluation()` already computed
+(§4.5: `unverified_evidence` / `low_confidence` / `capped_by_critical_mistake`
+/ `incomplete_rubric_coverage`) — is now persisted onto the `evaluations` row
+alongside `humanReviewStatus` and rendered in the review-queue card as a
+`Callout`, along with the full per-criterion evidence quotes, strengths,
+missed opportunities, critical mistakes, priority-improvement note, and
+better-alternative text. Before this, the queue card showed only the rubric
+id, the numeric score, and the overall confidence percentage — a reviewer
+could see *that* something was flagged but not *why*, nor anything the AI
+actually said, making an informed "uphold or overturn" decision effectively
+impossible from the review-queue UI alone. `unverified_evidence` and
+`low_confidence` in particular call for different reviewer behavior (check a
+specific quote vs. re-read the whole thing), so collapsing them into "low
+confidence" in the UI would have been misleading. Rows written before this
+column existed have `humanReviewReason: null` and simply render without the
+reason callout — the rest of the card (criteria/strengths/etc., which were
+always stored) renders unaffected.
+
 The same page also serves as the review queue for ingestion suggestions
 (content changes proposed by an AI ingestion pipeline), with an explicit
 `noAutoPublish` callout (dictionary key `admin.noAutoPublish`, "No suggestion

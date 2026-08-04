@@ -3,7 +3,6 @@ import type { Locale } from "@/lib/i18n/config";
 import { db } from "@/lib/db";
 import { scenarios } from "@/lib/db/schema";
 import { getReviewGateStatus } from "@/lib/actions/admin";
-import { getSessionUser } from "@/lib/auth/session";
 import { can } from "@/lib/auth/rbac";
 import type { ScenarioDef } from "@content/types";
 import { Card, CardBody } from "@/components/ui/card";
@@ -12,16 +11,18 @@ import { EmptyState } from "@/components/ui/feedback";
 import { SectionTitle } from "@/components/layout/app-shell";
 import { GatePanel, type GateRow } from "../_components/gate-panel";
 import { humanize } from "../_lib/format";
+import { requireContentAuthorOrRedirect } from "../_lib/guard";
 
 export default async function AdminScenariosPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const loc = locale as Locale;
   const dict = getDictionary(loc);
 
-  const [user, scenarioRows] = await Promise.all([getSessionUser(), db.select().from(scenarios)]);
+  const user = await requireContentAuthorOrRedirect(loc);
+  const scenarioRows = await db.select().from(scenarios);
 
-  const canReview = !!user && can(user, "content.review");
-  const canPublish = !!user && can(user, "content.publish");
+  const canReview = can(user, "content.review");
+  const canPublish = can(user, "content.publish");
 
   const gatesByScenario = new Map<string, GateRow[]>(
     await Promise.all(

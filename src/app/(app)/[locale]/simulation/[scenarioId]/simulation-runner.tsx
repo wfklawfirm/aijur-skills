@@ -141,7 +141,7 @@ export function SimulationRunner({
         }
       />
 
-      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 py-4">
+      <main id="main" className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 py-4">
         {phase === "brief" && (
           <BriefScreen scenario={scenario} L={L} starting={starting} onBegin={() => void handleBegin()} />
         )}
@@ -386,6 +386,7 @@ function ResultScreen({ evaluation, awayHref }: { evaluation: SimulationEvaluati
       </div>
 
       {evaluation.needsHumanReview && <Callout tone="warning">{dict.feedback.lowConfidence}</Callout>}
+      {evaluation.degraded && <Callout tone="warning">{dict.feedback.degraded}</Callout>}
 
       <LinkButton variant="primary" block href={awayHref}>
         {dict.common.continue}

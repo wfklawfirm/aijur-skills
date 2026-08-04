@@ -136,7 +136,7 @@ export function OnboardingFlow({ locale }: { locale: Locale }) {
         />
         <p className="text-supporting num">{t(dict.onboarding.stepOf, { current: step + 1, total: STEP_COUNT })}</p>
         <div>
-          <p className="text-page-title">{dict.onboarding.title}</p>
+          <h1 className="text-page-title">{dict.onboarding.title}</h1>
           <p className="text-supporting mt-1">{dict.onboarding.subtitle}</p>
         </div>
       </header>

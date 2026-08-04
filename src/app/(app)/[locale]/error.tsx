@@ -15,7 +15,7 @@ export default function LocaleError({ error, reset }: { error: Error & { digest?
   }, [error]);
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-4 px-6">
+    <main id="main" className="flex min-h-dvh flex-col items-center justify-center gap-4 px-6">
       <div className="w-full max-w-sm">
         <ErrorState
           title={dict.errors.serverError}

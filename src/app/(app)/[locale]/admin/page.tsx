@@ -4,11 +4,13 @@ import type { Locale } from "@/lib/i18n/config";
 import { db } from "@/lib/db";
 import { sources, skills, units } from "@/lib/db/schema";
 import { listPendingIngestion, listQueuedEvaluations } from "@/lib/actions/admin";
+import { can } from "@/lib/auth/rbac";
 import type { SkillDef } from "@content/types";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, type Tone } from "@/components/ui/badge";
 import { SectionTitle } from "@/components/layout/app-shell";
 import { analysisStatusTone, contentStatusTone, humanize, reviewStatusTone } from "./_lib/format";
+import { requireContentAuthorOrRedirect } from "./_lib/guard";
 
 function groupCount<T>(rows: T[], key: (row: T) => string): { value: string; count: number }[] {
   const counts = new Map<string, number>();
@@ -56,12 +58,18 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
   const loc = locale as Locale;
   const dict = getDictionary(loc);
 
+  const user = await requireContentAuthorOrRedirect(loc);
+  // listQueuedEvaluations() is gated on the stricter `evaluation.review`
+  // (see src/lib/actions/admin.ts) -- a content author with no reviewer
+  // role would otherwise get an unhandled AuthError from this call.
+  const canReviewEvaluations = can(user, "evaluation.review");
+
   const [sourceRows, skillRows, unitRows, pendingIngestion, queuedEvaluations] = await Promise.all([
     db.select().from(sources),
     db.select().from(skills),
     db.select().from(units),
     listPendingIngestion(),
-    listQueuedEvaluations(),
+    canReviewEvaluations ? listQueuedEvaluations() : Promise.resolve([]),
   ]);
 
   const sourcesByStatus = groupCount(sourceRows, (r) => r.analysisStatus);

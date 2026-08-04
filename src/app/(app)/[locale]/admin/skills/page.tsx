@@ -4,7 +4,6 @@ import type { Locale } from "@/lib/i18n/config";
 import { db } from "@/lib/db";
 import { domains, skills } from "@/lib/db/schema";
 import { getReviewGateStatus } from "@/lib/actions/admin";
-import { getSessionUser } from "@/lib/auth/session";
 import { can } from "@/lib/auth/rbac";
 import type { DomainDef, SkillDef } from "@content/types";
 import { Card, CardBody } from "@/components/ui/card";
@@ -13,20 +12,21 @@ import { EmptyState } from "@/components/ui/feedback";
 import { SectionTitle } from "@/components/layout/app-shell";
 import { GatePanel, type GateRow } from "../_components/gate-panel";
 import { formatPercent, humanize, reviewStatusTone } from "../_lib/format";
+import { requireContentAuthorOrRedirect } from "../_lib/guard";
 
 export default async function AdminSkillsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const loc = locale as Locale;
   const dict = getDictionary(loc);
 
-  const [user, domainRows, skillRows] = await Promise.all([
-    getSessionUser(),
+  const user = await requireContentAuthorOrRedirect(loc);
+  const [domainRows, skillRows] = await Promise.all([
     db.select().from(domains).orderBy(asc(domains.order)),
     db.select().from(skills),
   ]);
 
-  const canReview = !!user && can(user, "content.review");
-  const canPublish = !!user && can(user, "content.publish");
+  const canReview = can(user, "content.review");
+  const canPublish = can(user, "content.publish");
 
   const gatesBySkill = new Map<string, GateRow[]>(
     await Promise.all(

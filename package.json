@@ -18,6 +18,7 @@
     "db:reset": "node -e \"require('fs').rmSync('data/aijur.db',{force:true})\" && npm run db:push && npm run db:seed",
     "setup": "npm run db:push && npm run db:seed",
     "test": "tsx --tsconfig tests/tsconfig.json --test tests/*.test.ts",
+    "test:e2e": "playwright test",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build"
   },
   "dependencies": {
@@ -30,6 +31,8 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.10.0",
     "@types/react": "^19.2.0",
