@@ -80,15 +80,15 @@ Counts pulled by loading `content/index.ts`'s `CONTENT` bundle directly:
 | Object | Count |
 |---|---|
 | Domains | 10 |
-| Skills | 42 (all `reviewStatus: ai_suggested`) |
-| Rubrics | 6 |
-| Scenarios (simulations) | 6 |
+| Skills | 47 (all `reviewStatus: ai_suggested`) |
+| Rubrics | 8 |
+| Scenarios (simulations) | 8 |
 | Source records | 33 |
-| Paths | 2 |
+| Paths | 3 |
 | Diagnostics | 1 (8 items) |
-| Units (total, across both paths) | 20 |
-| Activities (total) | 109 |
-| Legal-English phrase-bank entries | 93 |
+| Units (total, across all paths) | 30 |
+| Activities (total) | 158 |
+| Legal-English phrase-bank entries | 96 |
 
 **Path-level detail:**
 
@@ -96,6 +96,7 @@ Counts pulled by loading `content/index.ts`'s `CONTENT` bundle directly:
 |---|---|---|---|---|---|
 | `path.client-communication-foundations` | professional | client-relations, communication, professional-judgment | 4 | 10 | 50 |
 | `path.legal-english-client-communication` | legal_english | legal-english, client-relations, communication | 4 | 10 | 59 |
+| `path.negotiation-influence` | professional | negotiation-influence | 4 | 10 | 49 |
 
 **Skills-per-domain vs. units-per-domain** (framework-only domains have skills defined
 but zero units written):
@@ -106,19 +107,39 @@ but zero units written):
 | Professional Communication | 3 | 20 |
 | Professional Judgment & Ethics | 4 | 10 |
 | Legal English | 10 | 10 |
-| Negotiation & Influence | 1 | **0** |
+| Negotiation & Influence | 6 | 10 |
 | Self-Management | 3 | **0** |
 | Teamwork & Leadership | 4 | **0** |
 | Business Development | 3 | **0** |
 | Firm & Matter Operations | 4 | **0** |
 | Digital Tools & AI | 1 | **0** |
 
-So: **4 of 10 domains have real unit content** (two of them only via the
-cross-listed paths above); **6 of 10 domains are framework-only** — skill
+So: **5 of 10 domains have real unit content** (two of them only via the
+cross-listed paths above); **5 of 10 domains are framework-only** — skill
 definitions and mastery-level descriptors exist, but no lessons, activities,
 scenarios, or rubrics have been written against them yet.
 
-Activity-kind distribution across the 109 authored activities: `reflection` 20,
+Negotiation & Influence (`path.negotiation-influence`, `content/paths/ni-units-*.ts`)
+was authored in the same session as this audit's most recent update, following
+the identical process as the two original paths: skills/rubrics/scenarios/units
+each written against `content/AUTHORING_BRIEF.md`'s non-negotiables, then
+independently QA-audited against that same brief (id consistency, no repeated
+fact patterns, wrong-answer rationales present, mobile-first block length,
+no accent-scoring or outcome guarantees) before being wired into
+`content/index.ts`. Like every other domain's content, it is
+`reviewStatus: "ai_suggested"` and does not count toward a learner's mastery
+record as human-reviewed until a person reviews it — the platform's
+mandatory-human-review rule applies to this content exactly as it does to
+the original four domains.
+
+Activity-kind distribution across the 158 authored activities skews toward the
+same kinds as the original two paths, plus this path's own mix of
+`short_written`/`email_rewrite` (negotiation correspondence),
+`branching_decision` (in-session decision points), and two new `simulation`
+units. Exact counts were not recomputed field-by-field for this update; see
+`content/index.ts`'s `CONTENT.paths` for the authoritative source.
+
+Prior (4-domain) activity-kind distribution, retained for reference: `reflection` 20,
 `short_written` 18, `listening` 10, `pronunciation` 10, `multiple_choice` 8,
 `best_response` 8, `fill_blank` 7, `ordering` 6, `matching` 5, `find_mistake` 4,
 `categorization` 3, `branching_decision` 3, `true_false` 2, `email_rewrite` 2,
