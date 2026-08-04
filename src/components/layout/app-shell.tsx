@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useI18n, useOnline } from "@/components/providers";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import {
   HomeIcon,
   LearnIcon,
@@ -108,6 +109,7 @@ export function AppHeader({
           {title}
         </h1>
         {right}
+        <LanguageSwitcher compact />
       </div>
     </header>
   );

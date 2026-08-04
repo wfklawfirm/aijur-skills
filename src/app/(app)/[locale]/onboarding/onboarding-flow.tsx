@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/components/providers";
 import { formatNumber } from "@/lib/i18n";
 import { LOCALE_META, type Locale } from "@/lib/i18n/config";
+import { setLocaleCookie } from "@/components/layout/language-switcher";
 import { saveOnboarding } from "@/lib/actions/onboarding";
 import { Button } from "@/components/ui/button";
 import { StepDots } from "@/components/ui/progress";
@@ -224,6 +225,7 @@ export function OnboardingFlow({ locale, userId }: { locale: Locale; userId: str
    */
   function switchLanguage(newLocale: Locale) {
     if (newLocale === locale) return;
+    setLocaleCookie(newLocale);
     try {
       localStorage.setItem(
         draftKey(userId),

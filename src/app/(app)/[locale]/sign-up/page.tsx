@@ -1,5 +1,6 @@
 import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { SignUpForm } from "./sign-up-form";
 
 export default async function SignUpPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -9,6 +10,9 @@ export default async function SignUpPage({ params }: { params: Promise<{ locale:
 
   return (
     <main id="main" className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-8 px-5 py-10">
+      <div className="flex justify-end">
+        <LanguageSwitcher />
+      </div>
       <header className="text-center">
         <h1 className="text-page-title">{dict.auth.signUp}</h1>
       </header>

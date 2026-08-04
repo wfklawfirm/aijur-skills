@@ -37,6 +37,7 @@ export const en: Dictionary = {
     offline: "You're offline — progress is saved locally and will sync when you reconnect.",
     signOut: "Sign out",
     language: "Language",
+    switchLanguageTo: "Switch to {language}",
     moveUp: "Move up",
     moveDown: "Move down",
   },

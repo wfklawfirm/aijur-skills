@@ -39,6 +39,7 @@ export const ar = {
     offline: "أنت غير متصل — تقدّمك محفوظ محليًا وسيُرفع عند عودة الاتصال.",
     signOut: "تسجيل الخروج",
     language: "اللغة",
+    switchLanguageTo: "التبديل إلى {language}",
     moveUp: "تحريك لأعلى",
     moveDown: "تحريك لأسفل",
   },

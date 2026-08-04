@@ -7,6 +7,7 @@ import type { ActivityResponse } from "@/lib/learning/responses";
 import { useI18n, useLocalized } from "@/components/providers";
 import { submitDiagnostic } from "@/lib/actions/onboarding";
 import { ActivityPlayer, type ActivityOutcome } from "@/components/activities/activity-player";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { StepDots, ScoreRing } from "@/components/ui/progress";
@@ -78,9 +79,18 @@ export function DiagnosticFlow({
   if (phase === "intro") {
     return (
       <div className="flex flex-1 flex-col justify-between gap-10 py-8">
-        <div className="space-y-4 text-center">
-          <h1 className="text-page-title">{dict.diagnostic.title}</h1>
-          <p className="text-supporting">{dict.diagnostic.intro}</p>
+        <div className="space-y-6">
+          {/* Only offered here, before any answer is recorded -- once
+              `items`/`result` start, responses live only in this component's
+              in-memory state (no draft-persistence like onboarding's), so a
+              language switch mid-quiz would silently lose progress. */}
+          <div className="flex justify-end">
+            <LanguageSwitcher />
+          </div>
+          <div className="space-y-4 text-center">
+            <h1 className="text-page-title">{dict.diagnostic.title}</h1>
+            <p className="text-supporting">{dict.diagnostic.intro}</p>
+          </div>
         </div>
         <Button variant="primary" block onClick={() => setPhase("items")}>
           {dict.common.start}

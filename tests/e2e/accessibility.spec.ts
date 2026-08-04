@@ -119,6 +119,13 @@ test.describe("Accessibility — real keyboard-only navigation (no mouse)", () =
     await page.keyboard.press("Tab");
     await expect(page.locator(".skip-link")).toBeFocused();
 
+    // Next is the language switcher (`components/layout/language-switcher.tsx`)
+    // -- it sits visually above the sign-in form, and DOM order matches
+    // visual order here on purpose (WCAG 2.4.3 meaningful sequence), so it's
+    // the correct next stop rather than something to route around.
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("button", { name: /Switch to/i })).toBeFocused();
+
     await page.keyboard.press("Tab");
     await expect(page.locator('input[name="email"]')).toBeFocused();
     await page.keyboard.type(DEMO_EMAIL);

@@ -6,6 +6,7 @@ import { getSessionUser } from "@/lib/auth/session";
 import { Card, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PracticeIcon, ShieldIcon, GlobeIcon, UsersIcon } from "@/components/ui/icons";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 export default async function LandingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -24,6 +25,9 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
 
   return (
     <main id="main" className="mx-auto flex min-h-dvh max-w-md flex-col gap-10 px-5 pb-14 pt-12">
+      <div className="flex justify-end">
+        <LanguageSwitcher />
+      </div>
       <header className="flex flex-col items-center gap-3 text-center">
         <Badge tone="brand">{dict.brand.name}</Badge>
         <p className="text-supporting max-w-xs">{dict.brand.slogan}</p>

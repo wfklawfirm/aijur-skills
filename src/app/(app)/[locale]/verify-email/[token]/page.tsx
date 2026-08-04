@@ -1,5 +1,6 @@
 import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { VerifyEmailForm } from "./verify-email-form";
 
 export default async function VerifyEmailPage({
@@ -13,6 +14,9 @@ export default async function VerifyEmailPage({
 
   return (
     <main id="main" className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center gap-8 px-5 py-10">
+      <div className="flex justify-end">
+        <LanguageSwitcher />
+      </div>
       <header className="text-center">
         <h1 className="text-page-title">{dict.auth.verifyEmailTitle}</h1>
       </header>
