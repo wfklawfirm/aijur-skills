@@ -379,7 +379,12 @@ in production content, just at low volume for some kinds (e.g. only 1
   `scn.fee-pushback` — closing out the platform's original, most heavily
   authored domain (4 scenarios where every other domain ships 2), so
   **all 18 of 18 scenarios now have a proven simulation run** — full
-  scenario coverage. 58/58 tests
+  scenario coverage, and (13) **a simulation reaching its own natural end**
+  (`scenario.maxTurns`, not the "End now" early-exit path used by every
+  other simulation test) — `sendSimulationMessage()` sets `shouldEnd` once
+  `nextTurn >= scenario.maxTurns`, which `simulation-runner.tsx` auto-acts
+  on without any "End now" click; this is a genuinely distinct code path
+  that had never been exercised. 59/59 tests
   passing. This is
   the first repeatable e2e run in the repo — previously only a one-off
   manual Playwright script existed, used to smoke-test the CSRF guard once
@@ -440,14 +445,15 @@ in production content, just at low volume for some kinds (e.g. only 1
   currently logs zero findings of any severity. What this suite still does
   NOT cover: no visual regression/screenshot-diffing, no keyboard-only
   navigation walkthrough, no screen-reader testing (axe catches the
-  mechanical subset of a11y issues, not the full WCAG surface), only 8 of
-  10 content domains have a unit page exercised (and now all 8 also have
-  their chapter-boundary seam AND their last unit exercised too, per (9)
-  and (10) above — 24 of 80 units total touched), and **all 18 of 18
+  mechanical subset of a11y issues, not the full WCAG surface), and only
+  8 of 10 content domains have a unit page exercised (and now all 8 also
+  have their chapter-boundary seam AND their last unit exercised too, per
+  (9) and (10) above — 24 of 80 units total touched). **All 18 of 18
   scenarios now have a full simulation run exercised** (per (8), (11), and
-  (12) above), though every one of those eighteen tests ends early rather
-  than driving to the scenario's natural `maxTurns` — that's the one
-  simulation-coverage dimension still unexercised.
+  (12) above), and one of those eighteen (`scn.guarantee-request`) is now
+  also proven reaching its own natural `maxTurns` end rather than always
+  going through "End now" (per (13) above) — the other seventeen still
+  only exercise the early-exit path.
 
   Running the expanded suite also found and fixed two more real bugs, this
   time in the test code itself rather than the app: (a) the shared
@@ -520,7 +526,7 @@ usability gap with its own new e2e regression test (§5, `docs/SECURITY.md`
 | Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **141 / 141 passing**, 38 suites, 0 failed, 0 skipped, 0 todo. Runtime ~14s. |
 | Content seed | `npm run db:reset` | **Succeeds.** 10 domains, 61 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 399 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
 | Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** No build errors, all routes generated (mix of static/SSG/dynamic). |
-| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **58 / 58 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths** plus 8 last-unit and 8 middle-unit spot checks — full first+seam+last coverage for every path (26 tests), **18 full simulation runs — all 18 of 18 authored scenarios now have a proven simulation run** (18 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
+| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **59 / 59 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths** plus 8 last-unit and 8 middle-unit spot checks — full first+seam+last coverage for every path (26 tests), **19 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus one (`scn.guarantee-request`) also proven reaching its natural `maxTurns` end** (19 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
 
 `npm run verify` (typecheck → lint → test → build) would pass end to end based on the
 individual results above — all four stages were run and all four are green as of this

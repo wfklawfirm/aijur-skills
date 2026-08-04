@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { DEMO_STORAGE_STATE } from "./global-setup";
 import { runSimulationToCompletion } from "./helpers";
 
@@ -215,5 +215,59 @@ test.describe("Simulation player", () => {
       '"Another lawyer quoted me a third of this"',
       "That's a fair question to raise, and I'd rather we talk it through than have you wonder about it. Can you tell me a bit about what the other quote covers, so we're actually comparing the same scope of work?",
     );
+  });
+
+  // Every test above ends the conversation early via the "End now" control
+  // -- a real, distinct code path from the scenario reaching its own
+  // natural end. `sendSimulationMessage()` sets `shouldEnd` once
+  // `nextTurn >= scenario.maxTurns` (`src/lib/actions/simulation.ts`), and
+  // `simulation-runner.tsx`'s `handleSend()` auto-calls `handleFinish()`
+  // when that happens -- the "End now" button is never involved. That
+  // auto-finish branch had never been exercised by this suite until now.
+  // scn.guarantee-request has the shortest `maxTurns` (10) of any tested
+  // scenario, keeping this test's turn count low while still proving the
+  // real thing: open-ended replies sent turn after turn (the offline
+  // agent's deterministic logic rewards an open question with a revealed
+  // fact -- see `offlineTurn()` in `src/lib/ai/agents/simulation.ts` --
+  // so exact wording doesn't matter, only that each message reads as an
+  // open question) until the agent itself decides to end, with no "End
+  // now" click anywhere in this test.
+  test("a simulation reaches its natural end (maxTurns) without the 'End now' control", async ({ page }) => {
+    await page.goto("/en/simulation/scn.guarantee-request");
+    await expect(page.getByRole("heading", { name: '"Do you guarantee I\'ll win?"' })).toBeVisible();
+    await page.getByRole("button", { name: "Start the simulation" }).click();
+    await expect(page.locator("main")).toContainText(/.+/, { timeout: 10_000 });
+    await expect(page.getByPlaceholder("Type your reply…")).toBeVisible();
+
+    // scn.guarantee-request's maxTurns is 10 -- send open-ended replies
+    // until the player itself transitions away from the chat phase (the
+    // "Simulation ended" result heading appears), never clicking "End now".
+    // The transition from chat -> evaluating -> result happens inside a
+    // single React re-render once `shouldEnd` comes back true, so a plain
+    // "check visible, then act" loop races the DOM: interacting with the
+    // input/button is wrapped in try/catch and simply breaks the loop if
+    // the page has already moved on, rather than trying to out-guess the
+    // exact re-render timing.
+    for (let i = 0; i < 12; i++) {
+      try {
+        const input = page.getByPlaceholder("Type your reply…");
+        await input.waitFor({ state: "visible", timeout: 3_000 });
+        await input.fill(`Can you tell me more about what happened, specifically around turn ${i + 1}?`, { timeout: 5_000 });
+        await page.getByRole("button", { name: "Send" }).click({ timeout: 5_000 });
+      } catch {
+        break;
+      }
+      await Promise.race([
+        expect(page.getByPlaceholder("Type your reply…")).toBeEnabled({ timeout: 15_000 }),
+        expect(page.getByText("Simulation ended")).toBeVisible({ timeout: 15_000 }),
+      ]).catch(() => {});
+      if (await page.getByText("Simulation ended").isVisible().catch(() => false)) break;
+    }
+
+    await expect(page.getByText("Simulation ended")).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator("body")).not.toContainText("500");
+    // The "End now" control should never have been clicked in this test --
+    // confirm no leftover confirmation dialog is stuck open.
+    await expect(page.getByRole("dialog")).not.toBeVisible();
   });
 });
