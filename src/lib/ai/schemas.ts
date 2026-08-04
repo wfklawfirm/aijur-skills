@@ -80,4 +80,15 @@ export const recommendationSchema = z.object({
   rationale: z.string().max(400),
 });
 
+/** A single personalized "hook" -- short engagement micro-content composed
+ * from a skill + dimension combination (career stage, counterparty, channel,
+ * tone, goal). See src/lib/adaptive/hooks.ts and content/adaptive/dimensions.ts. */
+export const adaptiveHookSchema = z.object({
+  title: z.string().min(1).max(80),
+  body: z.string().min(1).max(280),
+  attribution: z.string().max(80).nullable().default(null),
+});
+
+export type AdaptiveHookOutput = z.infer<typeof adaptiveHookSchema>;
+
 export type RecommendationOutput = z.infer<typeof recommendationSchema>;

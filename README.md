@@ -12,8 +12,11 @@ verification), a real learning engine with an evidence-based mastery
 algorithm, a real AI evaluation pipeline with a non-model-dependent
 verification layer, an application-level CSRF guard, and a real admin
 Content Studio — all documented in [`docs/`](./docs) and grounded in a
-141-test unit suite plus a real-browser e2e/RTL/accessibility suite
-(`npm run test:e2e`).
+162-test unit suite plus a real-browser e2e/RTL/accessibility suite
+(`npm run test:e2e`). A first phase of a personalized, non-repetitive
+content engine (the Adaptive Professional Journey Engine — see
+[`docs/ADAPTIVE_ENGINE_ARCHITECTURE.md`](./docs/ADAPTIVE_ENGINE_ARCHITECTURE.md))
+now generates personalized "hooks" on the Home page.
 
 ## Quick start
 
@@ -119,6 +122,7 @@ ai_suggested` — see the audit for what that means). Then:
 | [`DESIGN_SYSTEM.md`](./docs/DESIGN_SYSTEM.md) | Design tokens, component library |
 | [`CONTENT_INGESTION.md`](./docs/CONTENT_INGESTION.md) | Source library, authoring pipeline, human-review gates |
 | [`SECURITY.md`](./docs/SECURITY.md) | Threat model, auth, RBAC, tenant isolation, known gaps |
+| [`ADAPTIVE_ENGINE_ARCHITECTURE.md`](./docs/ADAPTIVE_ENGINE_ARCHITECTURE.md) | The personalized/non-repetitive content engine: hybrid content layers, novelty detection, quality gates, what's built vs. deferred from the full spec |
 
 ## Notes on the AI layer
 

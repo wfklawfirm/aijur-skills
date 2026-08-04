@@ -800,7 +800,7 @@ export const aiModelRuns = sqliteTable(
     id: text("id").primaryKey(),
     userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
     organizationId: text("organization_id"),
-    /** simulation | evaluation | coaching | language | recommendation | safety */
+    /** simulation | evaluation | coaching | language | recommendation | safety | adaptive_hook */
     agent: text("agent").notNull(),
     provider: text("provider").notNull(),
     model: text("model").notNull(),
@@ -914,4 +914,99 @@ export const rateLimits = sqliteTable(
     count: integer("count").notNull().default(0),
   },
   (t) => [primaryKey({ columns: [t.key, t.windowStart] })],
+);
+
+// ---------------------------------------------------------------------------
+// Adaptive content engine (AIJUR Adaptive Professional Journey Engine)
+// ---------------------------------------------------------------------------
+// Phase 1 scope: personalized "hooks" only (short engagement micro-content --
+// see the existing unit.hook UnitStep kind this reuses the concept from).
+// Deliberately consolidates the spec's ~30 requested entities into two real
+// tables plus the fields already on `profiles`/`masteryRecords`/`evidence` --
+// see docs/ADAPTIVE_ENGINE_ARCHITECTURE.md for the full entity-mapping
+// rationale. `adaptiveContent` rows ARE the Content Reservoir (queried by
+// skillId + status), the Fingerprint record, and the Quality/Novelty score,
+// all at once; `userContentExposure` is the User/Cohort Exposure History.
+
+export const adaptiveContent = sqliteTable(
+  "adaptive_content",
+  {
+    id: text("id").primaryKey(),
+    /** Phase 1 only emits "hook"; the column exists so scenario_variant etc.
+     * can extend this same table later without a schema change. */
+    contentType: text("content_type").notNull().default("hook"),
+    skillId: text("skill_id").notNull(),
+    secondarySkillIds: text("secondary_skill_ids", { mode: "json" }).$type<string[]>().notNull().default(sql`'[]'`),
+    language: text("language").notNull().$type<"ar" | "en">(),
+    difficulty: integer("difficulty").notNull().default(1),
+    /** The composed dimension combination (hookType, careerStage, channel,
+     * tone, ...) that produced this item -- see content/adaptive/dimensions.ts. */
+    dimensions: text("dimensions", { mode: "json" }).$type<Record<string, string>>().notNull(),
+    /** Stable hash of `dimensions` (sorted), used for structural-repetition
+     * checks -- two items with the same key are the "same experience" even
+     * if the wording differs. */
+    structuralKey: text("structural_key").notNull(),
+    /** The actual generated content: {title, body, attribution?}. */
+    payload: text("payload", { mode: "json" }).$type<{ title: string; body: string; attribution?: string }>().notNull(),
+    /** MinHash-lite signature of the normalised body text -- an approximate,
+     * offline-computable proxy for near-duplicate/semantic similarity (see
+     * src/lib/adaptive/fingerprint.ts). NOT an embedding vector -- true
+     * embedding-based similarity is out of Phase 1 scope; see the
+     * architecture doc's "What's NOT built" section for why. */
+    textFingerprint: text("text_fingerprint", { mode: "json" }).$type<number[]>().notNull(),
+    noveltyScore: real("novelty_score").notNull(),
+    qualityScore: real("quality_score").notNull(),
+    /** Per-gate pass/fail detail from src/lib/adaptive/quality-gates.ts, kept
+     * for the admin review queue and for debugging rejections. */
+    qualityGateReport: text("quality_gate_report", { mode: "json" }).$type<Record<string, boolean>>().notNull(),
+    sourceIds: text("source_ids", { mode: "json" }).$type<string[]>().notNull().default(sql`'[]'`),
+    /** template (deterministic offline composer) | ai:<provider> */
+    generatedBy: text("generated_by").notNull(),
+    promptVersion: text("prompt_version").notNull(),
+    status: text("status").notNull().$type<
+      | "generated_draft"
+      | "human_review_required"
+      | "rejected"
+      | "approved"
+      | "published"
+      | "retired"
+    >(),
+    reviewNote: text("review_note"),
+    reviewedBy: text("reviewed_by").references(() => users.id, { onDelete: "set null" }),
+    reviewedAt: integer("reviewed_at"),
+    /** Reservoir items expire so a stale variant isn't served forever --
+     * matches the spec's "Content Lifecycle" expectation. Null = no expiry
+     * set yet (Phase 1 sets a fixed horizon at generation time). */
+    expiresAt: integer("expires_at"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [
+    index("adaptive_content_skill_status_idx").on(t.skillId, t.status),
+    index("adaptive_content_structural_key_idx").on(t.structuralKey),
+  ],
+);
+
+/** Real per-user exposure history -- what a learner has actually been shown,
+ * so the reservoir/generator can exclude it and the diversity scheduler can
+ * see recent patterns (e.g. "don't repeat the same hookType twice in a row"). */
+export const userContentExposure = sqliteTable(
+  "user_content_exposure",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    contentId: text("content_id").notNull().references(() => adaptiveContent.id, { onDelete: "cascade" }),
+    contentType: text("content_type").notNull(),
+    skillId: text("skill_id").notNull(),
+    structuralKey: text("structural_key").notNull(),
+    /** Where it was shown -- e.g. {surface:"home_daily_challenge"}. Kept
+     * loose (json) since Phase 2 surfaces (unit intro, scenario brief) will
+     * add their own context shapes without a schema change. */
+    context: text("context", { mode: "json" }).$type<Record<string, string>>(),
+    exposedAt: createdAt(),
+  },
+  (t) => [
+    index("exposure_user_skill_idx").on(t.userId, t.skillId),
+    index("exposure_user_exposed_idx").on(t.userId, t.exposedAt),
+  ],
 );

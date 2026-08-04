@@ -28,7 +28,8 @@ export type AgentName =
   | "coaching"
   | "language"
   | "recommendation"
-  | "safety";
+  | "safety"
+  | "adaptive_hook";
 
 export type ProviderName = "offline" | "anthropic" | "openai";
 

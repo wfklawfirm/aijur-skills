@@ -4,6 +4,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { db } from "@/lib/db";
 import { sources, skills, units } from "@/lib/db/schema";
 import { listPendingIngestion, listQueuedEvaluations } from "@/lib/actions/admin";
+import { getAdaptiveContentStats } from "@/lib/actions/adaptive-admin";
 import { can } from "@/lib/auth/rbac";
 import type { SkillDef } from "@content/types";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,12 +65,13 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
   // role would otherwise get an unhandled AuthError from this call.
   const canReviewEvaluations = can(user, "evaluation.review");
 
-  const [sourceRows, skillRows, unitRows, pendingIngestion, queuedEvaluations] = await Promise.all([
+  const [sourceRows, skillRows, unitRows, pendingIngestion, queuedEvaluations, adaptiveStats] = await Promise.all([
     db.select().from(sources),
     db.select().from(skills),
     db.select().from(units),
     listPendingIngestion(),
     canReviewEvaluations ? listQueuedEvaluations() : Promise.resolve([]),
+    getAdaptiveContentStats(),
   ]);
 
   const sourcesByStatus = groupCount(sourceRows, (r) => r.analysisStatus);
@@ -124,6 +126,14 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
             <CardBody>
               <p className="text-kpi-value num">{queuedEvaluations.length}</p>
               <p className="text-supporting mt-1">{dict.admin.evaluationsPending}</p>
+            </CardBody>
+          </Card>
+        </Link>
+        <Link href={`/${loc}/admin/adaptive-content`} className="block">
+          <Card className="transition-colors hover:bg-[var(--surface-muted)]">
+            <CardBody>
+              <p className="text-kpi-value num">{adaptiveStats.total}</p>
+              <p className="text-supporting mt-1">{dict.admin.adaptiveContent.title}</p>
             </CardBody>
           </Card>
         </Link>

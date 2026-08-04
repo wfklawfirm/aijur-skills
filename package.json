@@ -17,6 +17,7 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:reset": "node -e \"require('fs').rmSync('data/aijur.db',{force:true})\" && npm run db:push && npm run db:seed",
     "setup": "npm run db:push && npm run db:seed",
+    "generate:adaptive": "tsx scripts/generate-adaptive-content.ts",
     "test": "tsx --tsconfig tests/tsconfig.json --test tests/*.test.ts",
     "test:e2e": "playwright test",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build"
