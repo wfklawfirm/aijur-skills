@@ -1,6 +1,7 @@
 import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { BrandMark } from "@/components/layout/brand-mark";
 import { ForgotPasswordForm } from "./forgot-password-form";
 
 export default async function ForgotPasswordPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -13,9 +14,10 @@ export default async function ForgotPasswordPage({ params }: { params: Promise<{
       <div className="flex justify-end">
         <LanguageSwitcher />
       </div>
-      <header className="text-center">
+      <header className="flex flex-col items-center gap-3 text-center">
+        <BrandMark size={56} />
         <h1 className="text-page-title">{dict.auth.forgotPasswordTitle}</h1>
-        <p className="text-supporting mt-2">{dict.auth.forgotPasswordBody}</p>
+        <p className="text-supporting">{dict.auth.forgotPasswordBody}</p>
       </header>
       <ForgotPasswordForm locale={loc} />
     </main>

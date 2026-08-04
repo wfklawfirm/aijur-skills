@@ -79,6 +79,33 @@ saturated multicolor game palette, and a serif-free but conservative,
 document-like typographic scale (see §3) rather than a rounded, playful
 display face.
 
+### 1.1 Brand mark
+
+The user supplied a real logo (scales of justice fused with a skills/
+checklist notebook, deep burgundy on white, with an "AIJUR SKILLS / SMARTER
+LAW PRACTICE" wordmark lockup below it). Source assets live in
+`public/brand/` and `public/icons/`, both derived from the one supplied
+image via ImageMagick (crop the icon out of the full lockup, transparent
+background, square-pad, downscale per target):
+
+| File | Size | Background | Use |
+|---|---|---|---|
+| `public/brand/aijur-logo-mark.png` | 800×800 | transparent | Source for `<BrandMark>` (`src/components/layout/brand-mark.tsx`) — icon only, no wordmark |
+| `public/brand/aijur-logo-full.png` | 730×1084 | transparent | Source for `<BrandLockup>` — full icon + wordmark + tagline, currently unused (see the component's own comment for why) |
+| `public/icons/icon-192.png`, `icon-512.png` | 192×192, 512×512 | transparent | PWA `manifest.webmanifest` icons, `purpose: "any"` — previously referenced by the manifest but **missing on disk entirely** until this fix |
+| `public/icons/maskable-512.png` | 512×512 | solid `#f7f8fa` (matches `manifest.webmanifest`'s `background_color`) | PWA maskable icon — icon content scaled to fit inside the ~80%-diameter safe zone so OS circle/rounded-square masking never clips it (verified by compositing a circle mask over it) |
+| `src/app/icon.png` | 256×256 | transparent | Next.js file-convention favicon (auto-detected, no `metadata.icons` needed) |
+| `src/app/apple-icon.png` | 180×180 | solid white | iOS home-screen icon — opaque background because iOS renders transparent PNG icon areas as black |
+
+`<BrandMark size={56} className?>` renders the icon-only mark via
+`next/image`; used at `size={56}` on all 5 pre-auth headers (sign-in,
+sign-up, forgot-password, reset-password, verify-email) and `size={92}` on
+the landing page. Deliberately **not** used with the full lockup's baked-in
+English wordmark on the Arabic locale — the landing page instead pairs
+`<BrandMark>` with the already-localized `dict.brand.name`/`dict.brand.
+slogan` text, keeping the bilingual app's translation discipline intact
+rather than showing untranslated raster text to Arabic readers.
+
 ---
 
 ## 2. Design tokens

@@ -1,6 +1,7 @@
 import { getDictionary } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { BrandMark } from "@/components/layout/brand-mark";
 import { VerifyEmailForm } from "./verify-email-form";
 
 export default async function VerifyEmailPage({
@@ -17,7 +18,8 @@ export default async function VerifyEmailPage({
       <div className="flex justify-end">
         <LanguageSwitcher />
       </div>
-      <header className="text-center">
+      <header className="flex flex-col items-center gap-3 text-center">
+        <BrandMark size={56} />
         <h1 className="text-page-title">{dict.auth.verifyEmailTitle}</h1>
       </header>
       <VerifyEmailForm locale={loc} token={token} />
