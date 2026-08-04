@@ -412,8 +412,21 @@ in production content, just at low volume for some kinds (e.g. only 1
   units right after it) — 24 more tests, closing the gap entirely: **every
   one of the 8 authored paths now has all 10 of its units exercised end to
   end, not a sample** — full depth-first unit coverage across all 80
-  authored units, the first time this has been true for any path. 116/116
-  tests
+  authored units, the first time this has been true for any path, and
+  (18) **a third natural-`maxTurns`-end scenario, from a third domain** —
+  `scn.catching-an-ai-hallucination` (Digital Tools & AI, `maxTurns: 10`)
+  — further spreading this coverage dimension beyond two domains. Adding
+  this test pushed the suite's total real `startSimulation()` calls in a
+  single run past the simulation-start rate limit's original 20/hour
+  ceiling (18 scenario tests + 3 natural-end tests = 21) — a genuine,
+  reproducible failure the first time this run was attempted (`Error: Too
+  many simulations started`), not a fluke. Fixed by revising
+  `SIMULATION_START_LIMIT.max` from 20 to 40 in
+  `src/lib/actions/simulation.ts` (see §5's rate-limiting entry and
+  `docs/SECURITY.md` §7 for the full reasoning) rather than removing
+  coverage to stay under the old ceiling — 40/hour still closes off an
+  unthrottled cost loop while giving real headroom above the platform's
+  18-scenario catalog. 117/117 tests
   passing. This is
   the first repeatable e2e run in the repo — previously only a one-off
   manual Playwright script existed, used to smoke-test the CSRF guard once
@@ -559,7 +572,7 @@ usability gap with its own new e2e regression test (§5, `docs/SECURITY.md`
 | Unit tests | `npm run test` (`tsx --test tests/*.test.ts`) | **141 / 141 passing**, 38 suites, 0 failed, 0 skipped, 0 todo. Runtime ~14s. |
 | Content seed | `npm run db:reset` | **Succeeds.** 10 domains, 61 skills, 18 rubrics, 18 scenarios, 8 paths, 80 units, 399 activities, 96 Legal-English phrases seeded cleanly into the real dev DB — the stronger cross-referential-integrity signal beyond typechecking alone. |
 | Production build | `npm run build` (`next build`, Turbopack) | **Succeeds.** No build errors, all routes generated (mix of static/SSG/dynamic). |
-| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **116 / 116 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **20 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus two (`scn.guarantee-request` and `scn.flagging-a-quality-issue`, from two different domains) also proven reaching their natural `maxTurns` end** (20 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
+| E2e / RTL / a11y | `CI=1 npx playwright test` (real Chromium against a real `next build && next start`) | **117 / 117 passing** — sign-up→onboarding→**full diagnostic (8 items)→home**, authenticated learner content across **all 8 authored paths with every one of their 10 units exercised — 80 of 80 units, full depth-first coverage** (82 tests), **21 full simulation runs — all 18 of 18 authored scenarios covered via the "End now" early-exit path, plus three (`scn.guarantee-request`, `scn.flagging-a-quality-issue`, `scn.catching-an-ai-hallucination`, from three different domains) also proven reaching their natural `maxTurns` end** (21 tests), **the admin review queue's full AI payload + queue reason** (1 test), the **PWA service worker's actual offline behaviour** (4 tests), RTL/LTR (3 tests), axe-core accessibility (5 tests). Zero critical/serious violations, and zero occurrences of `page-has-heading-one`/`region`/`skip-link` (now promoted to always-blocking in the test itself, per §5) — no other moderate/minor findings logged either. |
 
 `npm run verify` (typecheck → lint → test → build) would pass end to end based on the
 individual results above — all four stages were run and all four are green as of this

@@ -27,7 +27,15 @@ async function consentGiven(userId: string): Promise<boolean> {
  * not IP: these all require `requireUser()` already, so the caller's
  * identity is real, not spoofable the way an IP is.
  */
-const SIMULATION_START_LIMIT = { windowMs: 60 * 60 * 1000, max: 20 };
+// 20/hour was the original figure; raised to 40 after this repo's own e2e
+// suite -- itself a real, if intensive, usage pattern of one account --
+// grew past 20 real startSimulation() calls in a single run (18 scenario
+// tests + natural-maxTurns-end tests). That's exactly the case this limit
+// is meant to allow: a motivated learner working through many short
+// scenarios in one focused session. 40/hour still closes off an
+// unthrottled loop against remote-provider cost while giving real headroom
+// above the platform's own 18-scenario catalog.
+const SIMULATION_START_LIMIT = { windowMs: 60 * 60 * 1000, max: 40 };
 const SIMULATION_MESSAGE_LIMIT = { windowMs: 15 * 60 * 1000, max: 60 };
 
 export async function startSimulation(

@@ -306,4 +306,36 @@ test.describe("Simulation player", () => {
     await expect(page.locator("body")).not.toContainText("500");
     await expect(page.getByRole("dialog")).not.toBeVisible();
   });
+
+  // A third domain, Digital Tools & AI -- scn.catching-an-ai-hallucination
+  // shares the same maxTurns (10) as the first natural-end test, so this
+  // continues to spread the coverage across genuinely different rubric/
+  // decisionPoints wiring rather than proving the same one twice more.
+  test("a third scenario from another domain also reaches its natural end (Digital Tools & AI)", async ({ page }) => {
+    await page.goto("/en/simulation/scn.catching-an-ai-hallucination");
+    await expect(page.getByRole("heading", { name: "Catching an AI hallucination" })).toBeVisible();
+    await page.getByRole("button", { name: "Start the simulation" }).click();
+    await expect(page.locator("main")).toContainText(/.+/, { timeout: 10_000 });
+    await expect(page.getByPlaceholder("Type your reply…")).toBeVisible();
+
+    for (let i = 0; i < 12; i++) {
+      try {
+        const input = page.getByPlaceholder("Type your reply…");
+        await input.waitFor({ state: "visible", timeout: 3_000 });
+        await input.fill(`Can you tell me more about how you verified this, specifically around turn ${i + 1}?`, { timeout: 5_000 });
+        await page.getByRole("button", { name: "Send" }).click({ timeout: 5_000 });
+      } catch {
+        break;
+      }
+      await Promise.race([
+        expect(page.getByPlaceholder("Type your reply…")).toBeEnabled({ timeout: 15_000 }),
+        expect(page.getByText("Simulation ended")).toBeVisible({ timeout: 15_000 }),
+      ]).catch(() => {});
+      if (await page.getByText("Simulation ended").isVisible().catch(() => false)) break;
+    }
+
+    await expect(page.getByText("Simulation ended")).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator("body")).not.toContainText("500");
+    await expect(page.getByRole("dialog")).not.toBeVisible();
+  });
 });
