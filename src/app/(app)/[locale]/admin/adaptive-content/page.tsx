@@ -11,11 +11,13 @@ import { formatPercent } from "../_lib/format";
 import { requireContentAuthorOrRedirect } from "../_lib/guard";
 
 /**
- * The "Adaptive Content Intelligence" monitor -- Phase 1 scope: one page
- * covering generation counts, a repetition monitor (hook-type/skill usage),
- * quality/novelty averages, and the human-review queue for anything the
- * quality gates didn't auto-approve. See adaptive-admin-core.ts for why this
- * is one page instead of the build spec's four separate dashboards.
+ * The "Adaptive Content Intelligence" monitor -- one page covering
+ * generation counts, a repetition monitor (shape-type/skill usage, per
+ * content type since Phase 2 added Daily Challenge alongside Hook --
+ * docs/ADAPTIVE_ENGINE_ARCHITECTURE.md §14), quality/novelty averages, and
+ * the human-review queue for anything the quality gates didn't auto-approve.
+ * See adaptive-admin-core.ts for why this is one page instead of the build
+ * spec's four separate dashboards.
  */
 export default async function AdaptiveContentPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -77,16 +79,44 @@ export default async function AdaptiveContentPage({ params }: { params: Promise<
       </section>
 
       <section>
-        <SectionTitle>{dict.admin.adaptiveContent.hookTypeUsage}</SectionTitle>
+        <SectionTitle>{dict.admin.adaptiveContent.contentTypeSplit}</SectionTitle>
         <div className="flex flex-wrap gap-1.5">
-          {stats.byHookType.map((h) => (
-            <Badge key={h.hookType} tone="brand">
-              {h.hookType.replace(/_/g, " ")}
-              <span className="num">{h.count}</span>
+          {stats.byContentType.map((c) => (
+            <Badge key={c.contentType} tone="neutral">
+              {c.contentType === "daily_challenge" ? dict.home.dailyChallenge : dict.admin.adaptiveContent.contentTypeHook}
+              <span className="num">{c.count}</span>
             </Badge>
           ))}
         </div>
       </section>
+
+      {stats.byHookType.length > 0 && (
+        <section>
+          <SectionTitle>{dict.admin.adaptiveContent.hookTypeUsage}</SectionTitle>
+          <div className="flex flex-wrap gap-1.5">
+            {stats.byHookType.map((h) => (
+              <Badge key={h.hookType} tone="brand">
+                {h.hookType.replace(/_/g, " ")}
+                <span className="num">{h.count}</span>
+              </Badge>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {stats.byChallengeType.length > 0 && (
+        <section>
+          <SectionTitle>{dict.admin.adaptiveContent.challengeTypeUsage}</SectionTitle>
+          <div className="flex flex-wrap gap-1.5">
+            {stats.byChallengeType.map((c) => (
+              <Badge key={c.challengeType} tone="brand">
+                {c.challengeType.replace(/_/g, " ")}
+                <span className="num">{c.count}</span>
+              </Badge>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section>
         <SectionTitle>{dict.admin.adaptiveContent.skillCoverage}</SectionTitle>
@@ -111,7 +141,8 @@ export default async function AdaptiveContentPage({ params }: { params: Promise<
                 <CardHeader>
                   <div className="min-w-0">
                     <p className="text-supporting">
-                      {item.skillId} · {item.language} · {item.dimensions.hookType}
+                      {item.skillId} · {item.language} ·{" "}
+                      {item.contentType === "daily_challenge" ? item.dimensions.challengeType : item.dimensions.hookType}
                     </p>
                     <CardTitle level={3}>{item.payload.title}</CardTitle>
                   </div>

@@ -6,14 +6,19 @@ import { getSkillMap } from "@/lib/content/service";
 import type { Locale } from "@content/types";
 import {
   CHANNELS,
+  CHALLENGE_TYPES_IMPLEMENTED,
   COUNTERPARTIES,
   GOALS,
   HOOK_TYPES_IMPLEMENTED,
   TONES,
+  type ImplementedChallengeType,
   type ImplementedHookType,
 } from "@content/adaptive/dimensions";
 import { generateHook } from "@/lib/ai/agents/adaptive-hook";
-import { evaluateQuality, type HookCandidate } from "./quality-gates";
+import { generateChallenge } from "@/lib/ai/agents/adaptive-challenge";
+import type { AgentResult } from "@/lib/ai/provider";
+import type { AdaptiveHookOutput } from "@/lib/ai/schemas";
+import { evaluateQuality, type AdaptiveContentCandidate } from "./quality-gates";
 import { structuralKey, textFingerprint, type ExposureFingerprint } from "./fingerprint";
 import { uid } from "@/lib/utils";
 
@@ -25,10 +30,24 @@ import { uid } from "@/lib/utils";
  * microservices yet -- the spec explicitly permits logical-only separation
  * for an MVP).
  *
+ * Phase 2 (§14) generalized this from "hooks only" to a shared
+ * `getPersonalizedContent()` core parameterized by a `ContentTypeSpec`, with
+ * `getPersonalizedHook()` and `getPersonalizedDailyChallenge()` as thin,
+ * type-safe wrappers over it -- real evidence the reservoir/novelty/quality
+ * pipeline generalizes to a second content type without duplicating the
+ * selection logic, not just a second copy-pasted file. The two content
+ * types share this module because they share every mechanic (reservoir
+ * lookup, generation attempts, safe-default fallback, exposure recording);
+ * only the dimension vocabulary, offline composer, and AI system prompt
+ * differ, and those already lived in separate files per type before this
+ * refactor (dimensions.ts, {hook,challenge}-composer.ts, adaptive-{hook,
+ * challenge}.ts).
+ *
  * Selection order, cheapest first (never generate when a good unseen item
  * already exists -- the spec's Content Reservoir principle):
- *   1. An approved/published reservoir item for this skill the user hasn't
- *      seen, preferring one whose hook type differs from their last exposure.
+ *   1. An approved/published reservoir item for this skill AND this content
+ *      type the user hasn't seen, preferring one whose "shape" (hookType or
+ *      challengeType) differs from their last exposure.
  *   2. A freshly generated variant (AI if a provider key is configured,
  *      otherwise the deterministic composer), run through the quality gates.
  *      Up to 2 randomized attempts.
@@ -41,7 +60,7 @@ import { uid } from "@/lib/utils";
 const RECENT_EXPOSURE_WINDOW = 20;
 const MAX_GENERATION_ATTEMPTS = 2;
 
-export interface PersonalizedHookRequest {
+export interface PersonalizedContentRequest {
   userId: string;
   organizationId: string | null;
   skillId: string;
@@ -53,10 +72,16 @@ export interface PersonalizedHookRequest {
   allowRemote: boolean;
   context?: Record<string, string>;
 }
+/** Pre-Phase-2 name, kept as an alias -- the request shape never depended on
+ * content type. */
+export type PersonalizedHookRequest = PersonalizedContentRequest;
 
-export interface PersonalizedHook {
+export interface PersonalizedAdaptiveContent {
   id: string;
-  hookTypeId: string;
+  /** The "shape" dimension value that produced this item: a hookType id
+   * (e.g. "quick_dilemma") for hooks, a challengeType id (e.g.
+   * "apply_today") for daily challenges -- see ContentTypeSpec.typeDimensionKey. */
+  typeId: string;
   title: string;
   body: string;
   attribution: string | null;
@@ -64,12 +89,26 @@ export interface PersonalizedHook {
   noveltyScore: number;
   qualityScore: number;
 }
+/** Pre-Phase-2 name, kept as an alias for call sites that only ever dealt
+ * with hooks (this type is identical; only `hookTypeId` renamed to the
+ * content-type-neutral `typeId`, which is why this is a type alias, not a
+ * separate shape). */
+export type PersonalizedHook = PersonalizedAdaptiveContent;
 
 function pickRandom<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)]!;
 }
 
 async function recentExposures(userId: string, limit = RECENT_EXPOSURE_WINDOW) {
+  // Deliberately not filtered by contentType: this represents "the last N
+  // adaptive-engine items this user has been shown, of any kind" -- a
+  // reasonable, arguably more correct definition of "recent" for both the
+  // exclude-list (content ids are globally unique via uid(), so excluding a
+  // different content type's id here is a harmless no-op) and the
+  // structural-key reroll bias (a hook's and a challenge's structural keys
+  // can never collide -- see structuralKey()'s note on typeDimensionKey
+  // below -- so mixing them in the "seen recently" set only makes the
+  // reroll bias slightly more conservative, never wrong).
   return db
     .select({
       contentId: userContentExposure.contentId,
@@ -81,38 +120,133 @@ async function recentExposures(userId: string, limit = RECENT_EXPOSURE_WINDOW) {
     .limit(limit);
 }
 
-async function recordExposure(userId: string, content: { id: string; skillId: string; structuralKey: string }, context?: Record<string, string>) {
+async function recordExposure(
+  userId: string,
+  contentType: "hook" | "daily_challenge",
+  content: { id: string; skillId: string; structuralKey: string },
+  context?: Record<string, string>,
+) {
   await db.insert(userContentExposure).values({
     id: uid("exp"),
     userId,
     contentId: content.id,
-    contentType: "hook",
+    contentType,
     skillId: content.skillId,
     structuralKey: content.structuralKey,
     context: context ?? null,
   });
 }
 
-export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise<PersonalizedHook> {
+/**
+ * Everything a content type needs to plug into the shared selection
+ * pipeline below. One instance per content type (HOOK_SPEC, CHALLENGE_SPEC),
+ * never constructed dynamically -- this is configuration, not user input.
+ */
+interface ContentTypeSpec<TType extends string> {
+  contentType: "hook" | "daily_challenge";
+  /** The key name used inside `adaptiveContent.dimensions` for this content
+   * type's "shape" value -- "hookType" or "challengeType". Using a distinct
+   * key name per content type (rather than a shared generic "type" key) is
+   * what keeps structuralKey() naturally non-colliding between content
+   * types with zero extra logic: `structuralKey()` hashes sorted
+   * `key=value` pairs, so "hookType=quick_dilemma" and
+   * "challengeType=apply_today" can never produce the same hash even if
+   * every other dimension value matched. The reservoir query below also
+   * explicitly filters by the `contentType` column as defense in depth --
+   * two independent reasons the two pools never cross-contaminate. */
+  typeDimensionKey: string;
+  implementedTypes: readonly TType[];
+  promptVersion: string;
+  safeDefault: { typeId: TType; counterpartyId: string; channelId: string; toneId: string; goalId: string };
+  generate: (params: {
+    skillName: string;
+    typeId: TType;
+    careerStageId: string;
+    counterpartyId: string;
+    channelId: string;
+    toneId: string;
+    goalId: string;
+    locale: Locale;
+    userId: string;
+    organizationId: string | null;
+    allowRemote: boolean;
+  }) => Promise<AgentResult<AdaptiveHookOutput>>;
+}
+
+const HOOK_SPEC: ContentTypeSpec<ImplementedHookType> = {
+  contentType: "hook",
+  typeDimensionKey: "hookType",
+  implementedTypes: HOOK_TYPES_IMPLEMENTED,
+  promptVersion: "hook-2026.08.1",
+  safeDefault: { typeId: "quick_dilemma", counterpartyId: "new_client", channelId: "email", toneId: "cooperative", goalId: "clarify" },
+  generate: (p) =>
+    generateHook({
+      skillName: p.skillName,
+      hookTypeId: p.typeId,
+      careerStageId: p.careerStageId,
+      counterpartyId: p.counterpartyId,
+      channelId: p.channelId,
+      toneId: p.toneId,
+      goalId: p.goalId,
+      locale: p.locale,
+      userId: p.userId,
+      organizationId: p.organizationId,
+      allowRemote: p.allowRemote,
+    }),
+};
+
+const CHALLENGE_SPEC: ContentTypeSpec<ImplementedChallengeType> = {
+  contentType: "daily_challenge",
+  typeDimensionKey: "challengeType",
+  implementedTypes: CHALLENGE_TYPES_IMPLEMENTED,
+  promptVersion: "challenge-2026.08.1",
+  safeDefault: { typeId: "apply_today", counterpartyId: "new_client", channelId: "email", toneId: "cooperative", goalId: "clarify" },
+  generate: (p) =>
+    generateChallenge({
+      skillName: p.skillName,
+      challengeTypeId: p.typeId,
+      careerStageId: p.careerStageId,
+      counterpartyId: p.counterpartyId,
+      channelId: p.channelId,
+      toneId: p.toneId,
+      goalId: p.goalId,
+      locale: p.locale,
+      userId: p.userId,
+      organizationId: p.organizationId,
+      allowRemote: p.allowRemote,
+    }),
+};
+
+async function getPersonalizedContent<TType extends string>(
+  req: PersonalizedContentRequest,
+  spec: ContentTypeSpec<TType>,
+): Promise<PersonalizedAdaptiveContent> {
   const exposures = await recentExposures(req.userId);
   const excludeIds = exposures.map((e) => e.contentId);
   const recentStructuralKeys = new Set(exposures.map((e) => e.structuralKey));
 
-  // The single most recent exposure's hook type, for the diversity scheduler
-  // rule "don't show the same hook type twice in a row" -- a cheap lookup
-  // since it's only needed for one row, not the whole window.
-  let lastHookTypeId: string | null = null;
+  // The single most recent exposure's "shape" type (of any content type --
+  // see recentExposures()'s note), for the diversity scheduler rule "don't
+  // show the same shape twice in a row". If the most recent exposure was a
+  // different content type, its dimensions won't have this spec's
+  // typeDimensionKey at all, so this naturally resolves to null (no bias),
+  // not a wrong value.
+  let lastTypeId: string | null = null;
   if (excludeIds.length > 0) {
     const lastRow = await db
       .select({ dimensions: adaptiveContent.dimensions })
       .from(adaptiveContent)
       .where(eq(adaptiveContent.id, excludeIds[0]!))
       .limit(1);
-    lastHookTypeId = lastRow[0]?.dimensions.hookType ?? null;
+    lastTypeId = lastRow[0]?.dimensions[spec.typeDimensionKey] ?? null;
   }
 
   // --- 1. Reservoir lookup -------------------------------------------------
-  const reservoirConditions = [eq(adaptiveContent.skillId, req.skillId), inArray(adaptiveContent.status, ["approved", "published"])];
+  const reservoirConditions = [
+    eq(adaptiveContent.skillId, req.skillId),
+    eq(adaptiveContent.contentType, spec.contentType),
+    inArray(adaptiveContent.status, ["approved", "published"]),
+  ];
   if (excludeIds.length > 0) reservoirConditions.push(notInArray(adaptiveContent.id, excludeIds));
   const candidates = await db
     .select()
@@ -121,12 +255,12 @@ export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise
     .orderBy(desc(adaptiveContent.qualityScore), desc(adaptiveContent.noveltyScore))
     .limit(5);
 
-  const chosen = candidates.find((c) => c.dimensions.hookType !== lastHookTypeId) ?? candidates[0];
+  const chosen = candidates.find((c) => c.dimensions[spec.typeDimensionKey] !== lastTypeId) ?? candidates[0];
   if (chosen) {
-    await recordExposure(req.userId, chosen, req.context);
+    await recordExposure(req.userId, spec.contentType, chosen, req.context);
     return {
       id: chosen.id,
-      hookTypeId: chosen.dimensions.hookType ?? "quick_dilemma",
+      typeId: chosen.dimensions[spec.typeDimensionKey] ?? spec.safeDefault.typeId,
       title: chosen.payload.title,
       body: chosen.payload.body,
       attribution: chosen.payload.attribution ?? null,
@@ -151,17 +285,24 @@ export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise
     textFingerprint: r.textFingerprint,
   }));
 
-  async function attempt(combo: {
-    hookTypeId: ImplementedHookType;
-    counterpartyId: string;
-    channelId: string;
-    toneId: string;
-    goalId: string;
-  }) {
+  function keyFor(typeId: TType, counterpartyId: string, channelId: string, toneId: string, goalId: string): string {
+    return structuralKey({
+      skillId: req.skillId,
+      language: req.locale,
+      [spec.typeDimensionKey]: typeId,
+      careerStage: req.careerStageId,
+      counterparty: counterpartyId,
+      channel: channelId,
+      tone: toneId,
+      goal: goalId,
+    });
+  }
+
+  async function attempt(combo: { typeId: TType; counterpartyId: string; channelId: string; toneId: string; goalId: string }) {
     const dims: Record<string, string> = {
       skillId: req.skillId,
       language: req.locale,
-      hookType: combo.hookTypeId,
+      [spec.typeDimensionKey]: combo.typeId,
       careerStage: req.careerStageId,
       counterparty: combo.counterpartyId,
       channel: combo.channelId,
@@ -170,9 +311,9 @@ export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise
     };
     const key = structuralKey(dims);
 
-    const result = await generateHook({
+    const result = await spec.generate({
       skillName: req.skillName,
-      hookTypeId: combo.hookTypeId,
+      typeId: combo.typeId,
       careerStageId: req.careerStageId,
       counterpartyId: combo.counterpartyId,
       channelId: combo.channelId,
@@ -185,7 +326,7 @@ export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise
     });
 
     const fingerprint: ExposureFingerprint = { structuralKey: key, textFingerprint: textFingerprint(result.data.body) };
-    const candidate: HookCandidate = {
+    const candidate: AdaptiveContentCandidate = {
       skillId: req.skillId,
       language: req.locale,
       payload: { title: result.data.title, body: result.data.body, attribution: result.data.attribution ?? undefined },
@@ -197,7 +338,7 @@ export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise
     const now = Date.now();
     await db.insert(adaptiveContent).values({
       id,
-      contentType: "hook",
+      contentType: spec.contentType,
       skillId: req.skillId,
       language: req.locale,
       difficulty: 1,
@@ -209,7 +350,7 @@ export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise
       qualityScore: quality.qualityScore,
       qualityGateReport: quality.report as unknown as Record<string, boolean>,
       generatedBy: result.provider === "offline" ? "template" : `ai:${result.provider}`,
-      promptVersion: "hook-2026.08.1",
+      promptVersion: spec.promptVersion,
       status: quality.status === "approved" ? "approved" : quality.status === "rejected" ? "rejected" : "human_review_required",
       // A 90-day horizon -- long enough to amortise generation cost across
       // many learners, short enough that a stale variant doesn't linger
@@ -217,13 +358,13 @@ export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise
       expiresAt: now + 90 * 24 * 60 * 60 * 1000,
     });
 
-    return { id, quality, payload: candidate.payload, structuralKey: key, hookTypeId: combo.hookTypeId };
+    return { id, quality, payload: candidate.payload, structuralKey: key, typeId: combo.typeId };
   }
 
-  function randomCombo(): { hookTypeId: ImplementedHookType; counterpartyId: string; channelId: string; toneId: string; goalId: string } {
-    const availableHookTypes = HOOK_TYPES_IMPLEMENTED.filter((h) => h !== lastHookTypeId);
+  function randomCombo(): { typeId: TType; counterpartyId: string; channelId: string; toneId: string; goalId: string } {
+    const availableTypes = spec.implementedTypes.filter((t) => t !== lastTypeId);
     return {
-      hookTypeId: pickRandom(availableHookTypes.length > 0 ? availableHookTypes : HOOK_TYPES_IMPLEMENTED),
+      typeId: pickRandom(availableTypes.length > 0 ? availableTypes : spec.implementedTypes),
       counterpartyId: pickRandom(COUNTERPARTIES).id,
       channelId: pickRandom(CHANNELS).id,
       toneId: pickRandom(TONES).id,
@@ -236,15 +377,15 @@ export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise
     // Best-effort: re-roll a few times if we land on a structural key this
     // user has seen recently. Not exhaustive search -- a small vocabulary
     // means an exact repeat is already unlikely, this just biases away from it.
-    for (let reroll = 0; reroll < 3 && recentStructuralKeys.has(structuralKey({ skillId: req.skillId, language: req.locale, hookType: combo.hookTypeId, careerStage: req.careerStageId, counterparty: combo.counterpartyId, channel: combo.channelId, tone: combo.toneId, goal: combo.goalId })); reroll++) {
+    for (let reroll = 0; reroll < 3 && recentStructuralKeys.has(keyFor(combo.typeId, combo.counterpartyId, combo.channelId, combo.toneId, combo.goalId)); reroll++) {
       combo = randomCombo();
     }
     const result = await attempt(combo);
     if (result.quality.status === "approved") {
-      await recordExposure(req.userId, { id: result.id, skillId: req.skillId, structuralKey: result.structuralKey }, req.context);
+      await recordExposure(req.userId, spec.contentType, { id: result.id, skillId: req.skillId, structuralKey: result.structuralKey }, req.context);
       return {
         id: result.id,
-        hookTypeId: result.hookTypeId,
+        typeId: result.typeId,
         title: result.payload.title,
         body: result.payload.body,
         attribution: result.payload.attribution ?? null,
@@ -257,12 +398,12 @@ export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise
 
   // Final fixed-safe attempt -- passes every mechanical gate by construction
   // except possibly novelty, which we accept here rather than leave the
-  // learner without a hook at all.
-  const safe = await attempt({ hookTypeId: "quick_dilemma", counterpartyId: "new_client", channelId: "email", toneId: "cooperative", goalId: "clarify" });
-  await recordExposure(req.userId, { id: safe.id, skillId: req.skillId, structuralKey: safe.structuralKey }, req.context);
+  // learner without content at all.
+  const safe = await attempt(spec.safeDefault);
+  await recordExposure(req.userId, spec.contentType, { id: safe.id, skillId: req.skillId, structuralKey: safe.structuralKey }, req.context);
   return {
     id: safe.id,
-    hookTypeId: safe.hookTypeId,
+    typeId: safe.typeId,
     title: safe.payload.title,
     body: safe.payload.body,
     attribution: safe.payload.attribution ?? null,
@@ -270,4 +411,15 @@ export async function getPersonalizedHook(req: PersonalizedHookRequest): Promise
     noveltyScore: safe.quality.noveltyScore,
     qualityScore: safe.quality.qualityScore,
   };
+}
+
+export async function getPersonalizedHook(req: PersonalizedContentRequest): Promise<PersonalizedAdaptiveContent> {
+  return getPersonalizedContent(req, HOOK_SPEC);
+}
+
+/** Phase 2 (§14): a second, real, architecturally distinct content type
+ * through the exact same reservoir/novelty/quality pipeline as hooks -- see
+ * this file's top doc comment. */
+export async function getPersonalizedDailyChallenge(req: PersonalizedContentRequest): Promise<PersonalizedAdaptiveContent> {
+  return getPersonalizedContent(req, CHALLENGE_SPEC);
 }

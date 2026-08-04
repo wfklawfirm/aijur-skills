@@ -29,7 +29,8 @@ export type AgentName =
   | "language"
   | "recommendation"
   | "safety"
-  | "adaptive_hook";
+  | "adaptive_hook"
+  | "adaptive_challenge";
 
 export type ProviderName = "offline" | "anthropic" | "openai";
 

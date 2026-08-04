@@ -19,7 +19,17 @@ import type { SessionUser } from "@/lib/auth/session";
 export interface AdaptiveContentStats {
   total: number;
   byStatus: Record<string, number>;
+  /** Phase 2 (§14): counts per content type ("hook" / "daily_challenge") --
+   * the top-level view of how the reservoir splits across content types,
+   * new alongside the per-type shape breakdowns below. */
+  byContentType: { contentType: string; count: number }[];
   byHookType: { hookType: string; count: number }[];
+  /** Phase 2 (§14): the same "shape" breakdown as byHookType, scoped to
+   * `contentType === "daily_challenge"` rows -- kept as a separate field
+   * (rather than renaming byHookType to something generic) so the existing
+   * "Hook type usage" admin section keeps meaning exactly what it always
+   * meant, and the new content type gets its own equally legible section. */
+  byChallengeType: { challengeType: string; count: number }[];
   bySkill: { skillId: string; count: number }[];
   averageQualityScore: number;
   averageNoveltyScore: number;
@@ -30,15 +40,23 @@ export async function getAdaptiveContentStatsCore(user: SessionUser): Promise<Ad
   const rows = await db.select().from(adaptiveContent);
 
   const byStatus: Record<string, number> = {};
+  const contentTypeCounts = new Map<string, number>();
   const hookTypeCounts = new Map<string, number>();
+  const challengeTypeCounts = new Map<string, number>();
   const skillCounts = new Map<string, number>();
   let qualitySum = 0;
   let noveltySum = 0;
 
   for (const row of rows) {
     byStatus[row.status] = (byStatus[row.status] ?? 0) + 1;
-    const hookType = row.dimensions.hookType ?? "unknown";
-    hookTypeCounts.set(hookType, (hookTypeCounts.get(hookType) ?? 0) + 1);
+    contentTypeCounts.set(row.contentType, (contentTypeCounts.get(row.contentType) ?? 0) + 1);
+    if (row.contentType === "daily_challenge") {
+      const challengeType = row.dimensions.challengeType ?? "unknown";
+      challengeTypeCounts.set(challengeType, (challengeTypeCounts.get(challengeType) ?? 0) + 1);
+    } else {
+      const hookType = row.dimensions.hookType ?? "unknown";
+      hookTypeCounts.set(hookType, (hookTypeCounts.get(hookType) ?? 0) + 1);
+    }
     skillCounts.set(row.skillId, (skillCounts.get(row.skillId) ?? 0) + 1);
     qualitySum += row.qualityScore;
     noveltySum += row.noveltyScore;
@@ -47,8 +65,14 @@ export async function getAdaptiveContentStatsCore(user: SessionUser): Promise<Ad
   return {
     total: rows.length,
     byStatus,
+    byContentType: [...contentTypeCounts.entries()]
+      .map(([contentType, count]) => ({ contentType, count }))
+      .sort((a, b) => b.count - a.count),
     byHookType: [...hookTypeCounts.entries()]
       .map(([hookType, count]) => ({ hookType, count }))
+      .sort((a, b) => b.count - a.count),
+    byChallengeType: [...challengeTypeCounts.entries()]
+      .map(([challengeType, count]) => ({ challengeType, count }))
       .sort((a, b) => b.count - a.count),
     bySkill: [...skillCounts.entries()]
       .map(([skillId, count]) => ({ skillId, count }))

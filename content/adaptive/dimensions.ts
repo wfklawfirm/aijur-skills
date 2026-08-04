@@ -48,6 +48,32 @@ export const HOOK_TYPES_IMPLEMENTED = [
 ] as const;
 export type ImplementedHookType = (typeof HOOK_TYPES_IMPLEMENTED)[number];
 
+/**
+ * Phase 2: Daily Challenge as a second content type (see
+ * docs/ADAPTIVE_ENGINE_ARCHITECTURE.md §14) -- a distinct "shape" dimension,
+ * same role `HOOK_TYPES` plays for hooks. A hook is a short reflective
+ * prompt or question; a challenge is a concrete micro-action the learner is
+ * asked to actually do today, in real work or in the app -- a different
+ * communicative purpose, not a reworded hook. Only 4 of these have offline
+ * composer templates in Phase 2 (see CHALLENGE_TYPES_IMPLEMENTED); the rest
+ * are named here so a later phase can extend the generator without touching
+ * this file, mirroring HOOK_TYPES' own "name the full taxonomy, implement a
+ * subset" pattern.
+ */
+export const CHALLENGE_TYPES: DimensionOption[] = [
+  { id: "apply_today", label: { en: "Apply it today", ar: "طبّقها اليوم" } },
+  { id: "rewrite_one", label: { en: "Rewrite one thing", ar: "أعد صياغة شيء واحد" } },
+  { id: "spot_and_log", label: { en: "Spot it and log it", ar: "لاحظها ودوّنها" } },
+  { id: "teach_it_back", label: { en: "Teach it back", ar: "اشرحها لغيرك" } },
+  { id: "ask_one_question", label: { en: "Ask one question", ar: "اطرح سؤالًا واحدًا" } },
+  { id: "measure_it", label: { en: "Measure it", ar: "قِسها" } },
+];
+
+/** Templates only exist for these in Phase 2's offline composer -- see the
+ * scope note above. Keep in sync with the `switch` in challenge-composer.ts. */
+export const CHALLENGE_TYPES_IMPLEMENTED = ["apply_today", "rewrite_one", "spot_and_log", "teach_it_back"] as const;
+export type ImplementedChallengeType = (typeof CHALLENGE_TYPES_IMPLEMENTED)[number];
+
 /** Reuses the exact career-stage vocabulary already collected at onboarding
  * (`profiles.careerStage`) rather than inventing a parallel "user role" set. */
 export const CAREER_STAGES: DimensionOption[] = [

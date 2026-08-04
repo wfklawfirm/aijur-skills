@@ -8,7 +8,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { buildHomeData, buildSkillMap } from "@/lib/learning/dashboard";
 import { getPathById, getSkillMap } from "@/lib/content/service";
 import { levelKey } from "@/lib/learning/mastery";
-import { getPersonalizedHook, type PersonalizedHook } from "@/lib/adaptive/hooks";
+import { getPersonalizedDailyChallenge, type PersonalizedAdaptiveContent } from "@/lib/adaptive/hooks";
 import { Page, AppHeader, BottomNav, SectionTitle } from "@/components/layout/app-shell";
 import { Card, CardBody, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { LinkButton } from "@/components/ui/button";
@@ -62,18 +62,23 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   }
   const currentSkill = home.continueUnit ? skillMap.get(home.continueUnit.unit.primarySkillId) : null;
 
-  // Adaptive Professional Journey Engine (Phase 1: hooks) -- a short,
-  // personalized engagement prompt tied to whatever skill the learner is
-  // actually working on right now, never the same one twice in a row (see
-  // src/lib/adaptive/hooks.ts). Best-effort: this is an engagement add-on,
-  // not core functionality, so a failure here must never break Home itself.
+  // Adaptive Professional Journey Engine -- a short, personalized prompt tied
+  // to whatever skill the learner is actually working on right now, never
+  // the same one twice in a row (see src/lib/adaptive/hooks.ts). Phase 2
+  // (docs/ADAPTIVE_ENGINE_ARCHITECTURE.md §14) made this card genuinely a
+  // Daily Challenge -- a concrete micro-action, through
+  // getPersonalizedDailyChallenge() -- rather than a Hook (a reflective
+  // prompt) rendered under a "Daily challenge" label, which is what this
+  // card actually was in Phase 1. Best-effort: this is an engagement
+  // add-on, not core functionality, so a failure here must never break
+  // Home itself.
   const dailyChallengeSkillId = home.continueUnit?.unit.primarySkillId ?? topSkills[0]?.skillId ?? null;
-  let dailyChallenge: PersonalizedHook | null = null;
+  let dailyChallenge: PersonalizedAdaptiveContent | null = null;
   if (dailyChallengeSkillId) {
     const skillDef = skillMap.get(dailyChallengeSkillId);
     if (skillDef) {
       try {
-        dailyChallenge = await getPersonalizedHook({
+        dailyChallenge = await getPersonalizedDailyChallenge({
           userId: user.id,
           organizationId: user.organization?.id ?? null,
           skillId: dailyChallengeSkillId,
@@ -143,7 +148,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           />
         )}
 
-        {/* 1.5 — Daily challenge (adaptive hook) */}
+        {/* 1.5 — Daily challenge (adaptive, Phase 2 §14) */}
         {dailyChallenge && (
           <>
             <SectionTitle>{dict.home.dailyChallenge}</SectionTitle>

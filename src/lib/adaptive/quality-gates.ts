@@ -1,18 +1,23 @@
 /**
- * AI Quality Gates for generated adaptive content (Phase 1: hooks only).
+ * AI Quality Gates for generated adaptive content -- Phase 1 built this for
+ * hooks only; Phase 2 (docs/ADAPTIVE_ENGINE_ARCHITECTURE.md §14) reuses it
+ * unchanged for Daily Challenge, since every gate here operates on the
+ * generic {skillId, language, payload, fingerprint} shape, not anything
+ * hook-specific -- real evidence the mechanical gate layer generalizes
+ * across content types without modification.
  *
  * Scope note: the build spec names 12 gates. Several of them (Evaluation
  * Integrity, full Cultural Fit review) presume scored, graded activities --
- * a hook is a short, ungraded engagement moment, not an assessed one, so
- * those don't apply the same way. The gates below are the mechanically
- * checkable subset for this content type; see
+ * a hook or challenge is a short, ungraded engagement moment, not an
+ * assessed one, so those don't apply the same way. The gates below are the
+ * mechanically checkable subset for these content types; see
  * docs/ADAPTIVE_ENGINE_ARCHITECTURE.md for the full 12-gate mapping and
- * what's deferred to Phase 2 (an actual AI-judge review pass for tone/
- * cultural nuance, which needs a configured provider key).
+ * what's still deferred (an actual AI-judge review pass for tone/cultural
+ * nuance, which needs a configured provider key).
  */
 import { noveltyScore, NOVELTY_THRESHOLD, type ExposureFingerprint } from "./fingerprint";
 
-export interface HookCandidate {
+export interface AdaptiveContentCandidate {
   skillId: string;
   language: "ar" | "en";
   payload: { title: string; body: string; attribution?: string };
@@ -54,7 +59,7 @@ const GUARANTEE_RE: Record<"ar" | "en", RegExp> = {
 
 const PLACEHOLDER_LEFTOVER_RE = /\{\{|\}\}|undefined|NaN/;
 
-function checkLanguageQuality(payload: HookCandidate["payload"], language: "ar" | "en"): boolean {
+function checkLanguageQuality(payload: AdaptiveContentCandidate["payload"], language: "ar" | "en"): boolean {
   if (!payload.title.trim() || !payload.body.trim()) return false;
   if (PLACEHOLDER_LEFTOVER_RE.test(payload.title) || PLACEHOLDER_LEFTOVER_RE.test(payload.body)) return false;
   // A crude but real script check -- Arabic content should contain Arabic
@@ -66,7 +71,7 @@ function checkLanguageQuality(payload: HookCandidate["payload"], language: "ar" 
   return true;
 }
 
-function checkMobileFit(payload: HookCandidate["payload"]): boolean {
+function checkMobileFit(payload: AdaptiveContentCandidate["payload"]): boolean {
   return (
     payload.title.length > 0 &&
     payload.title.length <= MOBILE_TITLE_MAX &&
@@ -75,14 +80,14 @@ function checkMobileFit(payload: HookCandidate["payload"]): boolean {
   );
 }
 
-function checkSafety(payload: HookCandidate["payload"], language: "ar" | "en"): boolean {
+function checkSafety(payload: AdaptiveContentCandidate["payload"], language: "ar" | "en"): boolean {
   const text = `${payload.title} ${payload.body}`;
   return !GUARANTEE_RE[language].test(text);
 }
 
 const QUALITY_APPROVAL_THRESHOLD = 0.8;
 
-export function evaluateQuality(candidate: HookCandidate, knownSkillIds: Set<string>, recentExposures: ExposureFingerprint[]): QualityEvaluation {
+export function evaluateQuality(candidate: AdaptiveContentCandidate, knownSkillIds: Set<string>, recentExposures: ExposureFingerprint[]): QualityEvaluation {
   const novelty = noveltyScore(candidate.fingerprint, recentExposures);
 
   const report: QualityGateReport = {

@@ -8,9 +8,10 @@ import {
   noveltyScore,
   NOVELTY_THRESHOLD,
 } from "@/lib/adaptive/fingerprint";
-import { evaluateQuality, type HookCandidate } from "@/lib/adaptive/quality-gates";
+import { evaluateQuality, type AdaptiveContentCandidate } from "@/lib/adaptive/quality-gates";
 import { composeHookOffline } from "@/lib/adaptive/hook-composer";
-import { HOOK_TYPES_IMPLEMENTED } from "@content/adaptive/dimensions";
+import { composeChallengeOffline } from "@/lib/adaptive/challenge-composer";
+import { CHALLENGE_TYPES_IMPLEMENTED, HOOK_TYPES_IMPLEMENTED } from "@content/adaptive/dimensions";
 
 /**
  * The adaptive content engine's testable core: novelty/repetition detection
@@ -18,9 +19,14 @@ import { HOOK_TYPES_IMPLEMENTED } from "@content/adaptive/dimensions";
  * the same properties that make them safe to run on every request. This is
  * the mechanical subset of the build spec's 18-category test list (Exact
  * Duplicate, Near-Duplicate, Semantic Similarity, Structural Repetition,
- * Quality Gate, Schema Validation); the DB-backed categories (User/Cohort
- * Exposure, Retry Variation, Tenant Isolation) are integration-level and
- * covered instead by tests/e2e/adaptive-content.spec.ts's real end-to-end run.
+ * Quality Gate, Schema Validation). The DB-backed categories (User/Cohort
+ * Exposure, Retry Variation, Tenant Isolation) are integration-level and, as
+ * of this writing, still not covered by a dedicated e2e spec -- the existing
+ * e2e suite only exercises the Home page surface generally (see
+ * docs/ADAPTIVE_ENGINE_ARCHITECTURE.md §10 and §14 for this honestly-stated
+ * gap; an earlier version of this comment claimed a
+ * tests/e2e/adaptive-content.spec.ts that was never actually written --
+ * corrected here rather than left standing).
  */
 
 describe("structuralKey — structural repetition detection", () => {
@@ -95,7 +101,7 @@ describe("noveltyScore", () => {
   });
 });
 
-function makeCandidate(overrides: Partial<HookCandidate> = {}): HookCandidate {
+function makeCandidate(overrides: Partial<AdaptiveContentCandidate> = {}): AdaptiveContentCandidate {
   return {
     skillId: "skill.active-listening",
     language: "en",
@@ -226,5 +232,64 @@ describe("composeHookOffline — the deterministic Controlled Generative Templat
     });
     const similarity = estimatedSimilarity(textFingerprint(a.body), textFingerprint(b.body));
     assert.ok(similarity < 0.5, `expected different hook types to read as different text, got similarity ${similarity}`);
+  });
+});
+
+describe("composeChallengeOffline — Phase 2's second content type through the same Controlled Generative Template layer", () => {
+  test("every implemented challenge type produces non-empty, gate-passing bilingual output for the same skill+dimensions", () => {
+    const knownSkills = new Set(["skill.active-listening"]);
+    for (const challengeTypeId of CHALLENGE_TYPES_IMPLEMENTED) {
+      for (const locale of ["ar", "en"] as const) {
+        const payload = composeChallengeOffline({
+          skillName: locale === "ar" ? "الإصغاء الفاعل" : "Active listening",
+          challengeTypeId,
+          careerStageId: "trainee",
+          counterpartyId: "difficult_client",
+          channelId: "phone_call",
+          toneId: "impatient",
+          goalId: "clarify",
+          locale,
+        });
+        assert.ok(payload.title.length > 0, `${challengeTypeId}/${locale} produced an empty title`);
+        assert.ok(payload.body.length > 0, `${challengeTypeId}/${locale} produced an empty body`);
+
+        const quality = evaluateQuality(
+          {
+            skillId: "skill.active-listening",
+            language: locale,
+            payload: { title: payload.title, body: payload.body, attribution: payload.attribution ?? undefined },
+            fingerprint: { structuralKey: `${challengeTypeId}-${locale}`, textFingerprint: textFingerprint(payload.body) },
+          },
+          knownSkills,
+          [],
+        );
+        assert.equal(quality.status, "approved", `${challengeTypeId}/${locale} did not pass the quality gates: ${JSON.stringify(quality.report)}`);
+      }
+    }
+  });
+
+  test("two different challenge types for the same skill+dimensions produce structurally and textually different output (not just reworded)", () => {
+    const a = composeChallengeOffline({
+      skillName: "Active listening",
+      challengeTypeId: "apply_today",
+      careerStageId: "trainee",
+      counterpartyId: "difficult_client",
+      channelId: "phone_call",
+      toneId: "impatient",
+      goalId: "clarify",
+      locale: "en",
+    });
+    const b = composeChallengeOffline({
+      skillName: "Active listening",
+      challengeTypeId: "teach_it_back",
+      careerStageId: "trainee",
+      counterpartyId: "difficult_client",
+      channelId: "phone_call",
+      toneId: "impatient",
+      goalId: "clarify",
+      locale: "en",
+    });
+    const similarity = estimatedSimilarity(textFingerprint(a.body), textFingerprint(b.body));
+    assert.ok(similarity < 0.5, `expected different challenge types to read as different text, got similarity ${similarity}`);
   });
 });

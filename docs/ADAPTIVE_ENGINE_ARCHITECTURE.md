@@ -1,11 +1,13 @@
 # Adaptive Engine Architecture
 
 This document covers `src/lib/adaptive/**`, `content/adaptive/**`,
-`src/lib/ai/agents/adaptive-hook.ts`, `src/lib/actions/adaptive-admin*.ts`,
-and `scripts/generate-adaptive-content.ts` — the AIJUR Adaptive Professional
-Journey Engine: a hybrid content-and-personalization layer that generates
-varied, non-repetitive, personalized "hooks" (short engagement prompts) for
-learners, instead of showing every learner the same fixed set.
+`src/lib/ai/agents/adaptive-hook.ts`, `src/lib/ai/agents/adaptive-challenge.ts`,
+`src/lib/actions/adaptive-admin*.ts`, and `scripts/generate-adaptive-content.ts`
+— the AIJUR Adaptive Professional Journey Engine: a hybrid
+content-and-personalization layer that generates varied, non-repetitive,
+personalized "hooks" (short engagement prompts) and, since Phase 2 (§14),
+"daily challenges" (short micro-action instructions) for learners, instead
+of showing every learner the same fixed set.
 
 It is written against a 46-section build specification the product team
 issued for a much larger system (personalized hooks, icebreakers, daily
@@ -38,10 +40,11 @@ don't need to be literal microservices, and its explicit MVP scope note
 
 Deferred to a later phase, named explicitly rather than silently dropped:
 
-- Content types beyond hooks: icebreakers, daily challenges as a distinct
-  type, scenario variations, roleplays, voice/visual exercises, Legal
-  English activities, missions, feedback messages, stage intros/summaries,
-  weekly reviews, return-after-absence recaps, next-mission previews.
+- Content types beyond hooks and daily challenges (the latter added in
+  Phase 2 — see §14): icebreakers, scenario variations, roleplays,
+  voice/visual exercises, Legal English activities, missions, feedback
+  messages, stage intros/summaries, weekly reviews, return-after-absence
+  recaps, next-mission previews.
 - The full 18-step generation pipeline (Phase 1 implements reservoir-check →
   generate → quality-gate → persist → expose, which is steps 1, 4–5, 9–12,
   16 of the spec's list; branching, retry-variation state machines, and
@@ -404,9 +407,111 @@ tracking, a live admin monitor, and a passing test suite.
 Not built, and not claimed: unlimited or never-repeating generation, true
 semantic embeddings, cross-user/cohort diversity balancing, source-grounded
 generation, an AI-judge review pass, background/async generation
-infrastructure, and 9 of the spec's content types beyond hooks. The natural
-next build step is either (a) extending this same pipeline to a second
-content type (Daily Challenge as distinct from Hook is the closest
-architectural neighbor), or (b) adding a real AI-judge quality-gate pass
-now that the mechanical gates and the reservoir are proven — see the
-delivery report for this build's specific recommendation.
+infrastructure, and 8 of the spec's content types beyond hooks and daily
+challenges (the latter added in Phase 2 — see §14). The natural next build
+step is either (a) extending this same pipeline to a third content type, or
+(b) adding a real AI-judge quality-gate pass now that the mechanical gates
+and the reservoir are proven — see the delivery report for this build's
+specific recommendation.
+
+## 14. Phase 2: Daily Challenge as a second content type
+
+§13 named the natural next step as "extending this same pipeline to a
+second content type (Daily Challenge as distinct from Hook is the closest
+architectural neighbor)." Phase 2 does exactly that, and is written up here
+in the same honest, explicit-scope-decision style as §0.
+
+**Why Daily Challenge, and what makes it genuinely different.** A Hook is a
+short reflective prompt or question — it asks the learner to think for a
+second. A Daily Challenge is a concrete micro-action instruction — it asks
+the learner to actually *do* something today and ends in an instruction,
+not a question. That distinction is the real test of "does the pattern
+generalize to a second content type," not just a reworded Hook with a new
+label. Every Daily Challenge template (`src/lib/adaptive/challenge-composer.ts`)
+ends with an action ("write two lines," "rewrite its opening line," "teach
+it back"), never a question.
+
+**What was reused unchanged, and what's real evidence the pattern
+generalizes:**
+
+- `evaluateQuality()` (quality-gates.ts) required zero logic changes — it
+  already operated on a generic `{skillId, language, payload, fingerprint}`
+  shape. The exported type was renamed from `HookCandidate` to
+  `AdaptiveContentCandidate` for honesty, with no behavior change.
+- `structuralKey()`'s existing design (sorted `key=value` pairs, hashed)
+  naturally keeps Hook and Daily Challenge structural keys from colliding,
+  because they use different dimension key names (`hookType` vs.
+  `challengeType`) — no new logic was needed for this, only the observation
+  documented here.
+- The `adaptiveContent.contentType` DB column already existed from Phase 1
+  (defaulting to `"hook"`), specifically designed for this kind of
+  extension without a migration.
+- The `adaptive-challenge.ts` AI agent reuses the existing
+  `adaptiveHookSchema`/`AdaptiveHookOutput` Zod schema rather than
+  duplicating it, since the output shape (`{title, body, attribution}`) is
+  identical between the two content types — only the system prompt differs.
+
+**What was genuinely new:**
+
+- `src/lib/adaptive/challenge-composer.ts` — 4 offline templates
+  (`apply_today`, `rewrite_one`, `spot_and_log`, `teach_it_back`), bilingual,
+  each ending in an instruction. 2 of the spec's 6 named challenge types
+  (`ask_one_question`, `measure_it`) are listed in
+  `content/adaptive/dimensions.ts`'s `CHALLENGE_TYPES` but not yet
+  implemented — the same "implemented vs. named" pattern §6 already used for
+  hook types.
+- `src/lib/ai/agents/adaptive-challenge.ts` — the AI-agent wrapper, offline
+  fallback wired to `composeChallengeOffline()`.
+- `src/lib/adaptive/hooks.ts` was refactored from a hook-specific pipeline
+  into a generic `getPersonalizedContent<TType>()` function parameterized by
+  a `ContentTypeSpec<TType>` (contentType, typeDimensionKey,
+  implementedTypes, promptVersion, safeDefault, generate fn), with
+  `getPersonalizedHook()` and `getPersonalizedDailyChallenge()` as thin
+  wrappers. This is the real proof the request-time selection pipeline
+  generalizes, not just the offline composer.
+- `scripts/generate-adaptive-content.ts` was generalized to loop over a
+  `JOBS` array covering both content types through one shared inner
+  generation-and-gating loop — real, executed proof the pregeneration
+  pipeline generalizes too, not just the code path.
+- The Home page's Daily Challenge card (`src/app/(app)/[locale]/home/page.tsx`)
+  now reads from `getPersonalizedDailyChallenge()` instead of reusing a Hook
+  under a relabeled card — it is genuinely backed by the new content type.
+- The admin monitor (`src/app/(app)/[locale]/admin/adaptive-content/page.tsx`)
+  gained a content-type split section and a Daily Challenge type-usage
+  section alongside the existing Hook type-usage section.
+
+**A real bug found and fixed while building this.** Phase 1's reservoir
+lookup query and `recordExposure()` had zero `contentType` filtering —
+harmless with only one content type in existence, but it would have caused
+Hook and Daily Challenge content to cross-contaminate the moment a second
+type was added (a learner's Hook exposure history suppressing a Daily
+Challenge, or vice versa, and the reservoir handing out the wrong content
+type's rows). Fixed by adding `eq(adaptiveContent.contentType, spec.contentType)`
+to the reservoir query and passing `contentType` explicitly into
+`recordExposure()` rather than hardcoding `"hook"`.
+
+**Mobile-fit was re-verified programmatically, not assumed.** The first
+draft of the 4 templates was too verbose: worst case 369 characters against
+real long skill names, with 6831 of 11520 (59%) of real skill/dimension
+combinations exceeding the `MOBILE_BODY_MAX = 260` quality gate. Templates
+were rewritten more concisely and re-checked against the actual longest
+skill names (46 chars EN / 34 chars AR from `content/framework/skills.ts`)
+crossed with every real dimension combination — final worst case 242
+characters, 0 over the 260 cap.
+
+**Deferred, same as Phase 1 named its own gaps in §0 and §13 — these remain
+open for Daily Challenge too, not newly introduced by it:**
+
+- The 2 unimplemented challenge types (`ask_one_question`, `measure_it`).
+- Content types beyond Hook and Daily Challenge (roleplays, missions,
+  voice/visual exercises, icebreakers, scenario variations, and the rest of
+  §0's list).
+- True semantic-embedding similarity, cohort-level diversity balancing, and
+  an AI-judge quality pass — still not built for either content type.
+- Dedicated e2e coverage for the reservoir/exposure flow. Phase 1 never
+  built this for Hook either (see §10); Phase 2 doesn't add it for Daily
+  Challenge. `tests/adaptive-content.test.ts` covers both content types at
+  the unit level (novelty/repetition detection, quality gates, and the
+  offline composers including cross-type textural distinctness), which
+  mirrors exactly what existed for Hook alone before this phase — this is a
+  named, honest gap, not a regression Phase 2 introduced.
