@@ -49,7 +49,7 @@ export default async function LearnPage({ params }: { params: Promise<{ locale: 
   return (
     <>
       <Page>
-        <AppHeader title={dict.learn.title} />
+        <AppHeader title={dict.learn.title} showStudio={showStudio} />
 
         {TRACKS.map((track) => {
           const pathsForTrack = byTrack.get(track);

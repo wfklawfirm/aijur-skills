@@ -6,14 +6,40 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useI18n, useOnline } from "@/components/providers";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { BrandMark } from "@/components/layout/brand-mark";
+import { signOutAction } from "@/lib/actions/auth";
+import { IconButton } from "@/components/ui/button";
+import { Sheet } from "@/components/ui/sheet";
 import {
   HomeIcon,
   LearnIcon,
+  LogoutIcon,
+  MenuIcon,
   PracticeIcon,
   ProfileIcon,
   ProgressIcon,
+  SettingsIcon,
   StudioIcon,
 } from "@/components/ui/icons";
+import type { Dictionary } from "@/lib/i18n/dictionaries/ar";
+import type { Locale } from "@/lib/i18n/config";
+
+/**
+ * The same five destinations everywhere a nav list appears — `BottomNav` and
+ * the `AppHeader` menu both build from this one function, so they can never
+ * silently drift apart into two different lists.
+ */
+function navItems(dict: Dictionary, locale: Locale, showStudio: boolean) {
+  return [
+    { href: `/${locale}/home`, label: dict.nav.home, Icon: HomeIcon },
+    { href: `/${locale}/learn`, label: dict.nav.learn, Icon: LearnIcon },
+    { href: `/${locale}/practice`, label: dict.nav.practice, Icon: PracticeIcon },
+    { href: `/${locale}/progress`, label: dict.nav.progress, Icon: ProgressIcon },
+    showStudio
+      ? { href: `/${locale}/admin`, label: dict.nav.admin, Icon: StudioIcon }
+      : { href: `/${locale}/profile`, label: dict.nav.profile, Icon: ProfileIcon },
+  ];
+}
 
 /**
  * Five destinations, no more. A sixth tab on a phone means every tab is a
@@ -24,15 +50,7 @@ export function BottomNav({ showStudio }: { showStudio: boolean }) {
   const { dict, locale } = useI18n();
   const pathname = usePathname();
 
-  const items = [
-    { href: `/${locale}/home`, label: dict.nav.home, Icon: HomeIcon },
-    { href: `/${locale}/learn`, label: dict.nav.learn, Icon: LearnIcon },
-    { href: `/${locale}/practice`, label: dict.nav.practice, Icon: PracticeIcon },
-    { href: `/${locale}/progress`, label: dict.nav.progress, Icon: ProgressIcon },
-    showStudio
-      ? { href: `/${locale}/admin`, label: dict.nav.admin, Icon: StudioIcon }
-      : { href: `/${locale}/profile`, label: dict.nav.profile, Icon: ProfileIcon },
-  ];
+  const items = navItems(dict, locale, showStudio);
 
   return (
     <nav
@@ -68,12 +86,27 @@ export function AppHeader({
   title,
   right,
   back,
+  showStudio = false,
+  wrap = false,
 }: {
   title: string;
   right?: React.ReactNode;
   /** A plain link back, or — for flows that must confirm before leaving — a handler. */
   back?: { href: string; label: string } | { onClick: () => void; label: string };
+  /** Whether the header menu shows Studio (in place of Profile) among its nav items. */
+  showStudio?: boolean;
+  /**
+   * Titles are truncated with an ellipsis by default -- the right call for a
+   * long unit/scenario/path name that would otherwise crowd the header. A
+   * title built from a person's own name (the Home greeting) must never be
+   * cut, so it opts into wrapping onto a second line instead.
+   */
+  wrap?: boolean;
 }) {
+  const { dict, locale } = useI18n();
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
   const arrow = (
     <svg
       width={20}
@@ -92,26 +125,103 @@ export function AppHeader({
   );
   const backClass =
     "-ms-2.5 flex h-11 w-11 items-center justify-center rounded-full text-[var(--foreground-secondary)] hover:bg-[var(--surface-muted)]";
+
+  const items = navItems(dict, locale, showStudio);
+
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/92 backdrop-blur safe-top">
-      <div className="mx-auto flex max-w-lg items-center gap-2 px-4 py-3">
-        {back &&
-          ("href" in back ? (
-            <Link href={back.href} aria-label={back.label} className={backClass}>
-              {arrow}
-            </Link>
-          ) : (
-            <button type="button" onClick={back.onClick} aria-label={back.label} className={backClass}>
-              {arrow}
-            </button>
-          ))}
-        <h1 dir="auto" className="text-page-title min-w-0 flex-1 truncate">
-          {title}
-        </h1>
-        {right}
-        <LanguageSwitcher compact />
-      </div>
-    </header>
+    <>
+      {/*
+        The Sheet below is a sibling of this header, never a child of it.
+        `backdrop-blur` here compiles to `backdrop-filter`, which -- like
+        `filter` or `transform` -- creates a new containing block for any
+        `position: fixed` descendant. A Sheet nested inside would size and
+        position itself against this header's own small box instead of the
+        viewport, breaking the full-screen overlay (caught by actually
+        screenshotting it, not by reading the JSX).
+      */}
+      <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/92 backdrop-blur safe-top">
+        <div className="mx-auto flex max-w-lg items-center gap-2 px-4 py-3">
+          {back &&
+            ("href" in back ? (
+              <Link href={back.href} aria-label={back.label} className={backClass}>
+                {arrow}
+              </Link>
+            ) : (
+              <button type="button" onClick={back.onClick} aria-label={back.label} className={backClass}>
+                {arrow}
+              </button>
+            ))}
+          {/* The mark only fits comfortably on top-level screens -- a back
+              button already occupies that space on detail/task screens. */}
+          {!back && <BrandMark size={28} className="shrink-0 rounded-[0.4rem]" />}
+          <h1
+            dir="auto"
+            className={cn("text-page-title min-w-0 flex-1", wrap ? "wrap-anywhere" : "truncate")}
+          >
+            {title}
+          </h1>
+          {right}
+          <LanguageSwitcher compact />
+          <IconButton label={dict.nav.menu} onClick={() => setMenuOpen(true)}>
+            <MenuIcon />
+          </IconButton>
+        </div>
+      </header>
+
+      <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} title={dict.nav.menu} closeLabel={dict.common.close}>
+        <nav aria-label={dict.nav.menu}>
+          <ul className="space-y-1">
+            {items.map(({ href, label, Icon }) => {
+              const active = pathname === href || pathname.startsWith(`${href}/`);
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    aria-current={active ? "page" : undefined}
+                    onClick={() => setMenuOpen(false)}
+                    className={cn(
+                      "flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3 py-2.5 text-[0.9375rem] font-medium transition-colors",
+                      active
+                        ? "bg-[var(--color-brand-tint)] text-[var(--color-brand)]"
+                        : "text-[var(--foreground)] hover:bg-[var(--surface-muted)]",
+                    )}
+                  >
+                    <Icon size={20} />
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="my-2 border-t border-[var(--border)]" />
+          <ul className="space-y-1">
+            <li>
+              <Link
+                href={`/${locale}/profile#settings`}
+                onClick={() => setMenuOpen(false)}
+                className="flex min-h-11 items-center gap-3 rounded-[var(--radius-control)] px-3 py-2.5 text-[0.9375rem] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-muted)]"
+              >
+                <SettingsIcon size={20} />
+                {dict.common.settings}
+              </Link>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  void signOutAction(locale);
+                }}
+                className="flex min-h-11 w-full items-center gap-3 rounded-[var(--radius-control)] px-3 py-2.5 text-start text-[0.9375rem] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-muted)]"
+              >
+                <LogoutIcon size={20} />
+                {dict.common.signOut}
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </Sheet>
+    </>
   );
 }
 

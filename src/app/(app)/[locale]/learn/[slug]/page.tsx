@@ -58,7 +58,11 @@ export default async function PathPage({
   return (
     <>
       <Page>
-        <AppHeader title={pick(path.title, locale)} back={{ href: `/${locale}/learn`, label: dict.common.back }} />
+        <AppHeader
+          title={pick(path.title, locale)}
+          back={{ href: `/${locale}/learn`, label: dict.common.back }}
+          showStudio={showStudio}
+        />
 
         <p dir="auto" className="text-supporting">
           {pick(path.description, locale)}

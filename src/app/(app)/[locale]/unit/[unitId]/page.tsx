@@ -75,6 +75,7 @@ export default async function UnitPage({
       initialStepIndex={initialStepIndex}
       returnHref={path ? `/${locale}/learn/${path.slug}` : `/${locale}/learn`}
       nextUnitHref={nextUnitHref}
+      showStudio={user.systemRole !== "learner"}
     />
   );
 }

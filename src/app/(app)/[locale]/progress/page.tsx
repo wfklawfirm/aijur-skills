@@ -98,7 +98,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ local
 
   return (
     <>
-      <AppHeader title={dict.progress.title} />
+      <AppHeader title={dict.progress.title} showStudio={user.systemRole !== "learner"} />
       <Page className="pb-24">
         <SectionTitle>{dict.progress.weekly}</SectionTitle>
         <div className="grid grid-cols-3 gap-2">

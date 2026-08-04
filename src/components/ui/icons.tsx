@@ -76,6 +76,32 @@ export const XIcon = (p: IconProps) => (
   </Svg>
 );
 
+/** The header menu trigger -- three horizontal lines, no directional
+ * meaning, so unlike ChevronIcon it never needs `.flip-rtl`. */
+export const MenuIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M4 6.5h16M4 12h16M4 17.5h16" />
+  </Svg>
+);
+
+/** A gear -- used for the header menu's "Settings" row only, nowhere else,
+ * so it stays a genuine visual cue rather than a repeated decoration. */
+export const SettingsIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  </Svg>
+);
+
+/** An open door with an arrow exiting it -- used only for the header
+ * menu's "Sign out" row. */
+export const LogoutIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M14 4.5H7A1.5 1.5 0 0 0 5.5 6v12A1.5 1.5 0 0 0 7 19.5h7" />
+    <path d="M11 12h9.5M17.5 8.5 21 12l-3.5 3.5" />
+  </Svg>
+);
+
 export const CheckIcon = (p: IconProps) => (
   <Svg {...p}>
     <path d="M5 12.5l4.5 4.5L19 7.5" />

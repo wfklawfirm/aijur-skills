@@ -42,6 +42,7 @@ export function UnitPlayer({
   initialStepIndex,
   returnHref,
   nextUnitHref,
+  showStudio,
 }: {
   unit: UnitDef;
   locale: Locale;
@@ -50,6 +51,7 @@ export function UnitPlayer({
   initialStepIndex: number;
   returnHref: string;
   nextUnitHref: string | null;
+  showStudio: boolean;
 }) {
   const { dict, t } = useI18n();
   const L = useLocalized();
@@ -119,6 +121,7 @@ export function UnitPlayer({
       <AppHeader
         title={L(unit.title)}
         back={{ onClick: () => setExitSheetOpen(true), label: dict.common.back }}
+        showStudio={showStudio}
         right={
           <span className="text-supporting num shrink-0">
             {t(dict.unit.stepOf, { current: stepIndex + 1, total: unit.steps.length })}

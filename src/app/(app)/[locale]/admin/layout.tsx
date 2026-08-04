@@ -44,7 +44,7 @@ export default async function AdminLayout({
 
   return (
     <>
-      <AppHeader title={dict.admin.title} />
+      <AppHeader title={dict.admin.title} showStudio />
       <Page>
         <AdminSubNav showOrganization={showOrganization} />
         {children}

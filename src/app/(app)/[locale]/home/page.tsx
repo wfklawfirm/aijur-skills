@@ -99,7 +99,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <>
       <Page>
-        <AppHeader title={fill(dict.home.greeting, { name: user.name }, locale)} />
+        <AppHeader title={fill(dict.home.greeting, { name: user.name }, locale)} showStudio={showStudio} wrap />
 
         {/* 1 — Your stage */}
         <SectionTitle>{dict.home.yourStage}</SectionTitle>

@@ -29,6 +29,7 @@ export default async function SimulationPage({
       locale={locale}
       unitId={unitId ?? null}
       returnStepIndex={Number.isFinite(returnStepIndex) ? returnStepIndex : undefined}
+      showStudio={user.systemRole !== "learner"}
     />
   );
 }

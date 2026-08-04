@@ -41,7 +41,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
 
   return (
     <>
-      <AppHeader title={dict.profile.title} />
+      <AppHeader title={dict.profile.title} showStudio={user.systemRole !== "learner"} />
       <Page className="pb-24">
         <SectionTitle>{dict.profile.account}</SectionTitle>
         <Card>
@@ -55,14 +55,16 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
           </CardBody>
         </Card>
 
-        <ProfileSettings
-          locale={locale}
-          weeklyMinutesGoal={profile?.weeklyMinutesGoal ?? 60}
-          accessibility={profile?.accessibility ?? {}}
-          aiConsentGranted={Boolean(profile?.aiProcessingConsentAt)}
-          organization={organization}
-          emailVerified={emailVerified}
-        />
+        <div id="settings">
+          <ProfileSettings
+            locale={locale}
+            weeklyMinutesGoal={profile?.weeklyMinutesGoal ?? 60}
+            accessibility={profile?.accessibility ?? {}}
+            aiConsentGranted={Boolean(profile?.aiProcessingConsentAt)}
+            organization={organization}
+            emailVerified={emailVerified}
+          />
+        </div>
       </Page>
       <BottomNav showStudio={user.systemRole !== "learner"} />
     </>

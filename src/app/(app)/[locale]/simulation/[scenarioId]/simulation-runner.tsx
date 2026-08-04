@@ -35,11 +35,13 @@ export function SimulationRunner({
   locale,
   unitId,
   returnStepIndex,
+  showStudio,
 }: {
   scenario: ScenarioDef;
   locale: Locale;
   unitId: string | null;
   returnStepIndex?: number;
+  showStudio: boolean;
 }) {
   const { dict, t } = useI18n();
   const L = useLocalized();
@@ -132,6 +134,7 @@ export function SimulationRunner({
       <AppHeader
         title={L(scenario.title)}
         back={headerBack}
+        showStudio={showStudio}
         right={
           phase === "chat" ? (
             <Button variant="ghost" size="sm" onClick={() => setEndSheetOpen(true)}>

@@ -105,6 +105,14 @@ directly above it; the localized `dict.brand.slogan` paragraph stays,
 since it's a distinct, richer line than the image's baked-in tagline, not
 a duplicate).
 
+`<BrandMark size={28} className?>` is used inside `AppHeader` (`app-shell.tsx`)
+on every top-level authenticated screen that has no `back` button — Home,
+Learn, Practice, Progress, Profile, the Content Studio — sized small and
+consistently (28px) so it reads as a persistent app identity mark next to
+the page title rather than competing with it. It is intentionally omitted
+on screens with a `back` button (unit player, simulation runner, a path's
+detail page): the back arrow already occupies that same header slot.
+
 **First pass had a real, since-fixed bug**: an early background-removal
 pass (2-corner flood fill) left an opaque gray patch in the full lockup's
 bottom-left corner, near the tagline text — invisible at a glance but a
@@ -334,7 +342,7 @@ document outline correct without adding a visual size per level.
 | `Badge` | `src/components/ui/badge.tsx` | Status/tag pill | `tone: neutral\|brand\|positive\|negative\|warning\|info` (6 tones); "the one place status colours are spent as backgrounds" |
 | `MasteryMeter` | `badge.tsx` | Skill mastery indicator | `level` (0–6, mapped to tone via `MASTERY_TONE`), `label`, `a11yLabel`, `compact`; renders 6 segment blocks + number + label — 3 redundant encodings |
 | `Sheet` | `src/components/ui/sheet.tsx` | Modal — bottom sheet on phone, centered dialog `sm:` and up | `open`, `onClose`, `title`, `closeLabel`, `footer`; `role="dialog"`, `aria-modal`, full keyboard focus trap (Tab/Shift+Tab cycling), Escape-to-close, body scroll lock, focus restore to the previously focused element on close |
-| Icon set (27 icons) | `src/components/ui/icons.tsx` | Iconography | `HomeIcon`, `LearnIcon`, `PracticeIcon`, `ProgressIcon`, `ProfileIcon`, `StudioIcon`, `XIcon`, `CheckIcon`, `ChevronIcon` (auto-mirrors via `.flip-rtl`), `LockIcon`, `PlayIcon`, `MicIcon`, `ArrowUpIcon`/`ArrowDownIcon`, `SparkIcon`, `AlertIcon`, `InfoIcon`, `BookmarkIcon`, `GlobeIcon`, `ClockIcon`, `ShieldIcon`, `UsersIcon`, `FolderIcon`, `ChipIcon`, `ScaleIcon`, `HandshakeIcon`, `MessageIcon`, `GrowthIcon`, `RefreshIcon`, `PlusIcon`, `BookIcon`; all `aria-hidden`/decorative by default, one shared `Svg` wrapper (`strokeWidth 1.75`, 24×24 viewBox) |
+| Icon set (30 icons) | `src/components/ui/icons.tsx` | Iconography | `HomeIcon`, `LearnIcon`, `PracticeIcon`, `ProgressIcon`, `ProfileIcon`, `StudioIcon`, `XIcon`, `MenuIcon` (header menu trigger — three lines, no `.flip-rtl` needed), `SettingsIcon` (gear — the header menu's Settings row only), `LogoutIcon` (the header menu's Sign out row only), `CheckIcon`, `ChevronIcon` (auto-mirrors via `.flip-rtl`), `LockIcon`, `PlayIcon`, `MicIcon`, `ArrowUpIcon`/`ArrowDownIcon`, `SparkIcon`, `AlertIcon`, `InfoIcon`, `BookmarkIcon`, `GlobeIcon`, `ClockIcon`, `ShieldIcon`, `UsersIcon`, `FolderIcon`, `ChipIcon`, `ScaleIcon`, `HandshakeIcon`, `MessageIcon`, `GrowthIcon`, `RefreshIcon`, `PlusIcon`, `BookIcon`; all `aria-hidden`/decorative by default, one shared `Svg` wrapper (`strokeWidth 1.75`, 24×24 viewBox) |
 | `DomainIcon` | `icons.tsx` | Looks up a legal-domain icon by string key (`handshake`, `message`, `scale`, `clock`, `users`, `growth`, `folder`, `shield`, `chip`, `globe`, `book`) | Falls back to `ScaleIcon` for unknown keys |
 | `Skeleton` / `SkeletonCard` / `LoadingRegion` | `src/components/ui/feedback.tsx` | Loading states | Comment: "Skeletons, not spinners — an empty page that reflows is worse than a slow one"; `LoadingRegion` wraps in `role="status" aria-live="polite"` |
 | `EmptyState` | `feedback.tsx` | Zero-data state | `title`, `body?`, `action?`, `icon?`; dashed-border card |
@@ -349,10 +357,47 @@ document outline correct without adding a visual size per level.
 | `StepDots` | `progress.tsx` | Unit-player step indicator | Comment: "dots, not a bar, so steps stay countable" |
 | `ScoreRing` | `progress.tsx` | Circular score display | `value`/`max` always printed as text inside the ring — "Score is always printed inside the ring, never conveyed by arc length alone"; ring color thresholds: `≥0.8` positive, `≥0.55` brand, else warning |
 | `Page` | `src/components/layout/app-shell.tsx` | Page content wrapper | `max-w-lg`, `.app-scroll` |
-| `AppHeader` | `app-shell.tsx` | Sticky page header | `title`, optional `back` (href or onClick), `right` slot; sticky, blurred background, `.safe-top` |
+| `AppHeader` | `app-shell.tsx` | Sticky page header | `title`, optional `back` (href or onClick), `right` slot, `showStudio` (same meaning as `BottomNav`'s prop — feeds the header menu's nav list), `wrap` (opt out of title `truncate` when the title must never be cut, e.g. the Home greeting built from the learner's own name); sticky, blurred background, `.safe-top`; shows a small `BrandMark` when there's no `back`; always shows a `MenuIcon` trigger opening a `Sheet` with the same nav list as `BottomNav` plus Settings and Sign out — see §4.1 |
 | `BottomNav` | `app-shell.tsx` | Primary 5-tab navigation | `showStudio` toggles the 5th tab between Studio (admin/content roles) and Profile (learners) — comment: "Five destinations, no more" |
 | `SectionTitle` | `app-shell.tsx` | Section heading within a `Page` | Renders `.text-label` as an `<h2>` |
 | `OfflineBanner` | `app-shell.tsx` | Connectivity banner | `role="status"`, warning tint |
+
+### 4.1 The `AppHeader` menu
+
+Every `AppHeader` — on every authenticated screen, `back` button or not —
+shows a `MenuIcon` trigger. It opens the same `Sheet` primitive already used
+elsewhere in the app, containing:
+
+- The identical nav list `BottomNav` renders, built from one shared
+  `navItems(dict, locale, showStudio)` helper in `app-shell.tsx` so the two
+  lists cannot silently drift apart — active item highlighted via
+  `usePathname()`, same `showStudio` logic (Studio vs. Profile).
+- A divider, then **Settings** (`SettingsIcon`, links to
+  `/${locale}/profile#settings` — a real anchor around `<ProfileSettings>` in
+  `profile/page.tsx`, not a duplicate of the Profile nav item) and **Sign
+  out** (`LogoutIcon`, calls the existing `signOutAction(locale)` server
+  action directly, styled as a plain neutral row — not destructive-red —
+  matching `profile-settings.tsx`'s existing sign-out button).
+
+**A real bug this surfaced, not a hypothetical one:** the `Sheet` must be
+rendered as a **sibling** of `<header>`, never a child of it. `AppHeader`'s
+header element uses `backdrop-blur` (`backdrop-filter` in the compiled CSS),
+and `backdrop-filter` — like `filter` or `transform` — creates a new CSS
+containing block for any `position: fixed` descendant. A `Sheet` nested
+inside stops covering the viewport and instead sizes/positions itself
+against the header's own small box. This was caught by actually
+screenshotting the open menu (not by reading the JSX) — the sheet rendered
+as a tiny sliver instead of a full-screen overlay before the fix. The lesson
+generalizes: never nest a `Sheet`/anything `fixed` inside an element carrying
+`backdrop-blur`, `blur`, or any other `transform`/`filter` utility.
+
+**The username-truncation fix:** every `AppHeader` title truncates with an
+ellipsis by default — correct for long unit/scenario/path titles that would
+otherwise crowd the header. The Home page's greeting
+(`fill(dict.home.greeting, { name: user.name }, locale)`) is the one title
+built from data the app cannot bound the length of, so it opts out via the
+new `wrap` prop, which swaps `truncate` for `wrap-anywhere` and lets the
+`<h1>` grow to a second line instead of cutting the learner's own name.
 
 ---
 

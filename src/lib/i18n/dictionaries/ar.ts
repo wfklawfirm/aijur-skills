@@ -42,6 +42,7 @@ export const ar = {
     switchLanguageTo: "التبديل إلى {language}",
     moveUp: "تحريك لأعلى",
     moveDown: "تحريك لأسفل",
+    settings: "الإعدادات",
   },
   nav: {
     home: "الرئيسية",
@@ -50,6 +51,7 @@ export const ar = {
     progress: "التقدّم",
     profile: "حسابي",
     admin: "الاستوديو",
+    menu: "القائمة",
   },
   auth: {
     signIn: "تسجيل الدخول",

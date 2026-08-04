@@ -40,6 +40,7 @@ export const en: Dictionary = {
     switchLanguageTo: "Switch to {language}",
     moveUp: "Move up",
     moveDown: "Move down",
+    settings: "Settings",
   },
   nav: {
     home: "Home",
@@ -48,6 +49,7 @@ export const en: Dictionary = {
     progress: "Progress",
     profile: "Profile",
     admin: "Studio",
+    menu: "Menu",
   },
   auth: {
     signIn: "Sign in",

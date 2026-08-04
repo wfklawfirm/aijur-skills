@@ -41,7 +41,7 @@ export default async function PracticePage({ params }: { params: Promise<{ local
 
   return (
     <>
-      <AppHeader title={dict.nav.practice} />
+      <AppHeader title={dict.nav.practice} showStudio={user.systemRole !== "learner"} />
       <Page className="pb-24">
         <SectionTitle>{dict.home.recommendedReview}</SectionTitle>
         {dueSkills.length === 0 ? (
