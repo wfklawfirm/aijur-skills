@@ -5,10 +5,26 @@
  *
  *  1. **Never cache an API response.** Progress, mastery and evaluations are
  *     the record of a learner's performance; serving a stale one is worse than
- *     showing an error. Mutations queue in IndexedDB on the client instead.
+ *     showing an error. A mutation attempted offline simply fails visibly
+ *     (the existing `OfflineBanner` — `useOnline()`, `app-shell.tsx` — warns
+ *     before that happens) rather than silently disappearing.
  *  2. **Do cache the shell and content pages** so a unit already opened stays
  *     readable in a lift, on a train, or on a bad connection — which is where
  *     a lot of this training will actually happen.
+ *
+ * Deliberately NOT implemented: queueing a failed mutation (in IndexedDB or
+ * otherwise) for automatic replay once back online. Every mutation in this
+ * app is a Next.js Server Action — a POST straight to the current page route,
+ * not a REST endpoint — and most of them (`submitActivity`'s AI-grading
+ * branch, `startSimulation`, `sendSimulationMessage`) need a live AI provider
+ * round trip; there is nothing meaningful to queue and replay for those.
+ * Blindly queueing and replaying arbitrary POSTs later would also fight this
+ * app's own safety rails: rate limiting is keyed to a real-time window
+ * (`checkRateLimit()`), the CSRF Origin guard expects a live same-origin
+ * request, and a stale session cookie could silently fail hours later with
+ * no learner watching. If offline-write support is ever built, it needs a
+ * deliberate design pass over which specific mutations are safe to queue at
+ * all -- not a generic bolt-on to every Server Action.
  */
 const VERSION = "aijur-v1";
 const SHELL = `${VERSION}-shell`;

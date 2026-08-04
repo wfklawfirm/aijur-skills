@@ -266,12 +266,31 @@ online.
 
 **Service worker** (`public/sw.js`) follows two deliberately narrow rules,
 per its own header comment:
-1. **Never cache an API response.** Requests to `/api/` are explicitly
-   ignored (`if (url.pathname.startsWith("/api/")) return;`) — progress,
-   mastery, and evaluation data are "the record of a learner's performance;
-   serving a stale one is worse than showing an error." (Mutation queuing in
-   IndexedDB is referenced in the comment but its implementation lives
-   outside the files reviewed for this doc.)
+1. **Never cache an API response.** The fetch handler bails on any non-`GET`
+   request before doing anything else (`if (request.method !== "GET")
+   return;`) — every mutation in this app is a Next.js Server Action (a
+   `POST` straight to the current page route, not a REST endpoint; see
+   `docs/PRODUCT_AUDIT.md` §1, "No REST API surface exists"), so this one
+   check is what actually keeps every mutation un-intercepted and
+   un-cached, not the separate `url.pathname.startsWith("/api/")` guard a
+   few lines below it (which is effectively dead code in this app — nothing
+   is ever requested at `/api/`). Progress, mastery, and evaluation data are
+   "the record of a learner's performance; serving a stale one is worse
+   than showing an error," so a mutation attempted offline simply fails
+   visibly rather than being silently queued. **Deliberately not
+   implemented: automatic replay of a failed mutation once back online.**
+   Considered and closed as out of scope, not merely unbuilt: most
+   mutations (`submitActivity`'s AI-grading branch, `startSimulation`,
+   `sendSimulationMessage`) need a live AI provider round trip, so there's
+   nothing meaningful to queue and replay for them; and blindly queueing
+   arbitrary POSTs for later replay would fight this app's own safety
+   rails — rate limiting is keyed to a real-time window
+   (`checkRateLimit()`), the CSRF Origin guard expects a live same-origin
+   request, and a session cookie could have quietly expired by replay time
+   with no learner watching to notice. A real design for this would need to
+   pick specific, safe-to-queue mutations deliberately, not bolt queueing
+   onto every Server Action generically. See `public/sw.js`'s own header
+   comment for the same reasoning in the source.
 2. **Cache the shell and content pages.** On `install`, `/offline` and
    `/manifest.webmanifest` are precached. On every same-origin `navigate`
    request, the SW does network-first-then-cache: fetch, clone the response
@@ -284,12 +303,13 @@ per its own header comment:
 open unit/activity page was already served (and cached) on navigation, so it
 stays visually usable — the learner can keep reading and answering. The
 `OfflineBanner` appears immediately via the `online`/`offline` browser events
-to make the state visible. Any progress-affecting call goes to `/api/`, which
-the SW explicitly does not intercept or fake — it will simply fail over the
-network, which the client-side action code (outside this doc's scope) is
-responsible for queueing/retrying. Navigating to a *new*, never-before-fetched
-page while offline falls back to the generic `/offline` page rather than a
-broken network error screen.
+to make the state visible. Any progress-affecting call is a Server Action
+`POST`, which the SW's method check above ensures is never intercepted or
+faked — it simply fails over the network, and the client-side action code
+(outside this doc's scope) is responsible for surfacing that failure to the
+learner. Navigating to a *new*, never-before-fetched page while offline falls
+back to the generic `/offline` page rather than a broken network error
+screen.
 
 `manifest.webmanifest` declares `display: "standalone"`, `orientation:
 "portrait"`, `theme_color: "#7a1832"` (the brand burgundy), `dir: "auto"`,
@@ -324,12 +344,12 @@ home screen and opened directly into ongoing work.
   page-level files (home, unit, practice/progress/simulation by grep only,
   not full read). It's possible a page not touched by this review uses
   physical properties in inline styles or non-Tailwind CSS.
-- **IndexedDB mutation queueing for offline writes** is referenced by comment
-  in `public/sw.js` ("Mutations queue in IndexedDB on the client instead")
-  but its actual implementation was not located within the files reviewed for
-  this document — it likely lives in `src/lib/actions/` or a client data
-  layer not covered here, and should be verified separately if offline-write
-  behavior needs documenting precisely.
+- ~~IndexedDB mutation queueing for offline writes~~ — resolved, not a gap:
+  no such implementation exists anywhere in the codebase (confirmed by
+  repo-wide search), and `public/sw.js`'s comment claiming it did was
+  inaccurate. The comment has been corrected and the decision to not build
+  it made explicit with reasoning (see "Offline UX" §6 above) rather than
+  left as an ambiguous claim to verify later.
 - **No `<img>`/`Image` usage found** means there was nothing to check for
   missing `alt` text — a genuine finding, not a gap, but worth flagging since
   it means image accessibility is untested territory: if photography or

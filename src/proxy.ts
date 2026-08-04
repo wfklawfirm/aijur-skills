@@ -19,6 +19,19 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
     pathname === "/sw.js" ||
+    // The service worker's offline fallback (public/sw.js's PRECACHE list
+    // and its fetch handler's `caches.match("/offline")` catch clause) both
+    // hardcode this exact locale-less URL. The page itself lives outside
+    // the [locale] route segment and renders both Arabic and English
+    // content together for that reason — a fully offline navigation can't
+    // run any locale-resolution logic, so this route deliberately isn't
+    // localized. Without this exemption the redirect below sends it to
+    // `/{locale}/offline`, which 404s (no such route exists), which makes
+    // the service worker's own install-time precache of "/offline" fail —
+    // and since `cache.addAll` rejects the whole `install` event on any
+    // non-2xx response, that 404 silently kills service worker
+    // installation altogether, not just this one fallback page.
+    pathname === "/offline" ||
     PUBLIC_FILE.test(pathname)
   ) {
     return NextResponse.next();

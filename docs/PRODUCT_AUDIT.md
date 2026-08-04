@@ -41,7 +41,7 @@ curriculum across eight paths.
 | **AI layer + offline fallback** | Functional | `src/lib/ai/provider.ts`: single `runAgent()` entry point, provider chain (anthropic → openai → offline, configurable via env), every call recorded to `aiModelRuns` (provider, model, prompt/rubric version, input hash, tokens, cost, latency, confidence) for audit/reproducibility. **Every agent (`simulation.ts`, `evaluation.ts`, `coaching.ts`) ships a rule-based `offline` implementation with the same Zod output schema**, so the app runs with zero API keys — confirmed by `.env.example` defaulting `AI_PRIMARY_PROVIDER=offline`. Prompt-injection defence via `asData()` wraps untrusted learner/client text in a fenced block. |
 | **Admin Content Studio** | Functional | 7 admin screens under `src/app/(app)/[locale]/admin/`: dashboard, sources, skills, rubrics, scenarios, units, review-queue, ingestion. `ingestion` page is explicitly a monitoring view over `ingestionSuggestions`/`humanReviews` tables, not an automated pipeline (see comment at `admin/ingestion/page.tsx:12`). An 8th screen, `admin/organization`, is shown only to users with an org role holding `org.members.manage` or `org.reports` (owner/admin/manager) — member list/add/role-change/remove plus a per-org report that respects `organizations.privacyPolicy.managersSeeScores`, and (for callers additionally holding `org.assign`) team create/rename/delete and member-to-team assignment. |
 | **i18n** | Functional, AR/EN only | `src/lib/i18n/config.ts`: `LOCALES = ["ar","en"]`, `DEFAULT_LOCALE = "ar"`, and an explicit `PLANNED_LOCALES = ["fr"]` — French is a stated intent, not built. Proxy-based locale routing (`src/proxy.ts`) with cookie > Accept-Language > Arabic-default resolution. `tests/i18n-parity.test.ts` checks dictionary key parity between `ar.ts`/`en.ts`. |
-| **PWA / offline** | Functional, conservative | `public/manifest.webmanifest` (standalone, RTL-aware `dir: auto`), `public/sw.js` — precaches only the app shell + `/offline` page, explicitly **never caches API/mutation responses** (comment at top of file), caches visited content pages for re-reading offline. No background sync of queued mutations is implemented beyond what's described. |
+| **PWA / offline** | Functional, conservative, now e2e-verified | `public/manifest.webmanifest` (standalone, RTL-aware `dir: auto`), `public/sw.js` — precaches only the app shell + `/offline` page, explicitly **never caches API/mutation responses** (comment at top of file), caches visited content pages for re-reading offline. No background sync of queued mutations is implemented beyond what's described. Two real, previously-undetected bugs meant this was **entirely non-functional** until this session's e2e pass (`tests/e2e/pwa-offline.spec.ts`) caught them — see §5. |
 | **Data model** | Functional | `src/lib/db/schema.ts`, 850 lines, 41 tables spanning identity/tenancy, content (sources→domains→skills→rubrics→scenarios→paths→chapters→units→activities), learner state (enrollments, unit progress, attempts, simulation sessions/messages, evaluations, mastery, evidence, review schedule, pronunciation attempts, vocabulary reviews), and platform ops (AI model runs, human reviews, ingestion suggestions, analytics events, audit log, feature flags, rate limits). |
 
 No REST API surface exists (`find src/app/api` returns empty) — all mutations are
@@ -341,13 +341,17 @@ in production content, just at low volume for some kinds (e.g. only 1
   low-confidence offline evaluation), then confirm the review queue renders
   the full AI payload and queue reason, not just a score badge (added
   alongside the Milestone 4 fix — see §5), (5) RTL/LTR `dir` and `lang`
-  attribute checks for both locales, and (6) axe-core scans
+  attribute checks for both locales, (6) axe-core scans
   (critical/serious severity gate) across 5 anonymous and authenticated
-  pages. 24/24 tests passing. This is the first repeatable
-  e2e run in the repo — previously only a one-off manual Playwright script
-  existed, used to smoke-test the CSRF guard once (`docs/SECURITY.md` §7)
-  and then discarded. Running this suite found and fixed three real,
-  previously-undetected bugs (not test-authoring mistakes): (a)
+  pages, and (7) **the PWA service worker's actual offline behaviour**
+  (`tests/e2e/pwa-offline.spec.ts`) — registration/control, the manifest,
+  a previously-visited page staying readable offline, and a never-visited
+  page falling back to the `/offline` screen. 28/28 tests passing. This is
+  the first repeatable e2e run in the repo — previously only a one-off
+  manual Playwright script existed, used to smoke-test the CSRF guard once
+  (`docs/SECURITY.md` §7) and then discarded. Running this suite found and
+  fixed five real, previously-undetected bugs (not test-authoring
+  mistakes): (a)
   `--foreground-muted` (the CSS custom property behind
   `.text-supporting`/`.text-label`, used throughout the UI for secondary
   text) was `#64748b`, a 4.47:1 contrast ratio against the app background —
@@ -366,7 +370,36 @@ in production content, just at low volume for some kinds (e.g. only 1
   step-progress dots plus the sticky "Continue" bar in `unit-player.tsx`
   sat outside any landmark — fixed by adding `id="main"` to both players'
   `<main>`, moving the step-progress indicator inside `<main>`, and
-  changing the sticky action bar from a bare `<div>` to a `<footer>`.
+  changing the sticky action bar from a bare `<div>` to a `<footer>`; (d)
+  **the service worker's own precache target 404'd, silently killing
+  installation entirely.** `src/proxy.ts`'s locale-redirect middleware
+  treats any extensionless path without a locale prefix as a page needing
+  one — but `/offline` (the exact URL both `public/sw.js`'s `PRECACHE`
+  list and its fetch handler's `caches.match("/offline")` fallback
+  hardcode) lives outside the `[locale]` route segment by design, so the
+  redirect sent it to `/{locale}/offline`, which 404s (no such route
+  exists). The Cache API's `cache.addAll()` rejects the whole `install`
+  event on any non-2xx response, so this one 404 meant the service worker
+  **never successfully installed at all** — not a degraded offline
+  experience, a completely non-functional one. Fixed by exempting
+  `/offline` from the locale redirect, matching how `/sw.js` itself was
+  already exempted. (e) **even with (d) fixed, the app's own
+  registration code never actually ran the service worker registration in
+  practice.** `register-sw.tsx` only called `navigator.serviceWorker
+  .register()` inside a `window.addEventListener("load", ...)` callback —
+  but that `useEffect` runs after hydration, which in a server-rendered
+  Next.js page routinely happens *after* the browser's `load` event has
+  already fired, so the listener attaches for an event that already
+  happened and never fires again. Confirmed directly: `document
+  .readyState` was already `"complete"` by the time the effect ran in
+  every real (non-instrumented) navigation tested. Fixed by registering
+  immediately when `document.readyState === "complete"` and only falling
+  back to the `load` listener on the rarer path where hydration genuinely
+  wins the race. Both (d) and (e) together mean the PWA offline story
+  documented as "Functional, conservative" in §2 had never actually
+  worked in this build until this session's e2e pass caught it —
+  `tests/e2e/pwa-offline.spec.ts` is now a permanent regression guard
+  against both regressing.
   `accessibility.spec.ts` now promotes `page-has-heading-one`, `region`,
   and `skip-link` to always-blocking (regardless of impact level) so a
   regression on any of them is caught, not just logged — the suite
