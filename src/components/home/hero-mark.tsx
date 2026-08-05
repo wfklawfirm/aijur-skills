@@ -1,37 +1,45 @@
 import * as React from "react";
+import { BrandMark } from "@/components/layout/brand-mark";
 
 /**
- * A small, understated identity mark at the top of Home (design overhaul,
- * Phase 1 — "أضف صورة توضيحية احترافية أعلى الصفحة للهوية"). Deliberately
- * abstract rather than a literal illustration: this is a legal-skills tool
- * for practising professionals, not a consumer app, and the existing design
- * system already treats decoration with restraint (see `globals.css`'s "one
- * accent, never decorative" rule) — an ascending-bars motif in the brand
- * palette reads as "progress" without competing with the real content below
- * it or requiring an image asset pipeline that doesn't exist in this repo.
+ * The Home page's identity mark, v2 — replaces an earlier abstract
+ * multi-color SVG illustration (ascending bars + a checkmark) after real
+ * user feedback that it read as too small and the colors didn't feel
+ * cohesive. Two real problems with that first version, not just taste:
+ * (1) it wasn't the actual AIJUR logo at all, just an unrelated abstract
+ * shape, so "the logo is too small" was literally true — there was no
+ * logo there to begin with, only a tiny 20px icon in the header; (2) it
+ * used four different tones at once (two pinks, solid burgundy, gold) in a
+ * 64px-tall illustration, which is exactly the kind of "no design system"
+ * clutter the original design brief complained about.
+ *
+ * This version uses the real, already-verified `BrandMark` icon (the same
+ * asset the header and PWA icons use, pixel-verified transparent
+ * background — see brand-mark.tsx's own comment) at a size that actually
+ * reads as a logo, paired with the real product name as plain text rather
+ * than the tall portrait `BrandLockup` image, which at any width small
+ * enough not to dominate a mobile Home screen becomes too tall (778x1130
+ * source aspect ratio) and pushes real content below the fold.
  */
 export function HeroMark({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 120 64"
-      className={className}
-      role="img"
-      aria-hidden="true"
-      style={{ width: "100%", height: "auto", maxWidth: 220 }}
-    >
-      <rect x="6" y="34" width="16" height="24" rx="5" fill="var(--color-brand-tint)" />
-      <rect x="30" y="20" width="16" height="38" rx="5" fill="var(--color-brand-light)" opacity="0.55" />
-      <rect x="54" y="8" width="16" height="50" rx="5" fill="var(--color-brand)" />
-      <circle cx="98" cy="16" r="10" fill="none" stroke="var(--color-warning)" strokeWidth="2.5" opacity="0.7" />
-      <path
-        d="M92 16.5l4 4 8-8.5"
-        fill="none"
-        stroke="var(--color-warning)"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.9"
-      />
-    </svg>
+    <div dir="ltr" className={`flex items-center justify-center gap-2.5 ${className ?? ""}`}>
+      <BrandMark size={44} className="shrink-0 rounded-xl" />
+      {/* Plain inline styles, not the shared .text-label class -- that
+          class carries RTL-specific size/casing overrides (globals.css)
+          meant for section headers, not a brand wordmark that should look
+          identical regardless of page direction. */}
+      <div className="text-start leading-tight">
+        <p style={{ fontSize: "1.0625rem", fontWeight: 700, letterSpacing: "-0.01em" }} className="text-[var(--foreground)]">
+          AIJUR
+        </p>
+        <p
+          style={{ fontSize: "0.6875rem", fontWeight: 600, letterSpacing: "0.09em" }}
+          className="text-[var(--foreground-muted)]"
+        >
+          SKILLS
+        </p>
+      </div>
+    </div>
   );
 }

@@ -422,10 +422,25 @@ rolled icon set in `icons.tsx`.
 
 **New components, `src/components/home/`:**
 
-- `HeroMark` — a small, abstract, brand-colored SVG identity mark at the top
-  of Home. Deliberately not a literal illustration/stock image — this is a
-  professional legal-skills tool, and the design system already treats
-  decoration with restraint (§1).
+- `HeroMark`, v2 — the identity mark at the top of Home. **Revised after
+  real user feedback** on the first version (an abstract, 4-color SVG
+  illustration — two pinks, solid burgundy, gold): it read as too small and
+  the colors didn't feel cohesive, on a real phone, not just a desktop
+  viewport artifact (confirmed with the user before changing anything).
+  Root cause was two real problems, not just taste: (1) it wasn't the
+  actual AIJUR logo at all, so "the logo is too small" was literally true —
+  there was no logo there to begin with, only the 20px icon in the header;
+  (2) four simultaneous tones in a 64px illustration is exactly the "no
+  design system" clutter the original design brief complained about. v2
+  uses the real, already-verified `BrandMark` icon (44px, same asset as the
+  header/PWA icons, pixel-verified transparent background) next to the
+  real "AIJUR / SKILLS" wordmark as plain text — not the tall portrait
+  `BrandLockup` image, which at any width small enough not to dominate a
+  mobile Home screen becomes too tall (778×1130 source aspect ratio) and
+  pushes real content below the fold. Uses plain inline styles rather than
+  the shared `.text-label` class, since that class carries RTL-specific
+  size/casing overrides meant for section headers, not a brand wordmark
+  that should look identical regardless of page direction.
 - `DashboardCard` — the "premium dashboard" card. Consolidates the three
   previously-separate Your stage / Weekly goal / Recent achievement sections
   into one glance, per the request to surface only what matters within 3
