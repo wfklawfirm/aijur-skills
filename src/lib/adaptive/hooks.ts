@@ -242,9 +242,17 @@ async function getPersonalizedContent<TType extends string>(
   }
 
   // --- 1. Reservoir lookup -------------------------------------------------
+  // Real bug found and fixed (Home redesign v3 follow-up): this query used
+  // to have no `language` filter at all, so an Arabic reservoir item could
+  // outrank an English one on quality/novelty and get served to an
+  // English-locale learner (and vice versa) -- e.g. an Arabic Daily
+  // Challenge rendering on /en/home. `adaptiveContent.language` is a real,
+  // populated column (set on every insert in the generation path below) --
+  // it was simply never applied as a lookup constraint.
   const reservoirConditions = [
     eq(adaptiveContent.skillId, req.skillId),
     eq(adaptiveContent.contentType, spec.contentType),
+    eq(adaptiveContent.language, req.locale),
     inArray(adaptiveContent.status, ["approved", "published"]),
   ];
   if (excludeIds.length > 0) reservoirConditions.push(notInArray(adaptiveContent.id, excludeIds));

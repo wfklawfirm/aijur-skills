@@ -480,6 +480,31 @@ generalizes:**
   gained a content-type split section and a Daily Challenge type-usage
   section alongside the existing Hook type-usage section.
 
+**A second real bug, found and fixed later (Home redesign v3 follow-up,
+item #58): the same reservoir query had zero `language` filtering
+either.** Reported by the user as a concrete symptom — the Daily Challenge
+card rendering Arabic text on an `/en/home` load — and traced to
+`getPersonalizedContent()`'s step-1 reservoir lookup: it filtered on
+`skillId`, `contentType`, and `status`, but never on `language`, even
+though `adaptiveContent.language` is a real, always-populated column (set
+on every insert in the generation path). Ranked purely by
+`qualityScore`/`noveltyScore`, an Arabic reservoir item could legitimately
+outrank an English one for the same skill and get served to an
+English-locale learner (and the same in reverse for Arabic learners).
+Fixed by adding `eq(adaptiveContent.language, req.locale)` to the same
+`reservoirConditions` array the `contentType` fix above already lives in —
+one more line in the same defense-in-depth spirit. Verified against the
+real symptom: signed in and screenshotted `/en/home` before the fix (Daily
+Challenge rendering Arabic) and after (rendering English), and added a
+real DB-backed regression test in `tests/adaptive-content.test.ts`
+("Reservoir language selection") that seeds a same-skill Arabic/English
+pair with the *wrong*-language item given a deliberately higher novelty
+score, so the test can only pass if the query is actually filtering by
+language — not by accident of insertion order or SQL tie-break behavior.
+Confirmed the test fails without the fix and passes with it (reverted the
+fix, re-ran, restored it, re-ran again), matching this project's standing
+verification discipline for every reported bug.
+
 **A real bug found and fixed while building this.** Phase 1's reservoir
 lookup query and `recordExposure()` had zero `contentType` filtering —
 harmless with only one content type in existence, but it would have caused
@@ -508,10 +533,17 @@ open for Daily Challenge too, not newly introduced by it:**
   §0's list).
 - True semantic-embedding similarity, cohort-level diversity balancing, and
   an AI-judge quality pass — still not built for either content type.
-- Dedicated e2e coverage for the reservoir/exposure flow. Phase 1 never
-  built this for Hook either (see §10); Phase 2 doesn't add it for Daily
-  Challenge. `tests/adaptive-content.test.ts` covers both content types at
-  the unit level (novelty/repetition detection, quality gates, and the
-  offline composers including cross-type textural distinctness), which
-  mirrors exactly what existed for Hook alone before this phase — this is a
-  named, honest gap, not a regression Phase 2 introduced.
+- Dedicated Playwright e2e coverage for the reservoir/exposure flow — still
+  genuinely absent for both content types. What now exists instead (added
+  for the item #58 language-filter fix above) is a real DB-backed
+  *integration* test in `tests/adaptive-content.test.ts` ("Reservoir
+  language selection") that exercises `getPersonalizedHook()`/
+  `getPersonalizedDailyChallenge()` end to end against the actual dev
+  database — closer to the gap than the purely offline/pure-function
+  coverage that existed before, but still not a browser-driven e2e spec
+  clicking through the Home page itself. `tests/adaptive-content.test.ts`
+  otherwise covers both content types at the unit level (novelty/repetition
+  detection, quality gates, and the offline composers including cross-type
+  textural distinctness), which mirrors what existed for Hook alone before
+  Phase 2 — this remains a named, honest gap, not a regression either phase
+  introduced.
