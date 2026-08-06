@@ -6,7 +6,7 @@ import { getSessionUser } from "@/lib/auth/session";
 import { getDictionary, fill, pick } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
 import { buildHomeData, buildSkillMap, computeStreak } from "@/lib/learning/dashboard";
-import { getPathById, getSkillMap } from "@/lib/content/service";
+import { getDomains, getPathById, getSkillMap } from "@/lib/content/service";
 import { levelKey } from "@/lib/learning/mastery";
 import { getPersonalizedDailyChallenge, type PersonalizedAdaptiveContent } from "@/lib/adaptive/hooks";
 import { Page, AppHeader, BottomNav, SectionTitle } from "@/components/layout/app-shell";
@@ -14,14 +14,22 @@ import { Card, CardBody, CardFooter } from "@/components/ui/card";
 import { LinkButton } from "@/components/ui/button";
 import { Badge, MasteryMeter } from "@/components/ui/badge";
 import { ScoreRing } from "@/components/ui/progress";
-import { Callout, EmptyState } from "@/components/ui/feedback";
+import { EmptyState } from "@/components/ui/feedback";
 import { GlobeIcon } from "@/components/ui/icons";
-import { HeroMark } from "@/components/home/hero-mark";
-import { DashboardCard } from "@/components/home/dashboard-card";
-import { ContinueCard } from "@/components/home/continue-card";
-import { SkillChip } from "@/components/home/skill-chip";
+import { ProgressSummaryCard } from "@/components/home/progress-summary-card";
+import { PrimaryAction } from "@/components/home/primary-action";
+import { ActiveSkillRow } from "@/components/home/active-skill-row";
+import { DailyChallengeCard } from "@/components/home/daily-challenge-card";
 
 const LEGAL_ENGLISH_PATH_ID = "path.legal-english-client-communication";
+
+/** First whitespace-separated token of a full name -- works the same for
+ * Arabic and Latin names. Used only for the Home greeting; every other
+ * screen (starting with Profile) still shows the full name. */
+function firstNameOf(fullName: string): string {
+  const trimmed = fullName.trim();
+  return trimmed.split(/\s+/)[0] || trimmed;
+}
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: rawLocale } = await params;
@@ -36,26 +44,31 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   if (!profile || !profile.onboardingCompletedAt) redirect(`/${locale}/onboarding`);
   if (!profile.diagnosticCompletedAt) redirect(`/${locale}/diagnostic`);
 
-  const [home, skillMap, legalEnglishPath, masteryEntries, streakDays] = await Promise.all([
+  const [home, skillMap, domains, legalEnglishPath, masteryEntries, streakDays] = await Promise.all([
     buildHomeData(user.id, profile.weeklyMinutesGoal),
     getSkillMap(),
+    getDomains(),
     getPathById(LEGAL_ENGLISH_PATH_ID),
     buildSkillMap(user.id),
     computeStreak(user.id),
   ]);
+  const domainIconById = new Map(domains.map((d) => [d.id, d.icon]));
 
-  // "Your stage" summary -- the same real per-skill evidence the full
+  // "Your Progress" summary -- the same real per-skill evidence the full
   // Progress dashboard is built from (see progress/page.tsx), condensed to
-  // one glance: an overall level, how much is tracked, and the strongest
-  // skills so far. Not a separate/invented metric.
+  // one glance: how much of the skill map has evidence, streak, and
+  // whatever's due for review. Not a separate/invented metric.
   const assessedCount = masteryEntries.length;
   const dueForReviewCount = masteryEntries.filter((e) => e.dueForReview).length;
-  const averageLevel =
-    assessedCount > 0 ? Math.round(masteryEntries.reduce((sum, e) => sum + e.level, 0) / assessedCount) : 0;
   const topSkills = [...masteryEntries].sort((a, b) => b.level - a.level).slice(0, 3);
   // Share of the platform's full skill map with at least one real evidence
-  // point -- what the dashboard's progress ring shows. Real and derivable
-  // from data already fetched above, not a separate query.
+  // point -- what the progress ring shows. Real and derivable from data
+  // already fetched above, not a separate query. Deliberately NOT paired
+  // with an average-mastery-level caption here (the old card did this,
+  // e.g. "8%" next to "Not assessed") -- both numbers were individually
+  // correct but read as contradictory together at low evidence counts. The
+  // full per-skill level breakdown stays on /progress, where it belongs
+  // next to the actual skill list it describes.
   const percentAssessed = skillMap.size > 0 ? Math.round((assessedCount / skillMap.size) * 100) : 0;
 
   let currentSkillLevel = 0;
@@ -103,33 +116,69 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     }
   }
 
+  // The page's one primary action (Home redesign v3 -- "أضف CTA واحداً
+  // واضحاً يمثل الخطوة التالية"). Chosen from real state, in priority
+  // order: resume what's in progress, start what's next, work through
+  // what's due for review, or -- the rare case of no enrollment and
+  // nothing due -- go find something to start. Never a fabricated label:
+  // "Start assessment" (one of the brief's own examples) never applies
+  // here, since the diagnostic is always already complete by the time a
+  // user reaches Home (redirected above otherwise).
+  let ctaHref: string;
+  let ctaLabel: string;
+  let ctaContext: string | undefined;
+  if (home.continueUnit) {
+    ctaHref = `/${locale}/unit/${home.continueUnit.unit.id}`;
+    ctaLabel = home.continueUnit.status === "in_progress" ? dict.home.ctaContinue : dict.home.ctaStart;
+    ctaContext = pick(home.continueUnit.unit.title, locale);
+  } else if (dueForReviewCount > 0) {
+    ctaHref = `/${locale}/practice`;
+    ctaLabel = dict.home.ctaReview;
+    ctaContext = fill(dict.home.dueCount, { n: dueForReviewCount }, locale);
+  } else {
+    ctaHref = `/${locale}/learn`;
+    ctaLabel = dict.home.ctaExplore;
+    ctaContext = undefined;
+  }
+
   const showStudio = user.systemRole !== "learner";
 
   return (
     <>
       <Page>
-        <AppHeader title={fill(dict.home.greeting, { name: user.name }, locale)} showStudio={showStudio} wrap />
+        {/* 1 — Header: the one logo placement on this page (icon + "AIJUR
+            SKILLS" wordmark), consolidating what used to be two separate
+            placements (a small icon here, a second standalone mark
+            centered below it) into exactly one, per direct feedback that
+            the logo was duplicated. */}
+        <AppHeader variant="brand" showStudio={showStudio} />
 
-        {/* 0 — Identity mark. Small and understated on purpose — see
-            hero-mark.tsx's own comment. */}
-        <div className="flex justify-center pb-1 pt-2">
-          <HeroMark />
+        {/* 2 — Greeting: a real <h1> (the page's only one, satisfying the
+            same a11y landmark the old header title used to provide), first
+            name only -- a four-part legal name was overwhelming this slot
+            and forcing an ugly two-line wrap. The full name is still shown
+            on Profile. */}
+        <div className="pb-1 pt-3">
+          <h1 dir="auto" className="text-page-title">
+            {fill(dict.home.greeting, { name: firstNameOf(user.name) }, locale)}
+          </h1>
+          <p dir="auto" className="text-supporting mt-1">
+            {dict.home.greetingSubtitle}
+          </p>
         </div>
 
-        {/* 1 — Premium dashboard: consolidates the old Your stage / Weekly
-            goal / Recent achievement sections into one glance (design
-            overhaul, Phase 1 — "اجعل الشاشة الأولى تُظهر أهم المعلومات فقط
-            خلال 3 ثوانٍ"). The full breakdown still lives on /progress. Kept
-            its own heading (compact, not removed) -- a screen-reader user
-            still needs a real landmark to jump to, even though the three
-            old sections' visual chrome is now one card. */}
+        {/* 3 — Today's progress summary. See progress-summary-card.tsx's own
+            comment for why this replaced the old "premium dashboard" card
+            (a 132px ring, and a percent/level-caption pairing that read as
+            contradictory). */}
         <SectionTitle compact>{dict.home.yourStage}</SectionTitle>
         {assessedCount > 0 ? (
-          <DashboardCard
+          <ProgressSummaryCard
             percentAssessed={percentAssessed}
-            levelLabel={dict.progress.masteryLevels[levelKey(averageLevel)]}
+            skillMapLabel={fill(dict.home.skillMapCoverage, { percent: percentAssessed }, locale)}
             streakDays={streakDays}
             streakLabel={fill(dict.progress.streak, { n: streakDays }, locale)}
+            dueLabel={dueForReviewCount > 0 ? fill(dict.home.dueCount, { n: dueForReviewCount }, locale) : null}
             weeklyMinutesDone={home.weeklyMinutesDone}
             weeklyMinutesGoal={home.weeklyMinutesGoal}
             weeklyGoalLabel={dict.home.weeklyGoal}
@@ -138,7 +187,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               { done: home.weeklyMinutesDone, goal: home.weeklyMinutesGoal },
               locale,
             )}
-            skillsTrackedLabel={fill(dict.home.stageSummary, { tracked: assessedCount, due: dueForReviewCount }, locale)}
+            viewFullProgressLabel={dict.home.seeFullProgress}
+            viewFullProgressHref={`/${locale}/progress`}
             recentAchievementLabel={home.recentAchievement?.label ?? null}
           />
         ) : (
@@ -152,57 +202,64 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           />
         )}
 
-        {topSkills.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
+        {/* 4 — Primary action: the single most important control on the
+            page, full width, driven by real state (see the cta* variables
+            above). */}
+        <div className="mt-5">
+          <PrimaryAction href={ctaHref} label={ctaLabel} context={ctaContext} />
+        </div>
+
+        {/* 5 — Active skills: 2-3 uniform full-width rows (same real
+            top-mastery evidence as before, `topSkills`), replacing the old
+            variable-width chip row. */}
+        <SectionTitle
+          compact
+          action={
+            topSkills.length > 0 && (
+              <LinkButton variant="ghost" size="sm" href={`/${locale}/progress`}>
+                {dict.home.viewAllSkills}
+              </LinkButton>
+            )
+          }
+        >
+          {dict.home.activeSkills}
+        </SectionTitle>
+        {topSkills.length > 0 ? (
+          <div className="space-y-2">
             {topSkills.map((entry) => {
               const skill = skillMap.get(entry.skillId);
-              return skill ? <SkillChip key={entry.skillId} name={pick(skill.name, locale)} /> : null;
+              if (!skill) return null;
+              return (
+                <ActiveSkillRow
+                  key={entry.skillId}
+                  href={`/${locale}/progress`}
+                  name={pick(skill.name, locale)}
+                  domainIcon={domainIconById.get(entry.domainId) ?? "scale"}
+                  level={entry.level}
+                  levelLabel={dict.progress.masteryLevels[levelKey(entry.level)]}
+                  a11yLabel={fill(dict.a11y.masteryLabel, { level: entry.level }, locale)}
+                />
+              );
             })}
           </div>
+        ) : (
+          <EmptyState title={dict.home.stageEmpty} />
         )}
 
-        {assessedCount > 0 && (
-          <div className="mt-2 flex justify-end">
-            <LinkButton variant="ghost" size="sm" href={`/${locale}/progress`}>
-              {dict.home.seeFullProgress}
-            </LinkButton>
-          </div>
-        )}
-
-        {/* 1.5 — Daily challenge (adaptive, Phase 2 §14) */}
+        {/* 6 — Daily challenge (adaptive, Phase 2 §14) */}
         {dailyChallenge && (
           <>
             <SectionTitle compact>{dict.home.dailyChallenge}</SectionTitle>
-            <Callout tone="brand" title={dailyChallenge.title}>
-              <span dir="auto">{dailyChallenge.body}</span>
-            </Callout>
+            <DailyChallengeCard
+              title={dailyChallenge.title}
+              body={dailyChallenge.body}
+              startLabel={dict.home.startChallenge}
+              startHref={`/${locale}/practice`}
+            />
           </>
         )}
 
-        {/* 2 — Continue learning: merges the old "Continue your journey" and
-            "Today's mission" sections (identical unit, shown twice before)
-            into one CTA per the design overhaul's redundancy note. */}
-        <SectionTitle compact>{dict.home.continueJourney}</SectionTitle>
-        {home.continueUnit ? (
-          <ContinueCard
-            pathTitle={pick(home.continueUnit.path.title, locale)}
-            unitTitle={pick(home.continueUnit.unit.title, locale)}
-            href={`/${locale}/unit/${home.continueUnit.unit.id}`}
-            ctaLabel={home.continueUnit.status === "in_progress" ? dict.common.resume : dict.common.start}
-            minutesLabel={`${home.continueUnit.unit.estimatedMinutes} ${dict.common.minutesShort}`}
-          />
-        ) : (
-          <EmptyState
-            title={dict.home.startEmpty}
-            action={
-              <LinkButton variant="primary" href={`/${locale}/learn`}>
-                {dict.nav.learn}
-              </LinkButton>
-            }
-          />
-        )}
-
-        {/* 3 — Current skill */}
+        {/* 7a — Additional content: current skill */}
         {home.continueUnit && currentSkill && (
           <>
             <SectionTitle compact>{dict.home.currentSkill}</SectionTitle>
@@ -221,7 +278,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </>
         )}
 
-        {/* 4 — Recommended review */}
+        {/* 7b — Additional content: recommended review */}
         <SectionTitle compact>{dict.home.recommendedReview}</SectionTitle>
         {home.dueReviews.length > 0 ? (
           <Card as="div" className="overflow-hidden">
@@ -257,7 +314,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           />
         )}
 
-        {/* 5 — Latest feedback */}
+        {/* 7c — Additional content: latest feedback */}
         {home.latestEvaluation && (
           <>
             <SectionTitle compact>{dict.home.latestFeedback}</SectionTitle>
@@ -277,7 +334,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </>
         )}
 
-        {/* 6 — Legal English quick practice */}
+        {/* 7d — Additional content: quick Legal English practice */}
         {legalEnglishPath && (
           <>
             <SectionTitle compact>{dict.home.legalEnglishQuick}</SectionTitle>

@@ -15,8 +15,11 @@ Primary sources:
 - `src/components/layout/app-shell.tsx` — `Page`, `AppHeader`, `BottomNav`,
   `SectionTitle`, `OfflineBanner`, the shell every screen is built inside.
 - `src/components/home/*.tsx` — the Home-only dashboard components from the
-  design overhaul (§4.2): `HeroMark`, `DashboardCard`, `ProgressRing`,
-  `ContinueCard`, `SkillChip`.
+  design overhaul (§4.2, §4.3): `ProgressRing`, `ProgressSummaryCard`,
+  `PrimaryAction`, `ActiveSkillRow`, `DailyChallengeCard`.
+- `src/components/layout/brand-wordmark.tsx` — `BrandWordmark`, the single
+  header-only logo lockup introduced in §4.3 (supersedes the Home-page
+  `HeroMark` from §4.2, which is removed).
 - `package.json` — Tailwind `^4.3.3`, `@tailwindcss/postcss ^4.3.3`,
   `framer-motion`, `lucide-react` (the latter two added for §4.2).
 
@@ -411,6 +414,14 @@ low-risk visual tightening, not the Home-only redesign in §4.2 below.
 
 ### 4.2 Home dashboard redesign (design overhaul, Phase 1 — Home only)
 
+> **Superseded by §4.3.** `HeroMark`, `DashboardCard`, `ContinueCard`, and
+> `SkillChip` (all described below) were removed in the Home redesign v3
+> pass and replaced with `BrandWordmark`, `ProgressSummaryCard`,
+> `PrimaryAction`, and `ActiveSkillRow` respectively. This section is kept
+> as the historical record of *why* v1/v2 looked the way they did —
+> §4.3 records what changed and why. `ProgressRing` survived both passes
+> (its defaults changed in v3; see §4.3).
+
 A full-app UI/UX rebuild was requested (new design system, Lucide icons
 app-wide, Framer Motion throughout, a redesigned bottom nav, etc.). Given the
 scope, it was deliberately split: **Phase 1 covers the Home screen only**,
@@ -492,6 +503,106 @@ correctly (header mark at the trailing/right edge, continue button's arrow
 flips and sits at the visual left, skill chips and progress bar direction-
 aware via existing logical-property helpers, no new RTL-specific code
 needed).
+
+---
+
+### 4.3 Home dashboard redesign v3 (mobile-first rebuild, Home only)
+
+A second, more detailed pass on the Home screen, requested against a
+screenshot of the v2 layout that read as "a narrow column in a huge empty
+desktop void" plus a specific, itemized brief: fix the duplicate logo, fix a
+progress-card contradiction, replace variable-width skill pills with uniform
+rows, and give Home a single clear primary action. Full component/route
+audit done first, per the request — several requirements (desktop/tablet
+`max-w-lg` centering, `env(safe-area-inset-bottom)`, 44px touch targets,
+border/radius tokens) were already satisfied by the existing shell and
+needed no changes; only the pieces below were actually rebuilt.
+
+**One logo, header-only — `BrandWordmark`:** the v2 `HeroMark` (a
+mid-page `BrandMark` + wordmark block) duplicated the small `BrandMark`
+icon `AppHeader` already rendered next to the page title, so the AIJUR mark
+appeared twice on one screen. `BrandWordmark` (`layout/brand-wordmark.tsx`)
+consolidates this into a single instance: `AppHeader` gains a
+`variant?: "default" | "brand"` prop (default unchanged, used on all other
+7+ screens); `variant="brand"` swaps the icon+title row for `BrandWordmark`
+— `BrandMark` at 32px next to a two-line "AIJUR / SKILLS" text stack, laid
+out horizontally rather than using the portrait `BrandLockup` asset (at a
+30-36px target height, `BrandLockup`'s 778×1130 source ratio collapses to
+an illegible ~21-25px width — the same math that ruled it out in §4.2).
+Home is the only screen using `variant="brand"`; nothing appears a second
+time below the header.
+
+**The "8% / Not assessed" contradiction — `ProgressSummaryCard`:** root
+cause was `DashboardCard` (§4.2) pairing two individually-correct numbers
+that read as contradictory together: `percentAssessed` (skill-map coverage,
+can be nonzero from early diagnostic evidence) captioned with a
+`levelLabel` derived from `averageLevel`, which reads "Not assessed" until
+real mastery thresholds are crossed. Fix: `ProgressRing`'s `levelLabel`
+prop is now optional and the Home card no longer passes it — the ring shows
+only the percent, explicitly labeled via a new `skillMapCoverage` dictionary
+string ("{percent}% of your skill map") so the number's meaning is
+unambiguous without a second, conflicting caption. `ProgressRing`'s
+defaults also changed (`size 132→64`, `stroke 11→6`) per the brief's "no
+giant ring" instruction — a small ring plus the existing horizontal
+`ProgressBar` for the weekly-minutes goal, not a page-dominating dial. The
+full per-skill level breakdown is unchanged on `/progress`. Renamed
+"Your stage" → "Your Progress" (dictionary `yourStage` key, value only);
+`tests/e2e/signup-onboarding.spec.ts`'s heading assertion was updated to
+match and passes.
+
+**One real-data-driven primary action — `PrimaryAction`:** a state machine
+in `home/page.tsx` (not a component prop) picks exactly one CTA from real
+state: continue an in-progress unit → start the next unit → review skills
+due for spaced repetition → explore/enroll if none of the above apply. This
+replaces `ContinueCard` (§4.2), which was always "continue learning"
+regardless of state. Rendered near-full-width, 48-52px tall
+(`min-h-[3.25rem]`), in `--brand` per §5's one-brand-action-per-screen rule
+— content-sized in v2, intentionally widened here per this pass's explicit
+instruction (both are real, sequential feedback from the same user; the
+later instruction wins).
+
+**Uniform skill rows — `ActiveSkillRow`:** replaces `SkillChip` (§2, a
+flex-wrap pill sized to its text, so skills with longer names were visibly
+wider than others). `ActiveSkillRow` reuses the existing full-width
+`LINK_CARD` row pattern already established on `/progress` rather than
+inventing new markup: a domain icon in a small colored circle, the skill
+name (`line-clamp-1`, so width never depends on text length), `MasteryMeter`
+in its existing `compact` mode (hides the level *text* but keeps the
+`a11yLabel` for screen readers), and a trailing `flip-rtl` chevron. Home
+shows 2-3 skills with a "View all skills" link to `/progress` — the only
+screen with skill-level detail (confirmed via a routing audit: no
+per-skill detail route exists elsewhere).
+
+**Self-contained Daily Challenge — `DailyChallengeCard`:** previously an
+orphaned title near the bottom of the page with no card chrome of its own.
+Now a complete card: icon, title (`line-clamp-1`), a short body
+(`line-clamp-2`), and a full-width "Start challenge" link into `/practice`.
+The brief's example copy mentioned "expected time or XP points" — neither
+exists anywhere in the data model (re-confirmed against
+`PersonalizedAdaptiveContent`, matching the §4.2 XP finding), so both were
+deliberately left out rather than fabricated, consistent with the "no
+invented data" rule the brief itself states.
+
+**Known pre-existing gap, not introduced by this pass:** the Daily
+Challenge's `title`/`body` text can render in Arabic on an `/en/home` load.
+Confirmed via `getPersonalizedDailyChallenge()` and its call site in
+`home/page.tsx` — `locale` is threaded through unchanged from the
+pre-v3 code, so this is a real, separate bug in the Adaptive Engine's
+content-selection/reservoir layer, not in `DailyChallengeCard` or this
+redesign. Left unfixed here deliberately — out of scope for a Home-page
+layout pass — and flagged for separate follow-up.
+
+**Verified:** `tsc`, lint, unit tests (177/177), production build, and the
+full e2e suite (127/127, including the accessibility axe-core scan of the
+authenticated Home hub and the updated "Your Progress" heading assertion)
+all clean. Manually screenshotted at all five required breakpoints
+(320×568, 360×800, 375×812, 390×844, 430×932) in both English and Arabic —
+zero horizontal overflow at any of the 10 combinations, single logo
+instance confirmed, RTL mirroring confirmed (header mark at the trailing
+edge, CTA/skill-row/challenge chevrons flip via the existing `.flip-rtl`
+helper), bottom-nav non-overlap confirmed via a real scrolled (non-
+`fullPage`) screenshot, desktop (1440×900) confirmed still centered inside
+the pre-existing `max-w-lg` app shell rather than stretching edge-to-edge.
 
 ---
 

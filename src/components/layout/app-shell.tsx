@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useI18n, useOnline } from "@/components/providers";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { BrandMark } from "@/components/layout/brand-mark";
+import { BrandWordmark } from "@/components/layout/brand-wordmark";
 import { signOutAction } from "@/lib/actions/auth";
 import { IconButton } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
@@ -88,8 +89,10 @@ export function AppHeader({
   back,
   showStudio = false,
   wrap = false,
+  variant = "default",
 }: {
-  title: string;
+  /** Ignored when `variant === "brand"` — the brand lockup replaces the title slot entirely. */
+  title?: string;
   right?: React.ReactNode;
   /** A plain link back, or — for flows that must confirm before leaving — a handler. */
   back?: { href: string; label: string } | { onClick: () => void; label: string };
@@ -98,10 +101,21 @@ export function AppHeader({
   /**
    * Titles are truncated with an ellipsis by default -- the right call for a
    * long unit/scenario/path name that would otherwise crowd the header. A
-   * title built from a person's own name (the Home greeting) must never be
-   * cut, so it opts into wrapping onto a second line instead.
+   * title built from a person's own name must never be cut, so it opts into
+   * wrapping onto a second line instead. Ignored in `variant="brand"`.
    */
   wrap?: boolean;
+  /**
+   * `"default"` — the small 20px `BrandMark` + page title, used on every
+   * screen (Learn, Practice, Progress, Profile, Content Studio, and every
+   * detail screen). `"brand"` — the full icon+wordmark lockup instead of a
+   * title, used ONLY on Home (Home redesign v3): "the logo appears exactly
+   * once on the page" meant consolidating the header's small icon and the
+   * page's separate standalone `HeroMark` into one placement, here. No
+   * other screen passes this — every other of the 8 existing `AppHeader`
+   * call sites is unaffected, same markup as before.
+   */
+  variant?: "default" | "brand";
 }) {
   const { dict, locale } = useI18n();
   const pathname = usePathname();
@@ -151,26 +165,36 @@ export function AppHeader({
                 {arrow}
               </button>
             ))}
-          {/* The mark only fits comfortably on top-level screens -- a back
-              button already occupies that space on detail/task screens.
-              Sits at the row's start edge -- the far *right* in the app's
-              primary RTL layout, which is where "أقصى اليمين" (design
-              overhaul follow-up notes) asked for it; shrunk from 28px to
-              20px per the same notes ("صغّرها أكثر"). */}
-          {!back && <BrandMark size={20} className="shrink-0 rounded-[0.35rem]" />}
-          <h1
-            dir="auto"
-            className={cn(
-              "text-page-title min-w-0 flex-1",
-              // A name too long for one line wraps instead of truncating
-              // (the real bug this fixed originally), but bounded to 2
-              // lines instead of growing the header indefinitely -- the
-              // "shorten the header" follow-up note.
-              wrap ? "wrap-anywhere line-clamp-2 leading-snug" : "truncate",
-            )}
-          >
-            {title}
-          </h1>
+          {variant === "brand" ? (
+            // Home only (see the prop doc above) -- the one on-page logo
+            // placement, replacing both the small mark this header used to
+            // show here AND the separate standalone mark Home used to
+            // center below the header (now removed entirely).
+            <BrandWordmark size={32} className="min-w-0 flex-1" />
+          ) : (
+            <>
+              {/* The mark only fits comfortably on top-level screens -- a back
+                  button already occupies that space on detail/task screens.
+                  Sits at the row's start edge -- the far *right* in the app's
+                  primary RTL layout, which is where "أقصى اليمين" (design
+                  overhaul follow-up notes) asked for it; shrunk from 28px to
+                  20px per the same notes ("صغّرها أكثر"). */}
+              {!back && <BrandMark size={20} className="shrink-0 rounded-[0.35rem]" />}
+              <h1
+                dir="auto"
+                className={cn(
+                  "text-page-title min-w-0 flex-1",
+                  // A name too long for one line wraps instead of truncating
+                  // (the real bug this fixed originally), but bounded to 2
+                  // lines instead of growing the header indefinitely -- the
+                  // "shorten the header" follow-up note.
+                  wrap ? "wrap-anywhere line-clamp-2 leading-snug" : "truncate",
+                )}
+              >
+                {title}
+              </h1>
+            </>
+          )}
           {right}
           <LanguageSwitcher compact />
           <IconButton label={dict.nav.menu} onClick={() => setMenuOpen(true)}>

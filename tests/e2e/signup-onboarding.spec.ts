@@ -104,13 +104,15 @@ test.describe("Sign-up and onboarding", () => {
     await expect(page.locator("main")).toBeVisible();
     await expect(page.locator("body")).not.toContainText("500");
 
-    // The new "Your stage" summary at the top of Home -- real placement
+    // The "Your Progress" summary at the top of Home -- real placement
     // evidence from the diagnostic just taken, condensed to one glance (see
     // buildSkillMap() in src/lib/learning/dashboard.ts). Renders either the
     // populated card or the empty-state fallback depending on this run's
     // diagnostic answers, so only the always-present section title is
-    // asserted -- the branch itself is exercised either way.
-    await expect(page.getByRole("heading", { name: "Your stage" })).toBeVisible();
+    // asserted -- the branch itself is exercised either way. Renamed from
+    // "Your stage" in the Home redesign v3 (still the same section, same
+    // heading landmark).
+    await expect(page.getByRole("heading", { name: "Your Progress" })).toBeVisible();
   });
 
   /**

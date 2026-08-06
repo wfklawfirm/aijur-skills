@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { clamp } from "@/lib/utils";
+import { clamp, cn } from "@/lib/utils";
 
 /**
  * The Home dashboard's circular progress indicator (design overhaul, Phase
@@ -17,12 +17,20 @@ import { clamp } from "@/lib/utils";
 export function ProgressRing({
   percent,
   levelLabel,
-  size = 132,
-  stroke = 11,
+  size = 64,
+  stroke = 6,
 }: {
   /** 0-100, already rounded by the caller. */
   percent: number;
-  levelLabel: string;
+  /**
+   * Optional -- Home's compact progress card (redesign v3) shows the
+   * percent alone; a mastery-level caption paired with it read as
+   * contradictory when the two didn't agree at low evidence counts (e.g.
+   * "8%" next to "Not assessed" -- a real issue flagged in review, not a
+   * hypothetical). The full per-skill mastery breakdown still lives on
+   * /progress, where it belongs next to the actual skill list it describes.
+   */
+  levelLabel?: string;
   size?: number;
   stroke?: number;
 }) {
@@ -51,10 +59,19 @@ export function ProgressRing({
       </svg>
       <div className="absolute inset-0 grid place-items-center text-center">
         <div>
-          <span className="num text-kpi-value block leading-none">{Math.round(percent)}%</span>
-          <span dir="auto" className="text-supporting mt-1 block leading-tight">
-            {levelLabel}
+          <span
+            className={cn(
+              "num block leading-none font-bold",
+              size >= 100 ? "text-kpi-value" : "text-[1rem]",
+            )}
+          >
+            {Math.round(percent)}%
           </span>
+          {levelLabel && (
+            <span dir="auto" className="text-supporting mt-1 block leading-tight">
+              {levelLabel}
+            </span>
+          )}
         </div>
       </div>
     </div>
