@@ -27,6 +27,7 @@ function memberOf(orgId: string): SessionUser {
     name: "Audit Test User",
     locale: "en",
     systemRole: "learner",
+    platformRole: null,
     sessionId: "test-session",
     organization: { id: orgId, name: "Test Org", slug: orgId, role: "member" },
   };

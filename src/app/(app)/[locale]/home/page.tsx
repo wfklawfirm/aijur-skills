@@ -3,6 +3,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { masteryRecords, profiles } from "@/lib/db/schema";
 import { getSessionUser } from "@/lib/auth/session";
+import { subscriptionBlocksContent } from "@/lib/subscriptions/gate";
 import { getDictionary, fill, pick } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
 import { buildHomeData, buildSkillMap, computeStreak } from "@/lib/learning/dashboard";
@@ -38,6 +39,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const user = await getSessionUser();
   if (!user) redirect(`/${locale}/sign-in`);
+
+  // Spec §8: a suspended/expired/not-yet-started subscription blocks paid
+  // content but must NOT sign the user out (that stays `accountStatus`'s
+  // job, enforced in `getSessionUser`) -- they land on a clear, dedicated
+  // screen instead of the app. An account with no subscription row at all
+  // (every pre-existing account, plus every content-team account) is never
+  // affected -- see `subscriptionBlocksContent`'s doc comment.
+  if (await subscriptionBlocksContent(user)) redirect(`/${locale}/subscription-ended`);
 
   const profileRows = await db.select().from(profiles).where(eq(profiles.userId, user.id)).limit(1);
   const profile = profileRows[0];

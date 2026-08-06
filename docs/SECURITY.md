@@ -268,6 +268,86 @@ direct Server Action call) still gets rejected, and the denial is logged via
   admin action that day) is caught the same way, not just at the next login
   attempt.
 
+### 3.2 Admin Dashboard — `platformRole` (`rbac.ts`) — a second, independent axis
+
+The Admin Dashboard (subscribers, plans, admins, activity log, settings —
+see `docs/ADMIN_DASHBOARD.md`) is gated by a **new, separate** column,
+`users.platformRole: "super_admin" | "admin" | "support" | null`, deliberately
+independent from both `systemRole` (Content Studio's author/reviewer/admin
+axis) and `isPlatformOwner()` (§3.1's hardcoded bootstrap allowlist). A
+Content Studio `admin` gets none of these permissions by default; a
+Content Studio `learner` can hold `platformRole: "support"` and read the
+subscriber list without touching content workflows at all. The two axes
+compose additively in `permissionsFor()`, exactly like the existing
+system-role/org-role composition — neither can remove what the other
+grants.
+
+New permissions added to the `Permission` union: `subscribers.read`,
+`subscribers.write`, `subscribers.manage_role`, `admins.manage`,
+`plans.manage`, `audit.read`, `reports.export`, `settings.manage`.
+
+**`PLATFORM_ROLE_PERMISSIONS` matrix:**
+
+| Permission | support | admin | super_admin |
+|---|:---:|:---:|:---:|
+| `subscribers.read` | ✓ | ✓ | ✓ |
+| `audit.read` | ✓ | ✓ | ✓ |
+| `subscribers.write` |  | ✓ | ✓ |
+| `reports.export` |  | ✓ | ✓ |
+| `subscribers.manage_role` |  |  | ✓ |
+| `admins.manage` |  |  | ✓ |
+| `plans.manage` |  |  | ✓ |
+| `settings.manage` |  |  | ✓ |
+
+`isPlatformOwner(user)` (§3.1's bootstrap allowlist) is folded into this
+unconditionally in `permissionsFor()` — the bootstrap owner always holds
+the full `super_admin` permission set even with `platformRole: null` in
+the database, so the very first admin session never depends on a manual
+DB write (see `docs/ADMIN_DASHBOARD.md` §4 for exactly how the first
+Super Admin is established).
+
+**Two protections layered on top of the permission check itself**, both in
+`subscribers-core.ts` and both covered by `tests/subscribers-core.test.ts`:
+
+- **`assertCanTargetUser()`** — blocks any actor whose own `platformRole`
+  is not `super_admin` from mutating a user whose `platformRole` **is**
+  `super_admin` (demote, suspend, hide, role-change) — an `admin` cannot
+  touch a `super_admin`, even though `admins.manage`-style checks alone
+  would otherwise allow the request to reach the database.
+- **`assertSuperAdminSurvives()`** / `countActiveSuperAdmins()` — refuses
+  any demotion, suspension, or hide action that would leave zero active
+  `super_admin` accounts on the platform (`error: "last_super_admin"`),
+  and separately, the hardcoded bootstrap owner can never be demoted via
+  the UI at all (`error: "cannot_demote_bootstrap_owner"`) — demoting the
+  `platformRole` column does nothing to `isPlatformOwner()`, so this
+  guard exists to keep the *visible* admin list from being emptied out
+  by mistake, not because the bootstrap owner could actually lose access.
+
+Enforced twice, same pattern as every other permission in this document:
+`admin/_lib/guard.ts`'s `require*OrRedirect()` helpers are the clean-
+redirect UX check at the page level, and every exported function in
+`subscribers-core.ts` calls its own `require_()`/`assertCanTargetUser()`/
+`assertSuperAdminSurvives()` before touching the database — that core
+file, not the page guard, is the real security boundary, identical in
+spirit to `platform-accounts-core.ts`'s `requirePlatformOwner()` pattern
+described in §3.1. Every admin mutation (create, edit, extend, suspend,
+cancel, grant lifetime, role change, plan change, bulk action) is also
+written to `subscriptionEvents` and/or the general audit log via
+`logAdminAction()` (`audit.ts`) — never silently.
+
+**Content-access gating is a separate, additional layer, not a replacement**
+for the account-level gate described above. `users.accountStatus` /
+`accessExpiresAt` remain the *only* full sign-in gate, unchanged. The new
+`subscriptions` table adds a second, softer layer for paid-content access:
+`subscriptionBlocksContent()` (`src/lib/subscriptions/gate.ts`) is checked
+at `/home` and, if a subscription exists and is expired/suspended/
+cancelled, redirects to `/subscription-ended` — the user stays signed in
+(per spec: "allow sign-in ... show a clear screen") rather than being
+signed out the way an account-level suspension does. An account with no
+subscription row at all is never blocked by this layer (`tests/
+subscription-gate.test.ts`), so every pre-existing Content Studio account
+is unaffected unless a subscription is explicitly created for it.
+
 ## 4. Tenant isolation
 
 `assertTenant()` (`rbac.ts:77-82`), quoted in full:

@@ -13,16 +13,21 @@ import { useI18n } from "@/components/providers";
  * `showOrganization` adds an eighth pill for org owners/admins/managers only
  * — someone with only `content.*` permissions (an author or reviewer with no
  * organization) never sees a tab for a feature `assertTenant()` would just
- * reject them from anyway. `showAccounts` is the same idea for the one
- * platform-owner-only pill (`isPlatformOwner()`, not a permission at all —
- * see `rbac.ts`).
+ * reject them from anyway. `showSubscribers`/`showAdmins`/`showActivity`
+ * are the same idea for the Admin Dashboard pills, gated on the matching
+ * `Permission` (or the `isPlatformOwner()` bootstrap fallback — see
+ * `rbac.ts`).
  */
 export function AdminSubNav({
   showOrganization,
-  showAccounts,
+  showSubscribers,
+  showAdmins,
+  showActivity,
 }: {
   showOrganization: boolean;
-  showAccounts: boolean;
+  showSubscribers: boolean;
+  showAdmins: boolean;
+  showActivity: boolean;
 }) {
   const { dict, locale } = useI18n();
   const pathname = usePathname();
@@ -37,7 +42,14 @@ export function AdminSubNav({
     { href: `${base}/review-queue`, label: dict.admin.reviewQueue },
     { href: `${base}/ingestion`, label: dict.admin.ingestion },
     ...(showOrganization ? [{ href: `${base}/organization`, label: dict.admin.organization.title }] : []),
-    ...(showAccounts ? [{ href: `${base}/accounts`, label: dict.admin.accounts.title }] : []),
+    // The Admin Dashboard cluster (spec §2) — a subscriber/subscription/
+    // permissions management area unified with, not duplicated alongside,
+    // the old `/admin/accounts` page (now a redirect into `subscribers`).
+    ...(showSubscribers ? [{ href: `${base}/subscribers`, label: dict.admin.subscribers.title }] : []),
+    ...(showSubscribers ? [{ href: `${base}/plans`, label: dict.admin.plans.title }] : []),
+    ...(showAdmins ? [{ href: `${base}/admins`, label: dict.admin.admins.title }] : []),
+    ...(showActivity ? [{ href: `${base}/activity`, label: dict.admin.activity.title }] : []),
+    ...(showSubscribers ? [{ href: `${base}/settings`, label: dict.admin.adminSettings.title }] : []),
   ];
 
   return (

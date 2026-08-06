@@ -38,6 +38,7 @@ function ownerOf(orgId: string, orgName: string, userId: string): SessionUser {
     name: "Test Owner",
     locale: "en",
     systemRole: "learner",
+    platformRole: null,
     sessionId: "test-session",
     organization: { id: orgId, name: orgName, slug: orgId, role: "owner" },
   };

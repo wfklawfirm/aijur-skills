@@ -36,6 +36,7 @@ function learner(): SessionUser {
     name: "Test Learner",
     locale: "en",
     systemRole: "learner",
+    platformRole: null,
     sessionId: "test-session",
     organization: null,
   };
@@ -48,6 +49,7 @@ function author(): SessionUser {
     name: "Test Author",
     locale: "en",
     systemRole: "author",
+    platformRole: null,
     sessionId: "test-session",
     organization: null,
   };
@@ -60,6 +62,7 @@ function reviewer(): SessionUser {
     name: "Test Reviewer",
     locale: "en",
     systemRole: "reviewer",
+    platformRole: null,
     sessionId: "test-session",
     organization: null,
   };

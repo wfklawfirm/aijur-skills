@@ -77,3 +77,32 @@ export function gateTone(status: string): Tone {
       return "neutral";
   }
 }
+
+/**
+ * Subscription display-status colour, per spec §15's explicit palette rule:
+ * green = active, orange = near-expiration, red = expired/dangerous, gray =
+ * inactive. Color is never the only signal — every badge that uses this also
+ * carries the status word itself (`Badge` always renders its children).
+ */
+export function subscriptionStatusTone(status: string): Tone {
+  switch (status) {
+    case "active":
+    case "lifetime":
+      return "positive";
+    case "trial":
+    case "scheduled":
+      return "info";
+    case "expiring_soon":
+      return "warning";
+    case "expired":
+    case "suspended":
+    case "cancelled":
+      return "negative";
+    default:
+      return "neutral";
+  }
+}
+
+export function accountStatusTone(status: string): Tone {
+  return status === "suspended" ? "negative" : "positive";
+}

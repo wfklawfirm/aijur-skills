@@ -53,6 +53,17 @@ export const organizations = sqliteTable("organizations", {
     managersSeeTranscripts: boolean;
     retentionDays: number;
   }>(),
+  /**
+   * Group-subscription scaffolding (spec §10). Deliberately minimal: seat
+   * counting and an org-level subscription window, layered on top of the
+   * existing `memberships` table for who belongs to the org. Null seats =
+   * no group subscription configured yet.
+   */
+  seats: integer("seats"),
+  seatsUsed: integer("seats_used").notNull().default(0),
+  groupSubscriptionStartAt: integer("group_subscription_start_at"),
+  groupSubscriptionEndAt: integer("group_subscription_end_at"),
+  internalNotes: text("internal_notes"),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });
@@ -83,6 +94,14 @@ export const users = sqliteTable(
     /** Null = no expiration. Past this timestamp, sign-in is blocked and any
      *  live session is revoked the next time it's checked (`getSessionUser`). */
     accessExpiresAt: integer("access_expires_at"),
+    /**
+     * Platform-wide admin-dashboard role, deliberately a SEPARATE axis from
+     * `systemRole` (which governs unrelated Content Studio permissions) and
+     * from `isPlatformOwner()` (a hardcoded-email bootstrap safety net that
+     * stays in place regardless of this column). Null = not an admin-panel
+     * user at all -- the common case for every learner/subscriber account.
+     */
+    platformRole: text("platform_role").$type<"super_admin" | "admin" | "support" | null>(),
     lastSeenAt: integer("last_seen_at"),
     deletedAt: integer("deleted_at"),
     createdAt: createdAt(),
@@ -182,6 +201,12 @@ export const profiles = sqliteTable("profiles", {
     .primaryKey()
     .references(() => users.id, { onDelete: "cascade" }),
   country: text("country"),
+  /** Admin-facing contact/organisation fields, all optional. */
+  phone: text("phone"),
+  firmOrOffice: text("firm_or_office"),
+  jobTitle: text("job_title"),
+  /** Free-form labels an admin can attach via bulk actions (spec §11 "Tag"). */
+  tags: text("tags", { mode: "json" }).$type<string[]>().notNull().default(sql`'[]'`),
   /** student | trainee | junior | experienced | manager */
   careerStage: text("career_stage").notNull().default("student"),
   yearsExperience: integer("years_experience").notNull().default(0),
@@ -778,23 +803,143 @@ export const notifications = sqliteTable(
     titleKey: text("title_key").notNull(),
     params: text("params", { mode: "json" }),
     readAt: integer("read_at"),
+    /**
+     * In-app delivery status only -- no email/SMS provider is configured in
+     * this project (spec §14: "do not invent sending configuration"). This
+     * column exists so the admin panel can show Sent/Pending/Failed once a
+     * real provider is wired in without another migration.
+     */
+    deliveryStatus: text("delivery_status").notNull().default("sent").$type<
+      "pending" | "sent" | "failed" | "not_configured"
+    >(),
+    channel: text("channel").notNull().default("in_app").$type<"in_app" | "email">(),
+    /** Prevents the same logical notification (e.g. "sub X expiring in 7d")
+     *  from being recorded twice. Null for notifications with no natural key. */
+    idempotencyKey: text("idempotency_key"),
     createdAt: createdAt(),
   },
-  (t) => [index("notifications_user_idx").on(t.userId, t.readAt)],
+  (t) => [
+    index("notifications_user_idx").on(t.userId, t.readAt),
+    uniqueIndex("notifications_idempotency_idx").on(t.idempotencyKey),
+  ],
 );
 
-export const subscriptions = sqliteTable("subscriptions", {
-  id: text("id").primaryKey(),
-  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }),
-  organizationId: text("organization_id").references(() => organizations.id, {
-    onDelete: "cascade",
-  }),
-  plan: text("plan").notNull().default("free"),
-  seats: integer("seats").notNull().default(1),
-  status: text("status").notNull().default("active"),
-  currentPeriodEnd: integer("current_period_end"),
-  createdAt: createdAt(),
-});
+export const subscriptions = sqliteTable(
+  "subscriptions",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }),
+    organizationId: text("organization_id").references(() => organizations.id, {
+      onDelete: "cascade",
+    }),
+    /** Free-text plan label, kept for backward compatibility with any existing
+     *  rows; `planId` is the real, manageable reference once plans exist. */
+    plan: text("plan").notNull().default("free"),
+    planId: text("plan_id").references(() => subscriptionPlans.id, { onDelete: "set null" }),
+    seats: integer("seats").notNull().default(1),
+    /** trial | active | suspended | cancelled | lifetime | expired.
+     *  "Expiring soon" and "scheduled" are computed from dates, never stored --
+     *  see `getSubscriptionStatus()` in `src/lib/subscriptions/access.ts`. */
+    status: text("status").notNull().default("active").$type<
+      "trial" | "active" | "suspended" | "cancelled" | "lifetime" | "expired"
+    >(),
+    startAt: integer("start_at"),
+    /** Access ends at 23:59:59 (configured timezone) of this timestamp's date.
+     *  Null + status "lifetime" = no expiration, ever. */
+    currentPeriodEnd: integer("current_period_end"),
+    autoRenew: integer("auto_renew", { mode: "boolean" }).notNull().default(false),
+    /** How this subscription came to exist -- shown on the subscriber detail page. */
+    grantMethod: text("grant_method").notNull().default("manual").$type<
+      "manual" | "trial" | "paid" | "invite"
+    >(),
+    lastExtendedAt: integer("last_extended_at"),
+    cancelReason: text("cancel_reason"),
+    createdByUserId: text("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
+    lastEditedByUserId: text("last_edited_by_user_id").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [
+    index("subscriptions_user_idx").on(t.userId),
+    index("subscriptions_status_idx").on(t.status),
+    index("subscriptions_period_end_idx").on(t.currentPeriodEnd),
+    index("subscriptions_plan_idx").on(t.planId),
+    index("subscriptions_org_idx").on(t.organizationId),
+  ],
+);
+
+/** Manageable plans (spec §9) -- entitlements live in `features`, never
+ *  hard-coded against a plan name in application code. */
+export const subscriptionPlans = sqliteTable(
+  "subscription_plans",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    description: text("description"),
+    status: text("status").notNull().default("active").$type<"active" | "archived">(),
+    /** Null = no default duration (e.g. a plan only ever granted as Lifetime). */
+    defaultDurationDays: integer("default_duration_days"),
+    /** Extensible entitlement set, e.g. { skillIds: [...], maxAssessments: 10,
+     *  legalEnglish: true, certificates: true, aiFeatures: true }. */
+    features: text("features", { mode: "json" }).$type<Record<string, unknown>>().notNull().default(sql`'{}'`),
+    priceAmount: real("price_amount"),
+    priceCurrency: text("price_currency"),
+    displayOrder: integer("display_order").notNull().default(0),
+    /** internal plans are usable by admins (e.g. "Manual Grant") but never
+     *  shown to a user picking a plan themselves. */
+    visibility: text("visibility").notNull().default("public").$type<"public" | "internal">(),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [uniqueIndex("subscription_plans_name_idx").on(t.name)],
+);
+
+/** Structured history for a single subscription -- what §6/§7/§12 mean by
+ *  "subscription history" and "old and new date before confirming". Distinct
+ *  from the generic `auditLog`, which also covers non-subscription admin
+ *  actions (role changes, account creation, exports, ...). */
+export const subscriptionEvents = sqliteTable(
+  "subscription_events",
+  {
+    id: text("id").primaryKey(),
+    subscriptionId: text("subscription_id").notNull().references(() => subscriptions.id, { onDelete: "cascade" }),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").notNull().$type<
+      | "created"
+      | "extended"
+      | "shortened"
+      | "plan_changed"
+      | "suspended"
+      | "reactivated"
+      | "cancelled"
+      | "lifetime_granted"
+      | "renewed"
+    >(),
+    previousValue: text("previous_value", { mode: "json" }),
+    newValue: text("new_value", { mode: "json" }),
+    reason: text("reason"),
+    actorUserId: text("actor_user_id").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    index("subscription_events_sub_idx").on(t.subscriptionId, t.createdAt),
+    index("subscription_events_user_idx").on(t.userId),
+  ],
+);
+
+/** Free-text internal admin notes on a subscriber, separate from the
+ *  structured audit trail (spec §5 "internal admin notes"). */
+export const adminNotes = sqliteTable(
+  "admin_notes",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    authorUserId: text("author_user_id").notNull().references(() => users.id, { onDelete: "set null" }),
+    body: text("body").notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("admin_notes_user_idx").on(t.userId, t.createdAt)],
+);
 
 // ---------------------------------------------------------------------------
 // AI operations, safety, audit
@@ -915,6 +1060,20 @@ export const featureFlags = sqliteTable("feature_flags", {
   overrides: text("overrides", { mode: "json" }).$type<Record<string, boolean>>(),
   description: text("description").notNull().default(""),
   updatedAt: updatedAt(),
+});
+
+/**
+ * Admin Dashboard settings (spec §19) — a small key/value store rather than a
+ * bespoke table per setting, since the set of settings is small and will
+ * grow. Never stores secrets/env values (those stay in real env vars, per
+ * spec's explicit "do not display environment variables or secret keys
+ * inside the admin panel").
+ */
+export const adminSettings = sqliteTable("admin_settings", {
+  key: text("key").primaryKey(),
+  value: text("value", { mode: "json" }).notNull(),
+  updatedAt: updatedAt(),
+  updatedByUserId: text("updated_by_user_id").references(() => users.id, { onDelete: "set null" }),
 });
 
 export const rateLimits = sqliteTable(

@@ -36,7 +36,15 @@ export default async function AdminLayout({
   const user = await getSessionUser();
   if (
     !user ||
-    !(can(user, "content.author") || can(user, "org.members.manage") || can(user, "org.reports") || isPlatformOwner(user))
+    !(
+      can(user, "content.author") ||
+      can(user, "org.members.manage") ||
+      can(user, "org.reports") ||
+      can(user, "subscribers.read") ||
+      can(user, "admins.manage") ||
+      can(user, "audit.read") ||
+      isPlatformOwner(user)
+    )
   ) {
     redirect(`/${loc}/home`);
   }
@@ -44,13 +52,20 @@ export default async function AdminLayout({
   const showOrganization = Boolean(
     user.organization && (can(user, "org.members.manage") || can(user, "org.reports")),
   );
-  const showAccounts = isPlatformOwner(user);
+  const showSubscribers = can(user, "subscribers.read") || isPlatformOwner(user);
+  const showAdmins = can(user, "admins.manage") || isPlatformOwner(user);
+  const showActivity = can(user, "audit.read") || isPlatformOwner(user);
 
   return (
     <>
       <AppHeader title={dict.admin.title} showStudio />
       <Page>
-        <AdminSubNav showOrganization={showOrganization} showAccounts={showAccounts} />
+        <AdminSubNav
+          showOrganization={showOrganization}
+          showSubscribers={showSubscribers}
+          showAdmins={showAdmins}
+          showActivity={showActivity}
+        />
         {children}
       </Page>
       <BottomNav showStudio />

@@ -46,3 +46,50 @@ export async function requirePlatformOwnerOrRedirect(loc: Locale): Promise<Sessi
   }
   return user;
 }
+
+/**
+ * Admin Dashboard pages (spec §1/§2) — same "clean redirect, not the real
+ * boundary" pattern as the two guards above. The actual enforcement is
+ * `require_()` inside every `subscribers-core.ts` function; this only
+ * decides whether the page renders at all so an unauthorized visitor isn't
+ * shown an empty shell full of failed data fetches.
+ */
+export async function requireSubscribersReadOrRedirect(loc: Locale): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (!user || !(can(user, "subscribers.read") || isPlatformOwner(user))) {
+    redirect(`/${loc}/admin`);
+  }
+  return user;
+}
+
+export async function requireAdminsManageOrRedirect(loc: Locale): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (!user || !(can(user, "admins.manage") || isPlatformOwner(user))) {
+    redirect(`/${loc}/admin`);
+  }
+  return user;
+}
+
+export async function requirePlansManageOrRedirect(loc: Locale): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (!user || !(can(user, "subscribers.read") || isPlatformOwner(user))) {
+    redirect(`/${loc}/admin`);
+  }
+  return user;
+}
+
+export async function requireAuditReadOrRedirect(loc: Locale): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (!user || !(can(user, "audit.read") || isPlatformOwner(user))) {
+    redirect(`/${loc}/admin`);
+  }
+  return user;
+}
+
+export async function requireSettingsManageOrRedirect(loc: Locale): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (!user || !(can(user, "subscribers.read") || isPlatformOwner(user))) {
+    redirect(`/${loc}/admin`);
+  }
+  return user;
+}

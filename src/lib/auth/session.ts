@@ -43,6 +43,8 @@ export interface SessionUser {
   name: string;
   locale: "ar" | "en";
   systemRole: "learner" | "author" | "reviewer" | "admin";
+  /** Admin Dashboard role (spec §1) -- see `PLATFORM_ROLE_PERMISSIONS` in rbac.ts. */
+  platformRole: "super_admin" | "admin" | "support" | null;
   sessionId: string;
   organization: { id: string; name: string; slug: string; role: string } | null;
 }
@@ -130,6 +132,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
     name: row.user.name,
     locale: row.user.locale,
     systemRole: row.user.systemRole,
+    platformRole: row.user.platformRole ?? null,
     sessionId: row.session.id,
     organization:
       row.org && row.membership

@@ -40,6 +40,7 @@ function owner(): SessionUser {
     name: "Platform Owner",
     locale: "en",
     systemRole: "learner",
+    platformRole: null,
     sessionId: "test-session",
     organization: null,
   };
@@ -54,6 +55,7 @@ function nonOwner(): SessionUser {
     // ownership -- that's the entire point of it being a separate,
     // hardcoded-email gate rather than a `Permission`.
     systemRole: "admin",
+    platformRole: null,
     locale: "en",
     sessionId: "test-session",
     organization: null,

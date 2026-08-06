@@ -5,7 +5,8 @@ import { db } from "@/lib/db";
 import { sources, skills, units } from "@/lib/db/schema";
 import { listPendingIngestion, listQueuedEvaluations } from "@/lib/actions/admin";
 import { getAdaptiveContentStats } from "@/lib/actions/adaptive-admin";
-import { can } from "@/lib/auth/rbac";
+import { getSubscribersDashboardKpis } from "@/lib/actions/subscribers";
+import { can, isPlatformOwner } from "@/lib/auth/rbac";
 import type { SkillDef } from "@content/types";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, type Tone } from "@/components/ui/badge";
@@ -64,14 +65,16 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
   // (see src/lib/actions/admin.ts) -- a content author with no reviewer
   // role would otherwise get an unhandled AuthError from this call.
   const canReviewEvaluations = can(user, "evaluation.review");
+  const showSubscriberKpis = can(user, "subscribers.read") || isPlatformOwner(user);
 
-  const [sourceRows, skillRows, unitRows, pendingIngestion, queuedEvaluations, adaptiveStats] = await Promise.all([
+  const [sourceRows, skillRows, unitRows, pendingIngestion, queuedEvaluations, adaptiveStats, subscriberKpis] = await Promise.all([
     db.select().from(sources),
     db.select().from(skills),
     db.select().from(units),
     listPendingIngestion(),
     canReviewEvaluations ? listQueuedEvaluations() : Promise.resolve([]),
     getAdaptiveContentStats(),
+    showSubscriberKpis ? getSubscribersDashboardKpis() : Promise.resolve(null),
   ]);
 
   const sourcesByStatus = groupCount(sourceRows, (r) => r.analysisStatus);
@@ -110,6 +113,54 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
           tone: contentStatusTone(e.value),
         }))}
       />
+
+      {subscriberKpis && (
+        <>
+          <SectionTitle
+            action={
+              <Link href={`/${loc}/admin/subscribers`} className="text-sm font-semibold text-[var(--color-brand)]">
+                {dict.admin.subscribers.title}
+              </Link>
+            }
+          >
+            {dict.admin.subscribers.title}
+          </SectionTitle>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Link href={`/${loc}/admin/subscribers`} className="block">
+              <Card className="transition-colors hover:bg-[var(--surface-muted)]">
+                <CardBody>
+                  <p className="text-kpi-value num">{subscriberKpis.totalSubscribers}</p>
+                  <p className="text-supporting mt-1">{dict.admin.subscribers.title}</p>
+                </CardBody>
+              </Card>
+            </Link>
+            <Link href={`/${loc}/admin/subscribers?status=active`} className="block">
+              <Card className="transition-colors hover:bg-[var(--surface-muted)]">
+                <CardBody>
+                  <p className="text-kpi-value num">{subscriberKpis.activeSubscribers}</p>
+                  <p className="text-supporting mt-1">{dict.admin.subscriberStatus.active}</p>
+                </CardBody>
+              </Card>
+            </Link>
+            <Link href={`/${loc}/admin/subscribers?status=expiring_soon`} className="block">
+              <Card className="transition-colors hover:bg-[var(--surface-muted)]">
+                <CardBody>
+                  <p className="text-kpi-value num">{subscriberKpis.expiringWithin7Days}</p>
+                  <p className="text-supporting mt-1">{dict.admin.subscriberStatus.expiring_soon}</p>
+                </CardBody>
+              </Card>
+            </Link>
+            <Link href={`/${loc}/admin/subscribers?status=expired`} className="block">
+              <Card className="transition-colors hover:bg-[var(--surface-muted)]">
+                <CardBody>
+                  <p className="text-kpi-value num">{subscriberKpis.expiredSubscribers}</p>
+                  <p className="text-supporting mt-1">{dict.admin.subscriberStatus.expired}</p>
+                </CardBody>
+              </Card>
+            </Link>
+          </div>
+        </>
+      )}
 
       <SectionTitle>{dict.admin.reviewQueue}</SectionTitle>
       <div className="grid grid-cols-2 gap-3">

@@ -22,6 +22,50 @@ import type { SessionUser } from "./session";
  * for anything that gates access itself — the actual `throw` in both
  * functions happens unconditionally, whether or not this write lands.
  */
+/**
+ * General admin-action audit trail (spec §12) — every mutation the Admin
+ * Dashboard performs writes one row here with who/what/when and the
+ * before/after values of the fields that actually changed. Deliberately
+ * separate from `subscriptionEvents` (which is the focused, subscription-only
+ * history shown on a subscriber's detail page): this table is the complete,
+ * cross-entity trail (role changes, plan edits, exports, settings, ...).
+ *
+ * Callers MUST NOT pass password hashes, tokens, or other secrets in `meta`
+ * — this is a durable, admin-readable log, not a debug trace.
+ */
+export function logAdminAction(
+  actor: SessionUser,
+  params: {
+    action: string;
+    entityType: string;
+    entityId: string;
+    organizationId?: string | null;
+    previousValue?: unknown;
+    newValue?: unknown;
+    reason?: string | null;
+  },
+): Promise<void> {
+  return db
+    .insert(auditLog)
+    .values({
+      id: uid("audit"),
+      actorId: actor.id,
+      organizationId: params.organizationId ?? actor.organization?.id ?? null,
+      action: params.action,
+      entityType: params.entityType,
+      entityId: params.entityId,
+      meta: {
+        ...(params.previousValue !== undefined ? { previous: params.previousValue } : {}),
+        ...(params.newValue !== undefined ? { next: params.newValue } : {}),
+        ...(params.reason ? { reason: params.reason } : {}),
+      },
+    })
+    .then(() => undefined)
+    .catch((err: unknown) => {
+      console.error("[audit] failed to log admin action", err);
+    });
+}
+
 export function logAccessDenial(
   user: SessionUser | null,
   code: "unauthenticated" | "forbidden",

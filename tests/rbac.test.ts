@@ -17,6 +17,7 @@ function user(overrides: Partial<SessionUser> = {}): SessionUser {
     name: "Test User",
     locale: "en",
     systemRole: "learner",
+    platformRole: null,
     sessionId: "s1",
     organization: null,
     ...overrides,

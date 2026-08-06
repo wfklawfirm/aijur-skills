@@ -18,7 +18,18 @@ export type Permission =
   | "org.members.manage"
   | "org.assign"
   | "org.reports"
-  | "platform.admin";
+  | "platform.admin"
+  // Admin Dashboard (spec §1) -- granted via `platformRole`, a separate axis
+  // from `systemRole`/org role below. Kept as fine-grained permissions (not
+  // one big "admin" flag) so a future role can be given a subset.
+  | "subscribers.read"
+  | "subscribers.write"
+  | "subscribers.manage_role"
+  | "admins.manage"
+  | "plans.manage"
+  | "audit.read"
+  | "reports.export"
+  | "settings.manage";
 
 const SYSTEM_ROLE_PERMISSIONS: Record<SessionUser["systemRole"], Permission[]> = {
   learner: ["content.read"],
@@ -55,10 +66,46 @@ const ORG_ROLE_PERMISSIONS: Record<string, Permission[]> = {
   member: ["content.read"],
 };
 
+/**
+ * Admin Dashboard roles (spec §1). Non-null `SessionUser["platformRole"]`
+ * values only -- a `null` platformRole contributes nothing here, same as an
+ * absent org role contributes nothing from `ORG_ROLE_PERMISSIONS`.
+ *
+ *  - support: read-only visibility into subscribers/subscriptions, per spec
+ *    ("editing permissions limited or unavailable").
+ *  - admin: day-to-day subscriber/subscription management, reports, exports.
+ *    Cannot manage other admins or plans, and (enforced in `subscribers-
+ *    core.ts`, not here) cannot touch a Super Admin's account.
+ *  - super_admin: everything, including managing other admins' platformRole
+ *    and plans/settings.
+ */
+const PLATFORM_ROLE_PERMISSIONS: Record<
+  NonNullable<SessionUser["platformRole"]>,
+  Permission[]
+> = {
+  support: ["subscribers.read", "audit.read"],
+  admin: ["subscribers.read", "subscribers.write", "audit.read", "reports.export"],
+  super_admin: [
+    "subscribers.read",
+    "subscribers.write",
+    "subscribers.manage_role",
+    "admins.manage",
+    "plans.manage",
+    "audit.read",
+    "reports.export",
+    "settings.manage",
+  ],
+};
+
 export function permissionsFor(user: SessionUser): Set<Permission> {
   const set = new Set<Permission>(SYSTEM_ROLE_PERMISSIONS[user.systemRole]);
   const orgRole = user.organization?.role;
   if (orgRole) for (const p of ORG_ROLE_PERMISSIONS[orgRole] ?? []) set.add(p);
+  if (user.platformRole) for (const p of PLATFORM_ROLE_PERMISSIONS[user.platformRole]) set.add(p);
+  // isPlatformOwner() stays a separate bootstrap check (see below) rather than
+  // being folded in here, so the very first Super Admin can always be
+  // assigned even before any `platformRole` row is set.
+  if (isPlatformOwner(user)) for (const p of PLATFORM_ROLE_PERMISSIONS.super_admin) set.add(p);
   return set;
 }
 
@@ -99,7 +146,7 @@ export function assertTenant(user: SessionUser, organizationId: string): void {
  * (`signUp`'s zod schema normalises with `.toLowerCase()`) but this guard
  * should not depend on that always being true elsewhere.
  */
-const PLATFORM_OWNER_EMAILS = ["wfklawfirm@gmail.com"];
+export const PLATFORM_OWNER_EMAILS = ["wfklawfirm@gmail.com"];
 
 export function isPlatformOwner(user: SessionUser): boolean {
   return PLATFORM_OWNER_EMAILS.includes(user.email.toLowerCase());
