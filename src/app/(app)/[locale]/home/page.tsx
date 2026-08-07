@@ -46,9 +46,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   // screen instead of the app. An account with no subscription row at all
   // (every pre-existing account, plus every content-team account) is never
   // affected -- see `subscriptionBlocksContent`'s doc comment.
-  if (await subscriptionBlocksContent(user)) redirect(`/${locale}/subscription-ended`);
+  const [blocksContent, profileRows] = await Promise.all([
+    subscriptionBlocksContent(user),
+    db.select().from(profiles).where(eq(profiles.userId, user.id)).limit(1),
+  ]);
+  if (blocksContent) redirect(`/${locale}/subscription-ended`);
 
-  const profileRows = await db.select().from(profiles).where(eq(profiles.userId, user.id)).limit(1);
   const profile = profileRows[0];
   if (!profile || !profile.onboardingCompletedAt) redirect(`/${locale}/onboarding`);
   if (!profile.diagnosticCompletedAt) redirect(`/${locale}/diagnostic`);
