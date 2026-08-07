@@ -2,17 +2,26 @@
 
 ## 1. Confirm the real production domain
 
-`MOBILE_APP_SERVER_URL` must point at a domain **you have personally
-verified is live and returns the real app**, not a guess. This project's
-own `.scratch/status.md` records that this was still an open item as of
-an earlier session (placeholder Vercel env vars). Verify with:
+**Resolved — see item #62 in `.scratch/status.md`.** The real, live,
+verified production domain is:
 
 ```
-curl -I https://your-real-domain
+https://aijur-skills-mu.vercel.app
 ```
 
-Then set `MOBILE_APP_SERVER_URL=https://your-real-domain` before running
-`npx cap sync`.
+This is a default Vercel-assigned domain (no custom domain configured).
+Confirmed live by direct fetch of `/ar` after fixing a real production
+outage this session (item #62 — production database schema was missing
+item #59's Admin Dashboard tables/columns; `getSessionUser()` was failing
+on every request until the schema was pushed). `.env.example`'s
+`MOBILE_APP_SERVER_URL` now defaults to this value. If a custom domain is
+added later, update it there and in every `REPLACE_WITH_PRODUCTION_DOMAIN`
+placeholder together (`docs/MOBILE_DEEP_LINKS.md`).
+
+To re-verify at any time:
+```
+curl -I https://aijur-skills-mu.vercel.app
+```
 
 ## 2. Replace every placeholder before submission
 
@@ -98,7 +107,7 @@ this repository** — `ios/App/App.xcodeproj` has no team assigned.
 
 ## 9. Remaining manual steps before publishing
 
-1. Confirm the real production domain (§1) and set `MOBILE_APP_SERVER_URL`.
+1. ~~Confirm the real production domain (§1)~~ — done, see §1.
 2. Replace every `REPLACE_WITH_*` placeholder (§2).
 3. Generate real Android and Apple signing keys (§6-7).
 4. Set up Firebase/APNs if push sending is wanted (§5) — optional, the app
