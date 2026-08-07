@@ -12,3 +12,11 @@ blob-report/
 playwright/.cache/
 tests/e2e/.auth/
 .scratch/
+
+# Signing keys -- never committed, at any depth in the repo. android/.gitignore
+# already covers android/*.jks specifically; this is a repo-wide backstop after
+# a real near-miss (item #64, .scratch/status.md) where a generated keystore
+# briefly sat at the repo root, unignored, before being moved outside the repo.
+*.jks
+*.keystore
+key.properties

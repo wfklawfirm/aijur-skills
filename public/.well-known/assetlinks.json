@@ -4,7 +4,7 @@
     "target": {
       "namespace": "android_app",
       "package_name": "com.aijur.skills",
-      "sha256_cert_fingerprints": ["REPLACE_WITH_REAL_SHA256_RELEASE_SIGNING_CERT_FINGERPRINT"]
+      "sha256_cert_fingerprints": ["CC:28:0F:D4:E5:6D:50:6A:BB:DA:F3:11:C3:ED:16:BC:5D:8C:2D:23:A5:84:A5:A4:F6:10:58:C6:57:FA:5B:0C"]
     }
   }
 ]

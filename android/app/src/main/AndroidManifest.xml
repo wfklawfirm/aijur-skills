@@ -20,18 +20,24 @@
             </intent-filter>
 
             <!--
-              App Links (verified deep links over https). REPLACE_WITH_PRODUCTION_DOMAIN
-              must become the real, confirmed-healthy production domain
-              (see docs/MOBILE_APP_ARCHITECTURE.md) before this can be
-              submitted, since autoVerify will simply fail against a
-              placeholder. A matching entry is also required at
-              public/.well-known/assetlinks.json on that same domain.
+              App Links (verified deep links over https). Domain confirmed
+              real and live this session (item #62, .scratch/status.md):
+              aijur-skills-mu.vercel.app. The matching
+              public/.well-known/assetlinks.json entry now carries the real
+              upload key's SHA-256 fingerprint (item #64), generated the
+              same session. Caveat, not yet resolved: if Play App Signing
+              is enrolled during store submission, Google re-signs the app
+              for distribution with its own key, and the fingerprint here
+              would then need to be Google's app signing key fingerprint
+              instead (visible in Play Console after enrollment), not this
+              upload key's fingerprint, or autoVerify will fail once real
+              users install the Play Store build.
             -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="REPLACE_WITH_PRODUCTION_DOMAIN" />
+                <data android:scheme="https" android:host="aijur-skills-mu.vercel.app" />
             </intent-filter>
 
             <!-- Custom-scheme fallback, works with no domain verification. -->
