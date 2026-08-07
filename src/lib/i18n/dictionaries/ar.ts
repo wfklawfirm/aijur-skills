@@ -453,6 +453,21 @@ export const ar = {
     retention: "مدة الاحتفاظ: {days} يومًا",
     appeal: "الاعتراض على التقييم",
     signOutEverywhere: "تسجيل الخروج من كل الأجهزة",
+    deleteConfirmBody:
+      "هذا الإجراء نهائي ولا يمكن التراجع عنه. سيُحذف حسابك وكل تقدّمك وإجاباتك ونتائجك فورًا.",
+    deletePasswordLabel: "أدخل كلمة المرور للتأكيد",
+    deleteTypePrompt: "اكتب DELETE للتأكيد",
+    deleteConfirmCta: "احذف حسابي نهائيًا",
+    deleteErrorInvalidPassword: "كلمة المرور غير صحيحة.",
+    deleteErrorLastSuperAdmin: "لا يمكنك حذف هذا الحساب لأنه المشرف الأعلى الوحيد المتبقي في المنصة.",
+    deleteErrorSoleOrgOwner: "لا يمكنك حذف هذا الحساب لأنك المالك الوحيد لمؤسسة تضم أعضاء آخرين. انقل الملكية أولًا.",
+    legal: "قانوني ودعم",
+    privacyPolicy: "سياسة الخصوصية",
+    termsOfUse: "شروط الاستخدام",
+    accountData: "الحساب والبيانات",
+    contactSupport: "تواصل مع الدعم",
+    appVersion: "إصدار التطبيق",
+    licenses: "التراخيص مفتوحة المصدر",
   },
   admin: {
     title: "استوديو المحتوى",
@@ -806,6 +821,15 @@ export const ar = {
   subscriptionEnded: {
     title: "انتهى اشتراكك",
     body: "لا يمكن الوصول إلى المحتوى المدفوع حاليًا. تقدّمك وبياناتك محفوظة بالكامل، وستستعيد الوصول فور تجديد الاشتراك.",
+  },
+  mobile: {
+    pressBackAgainToExit: "اضغط رجوع مرة أخرى للخروج",
+    notificationsTitle: "الإشعارات",
+    notificationsBody: "فعّل الإشعارات لتصلك تذكيرات بمتابعة تعلّمك ونتائج تقييماتك — يمكنك إيقافها لاحقًا في أي وقت.",
+    notificationsEnable: "تفعيل الإشعارات",
+    notificationsEnabled: "تم تفعيل الإشعارات.",
+    notificationsDenied: "تم رفض إذن الإشعارات. يمكنك تفعيله من إعدادات النظام.",
+    notificationsUnsupported: "الإشعارات غير مدعومة في هذه البيئة.",
   },
   errors: {
     notFound: "لم نجد هذه الصفحة",

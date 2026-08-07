@@ -62,8 +62,14 @@ export function Field({
   );
 }
 
+// text-base (16px), not the app's usual text-[0.9375rem] (15px): iOS Safari
+// (and the same WebKit engine inside the native app's WKWebView) auto-zooms
+// the whole page on focus of any text input/textarea/select computed under
+// 16px -- a jarring, native-app-breaking zoom the brief explicitly calls
+// out (§21). This is the one place the app intentionally departs from its
+// usual control text size, for every text input, textarea, and select.
 const CONTROL =
-  "w-full min-h-11 rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-3.5 py-2.5 text-[0.9375rem] text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] transition-colors focus:border-[var(--color-brand)] aria-[invalid=true]:border-[var(--color-negative)]";
+  "w-full min-h-11 rounded-[var(--radius-control)] border border-[var(--border-strong)] bg-[var(--surface)] px-3.5 py-2.5 text-base text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] transition-colors focus:border-[var(--color-brand)] aria-[invalid=true]:border-[var(--color-negative)]";
 
 export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className, ...rest }, ref) {

@@ -159,6 +159,16 @@
   border-color: var(--border);
 }
 
+html,
+body {
+  /* A native WKWebView/Android WebView has no browser chrome to clip an
+     accidental horizontal overflow -- a single too-wide element can pan the
+     whole app sideways with no way back short of a relaunch. Web browsers
+     hide this same class of bug behind their own viewport clipping, so it
+     only surfaces once wrapped in the native shell. */
+  overflow-x: hidden;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   /* Keeps the bottom nav clear of the iOS home indicator. */
@@ -329,6 +339,14 @@ body {
 
 .safe-top {
   padding-block-start: max(env(safe-area-inset-top), 0px);
+}
+
+/** Landscape/notch-aware horizontal insets (Dynamic Island / rounded-corner
+ *  devices in landscape, punch-hole cameras). Logical properties so it
+ *  mirrors correctly under RTL. */
+.safe-x {
+  padding-inline-start: max(env(safe-area-inset-left), 0px);
+  padding-inline-end: max(env(safe-area-inset-right), 0px);
 }
 
 /** The app shell: content never sits under the bottom bar or the notch. */

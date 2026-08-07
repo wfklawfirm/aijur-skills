@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import Link from "next/link";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { organizations, profiles, users } from "@/lib/db/schema";
@@ -8,6 +9,7 @@ import { isLocale, type Locale } from "@/lib/i18n/config";
 import { AppHeader, BottomNav, Page, SectionTitle } from "@/components/layout/app-shell";
 import { Card, CardBody } from "@/components/ui/card";
 import { ProfileSettings } from "./profile-settings";
+import { NotificationSettings } from "./notification-settings";
 
 export default async function ProfilePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: rawLocale } = await params;
@@ -55,6 +57,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
           </CardBody>
         </Card>
 
+        <NotificationSettings />
+
         <div id="settings">
           <ProfileSettings
             locale={locale}
@@ -65,6 +69,15 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
             emailVerified={emailVerified}
           />
         </div>
+
+        <SectionTitle>{dict.profile.legal}</SectionTitle>
+        <Card>
+          <CardBody className="p-0">
+            <Link href={`/${locale}/legal`} className="flex items-center justify-between px-4 py-3.5 text-[0.9375rem]">
+              {dict.profile.privacyPolicy} · {dict.profile.termsOfUse} · {dict.profile.accountData}
+            </Link>
+          </CardBody>
+        </Card>
       </Page>
       <BottomNav showStudio={user.systemRole !== "learner"} />
     </>

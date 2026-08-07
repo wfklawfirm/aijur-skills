@@ -21,6 +21,13 @@ const nextConfig: NextConfig = {
         ],
       },
       { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }] },
+      {
+        // iOS Universal Links verification -- Apple's servers reject this
+        // file if it isn't served as JSON (no .json extension in the URL,
+        // so Next would otherwise serve it as text/plain via `public/`).
+        source: "/.well-known/apple-app-site-association",
+        headers: [{ key: "Content-Type", value: "application/json" }],
+      },
     ];
   },
 };

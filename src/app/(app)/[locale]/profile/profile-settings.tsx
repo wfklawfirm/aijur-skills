@@ -4,12 +4,14 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/components/providers";
 import {
+  deleteOwnAccount,
   setAiConsent,
   signOutEverywhere,
   updateAccessibility,
   updateWeeklyGoal,
 } from "@/lib/actions/profile";
 import { signOutAction } from "@/lib/actions/auth";
+import { teardownPushOnSignOut } from "@/lib/platform/push";
 import { resendVerificationEmail } from "@/lib/actions/email-verification";
 import type { Locale } from "@/lib/i18n/config";
 import { SectionTitle } from "@/components/layout/app-shell";
@@ -97,6 +99,30 @@ export function ProfileSettings({
 
   // --- delete account -----------------------------------------------------
   const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const [deletePassword, setDeletePassword] = React.useState("");
+  const [deleteTyped, setDeleteTyped] = React.useState("");
+  const [deleting, setDeleting] = React.useState(false);
+  const [deleteError, setDeleteError] = React.useState<string | null>(null);
+  const canConfirmDelete = deletePassword.length > 0 && deleteTyped.trim().toUpperCase() === "DELETE";
+
+  async function handleDeleteAccount() {
+    if (!canConfirmDelete) return;
+    setDeleting(true);
+    setDeleteError(null);
+    const result = await deleteOwnAccount(deletePassword);
+    if (result.ok) {
+      router.push(`/${locale}/sign-in`);
+      return;
+    }
+    setDeleting(false);
+    setDeleteError(
+      result.error === "invalid_password"
+        ? dict.profile.deleteErrorInvalidPassword
+        : result.error === "last_super_admin"
+          ? dict.profile.deleteErrorLastSuperAdmin
+          : dict.profile.deleteErrorSoleOrgOwner,
+    );
+  }
 
   // --- sign out everywhere -----------------------------------------------------
   const [signingOutEverywhere, setSigningOutEverywhere] = React.useState(false);
@@ -240,28 +266,66 @@ export function ProfileSettings({
 
       <Sheet
         open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
+        onClose={() => {
+          setDeleteOpen(false);
+          setDeletePassword("");
+          setDeleteTyped("");
+          setDeleteError(null);
+        }}
         title={dict.profile.deleteAccount}
         closeLabel={dict.a11y.closeDialog}
         footer={
           <div className="flex gap-2">
-            <Button variant="secondary" block onClick={() => setDeleteOpen(false)}>
+            <Button
+              variant="secondary"
+              block
+              onClick={() => {
+                setDeleteOpen(false);
+                setDeletePassword("");
+                setDeleteTyped("");
+                setDeleteError(null);
+              }}
+            >
               {dict.common.cancel}
             </Button>
-            <Button variant="destructive" block disabled title={dict.common.errorBody}>
-              {dict.profile.deleteAccount}
+            <Button
+              variant="destructive"
+              block
+              disabled={!canConfirmDelete}
+              loading={deleting}
+              onClick={handleDeleteAccount}
+            >
+              {dict.profile.deleteConfirmCta}
             </Button>
           </div>
         }
       >
-        <p className="text-supporting">{dict.profile.deleteBody}</p>
-        <div className="mt-3">
-          <Callout tone="warning">{dict.common.errorBody}</Callout>
+        <div className="space-y-4">
+          <Callout tone="negative">{dict.profile.deleteConfirmBody}</Callout>
+          {deleteError && <Callout tone="negative">{deleteError}</Callout>}
+          <Field label={dict.profile.deletePasswordLabel}>
+            {(p) => (
+              <Input
+                type="password"
+                autoComplete="current-password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                {...p}
+              />
+            )}
+          </Field>
+          <Field label={dict.profile.deleteTypePrompt}>
+            {(p) => <Input type="text" value={deleteTyped} onChange={(e) => setDeleteTyped(e.target.value)} {...p} />}
+          </Field>
         </div>
       </Sheet>
 
       <div className="mt-6">
-        <Button variant="ghost" block onClick={() => signOutAction(locale)}>
+        <Button
+          variant="ghost"
+          block
+          onClick={() => void teardownPushOnSignOut().finally(() => void signOutAction(locale))}
+        >
           {dict.common.signOut}
         </Button>
       </div>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AIJUR Skills</string>
+    <string name="title_activity_main">AIJUR Skills</string>
+    <string name="package_name">com.aijur.skills</string>
+    <string name="custom_url_scheme">com.aijur.skills</string>
+</resources>

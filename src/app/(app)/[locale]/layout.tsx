@@ -6,6 +6,7 @@ import { LOCALE_META, isLocale, LOCALES } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n";
 import { ConnectivityProvider, I18nProvider } from "@/components/providers";
 import { RegisterServiceWorker } from "@/components/layout/register-sw";
+import { NativeInit } from "@/components/layout/native-init";
 
 const latin = Inter({
   subsets: ["latin"],
@@ -96,7 +97,10 @@ export default async function LocaleLayout({
           {dict.a11y.skipToContent}
         </a>
         <I18nProvider locale={locale} dict={dict}>
-          <ConnectivityProvider>{children}</ConnectivityProvider>
+          <ConnectivityProvider>
+            <NativeInit />
+            {children}
+          </ConnectivityProvider>
         </I18nProvider>
         <RegisterServiceWorker />
       </body>

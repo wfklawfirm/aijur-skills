@@ -1,0 +1,21 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "REPLACE_WITH_TEAM_ID.com.aijur.skills",
+        "paths": [
+          "/*/home",
+          "/*/learn/*",
+          "/*/unit/*",
+          "/*/simulation/*",
+          "/*/practice",
+          "/*/progress",
+          "/*/subscription-ended",
+          "/*/verify-email/*",
+          "/*/reset-password/*"
+        ]
+      }
+    ]
+  }
+}

@@ -812,7 +812,7 @@ export const notifications = sqliteTable(
     deliveryStatus: text("delivery_status").notNull().default("sent").$type<
       "pending" | "sent" | "failed" | "not_configured"
     >(),
-    channel: text("channel").notNull().default("in_app").$type<"in_app" | "email">(),
+    channel: text("channel").notNull().default("in_app").$type<"in_app" | "email" | "push">(),
     /** Prevents the same logical notification (e.g. "sub X expiring in 7d")
      *  from being recorded twice. Null for notifications with no natural key. */
     idempotencyKey: text("idempotency_key"),
@@ -822,6 +822,30 @@ export const notifications = sqliteTable(
     index("notifications_user_idx").on(t.userId, t.readAt),
     uniqueIndex("notifications_idempotency_idx").on(t.idempotencyKey),
   ],
+);
+
+/**
+ * One row per (user, device). A device-token lifecycle table, not just a
+ * single column on `users` -- the native app conversion brief explicitly
+ * requires multi-device support (a learner signed in on both a phone and a
+ * tablet should get pushes on both). Nothing in this project ever actually
+ * sends a push yet -- see `docs/MOBILE_PUSH_NOTIFICATIONS.md` for exactly
+ * what real Firebase/APNs configuration is still required; this table is
+ * the real, working registration half of that pipeline.
+ */
+export const pushTokens = sqliteTable(
+  "push_tokens",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    token: text("token").notNull(),
+    platform: text("platform").notNull().$type<"ios" | "android">(),
+    locale: text("locale"),
+    timezone: text("timezone"),
+    createdAt: createdAt(),
+    lastSeenAt: integer("last_seen_at").notNull().default(now),
+  },
+  (t) => [index("push_tokens_user_idx").on(t.userId), uniqueIndex("push_tokens_token_idx").on(t.token)],
 );
 
 export const subscriptions = sqliteTable(

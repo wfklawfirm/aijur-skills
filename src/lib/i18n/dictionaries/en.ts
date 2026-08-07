@@ -451,6 +451,21 @@ export const en: Dictionary = {
     retention: "Retention: {days} days",
     appeal: "Appeal an assessment",
     signOutEverywhere: "Sign out on all devices",
+    deleteConfirmBody:
+      "This is permanent and cannot be undone. Your account, all your progress, answers, and results will be deleted immediately.",
+    deletePasswordLabel: "Enter your password to confirm",
+    deleteTypePrompt: "Type DELETE to confirm",
+    deleteConfirmCta: "Permanently delete my account",
+    deleteErrorInvalidPassword: "That password isn't correct.",
+    deleteErrorLastSuperAdmin: "You can't delete this account — it's the last remaining Super Admin on the platform.",
+    deleteErrorSoleOrgOwner: "You can't delete this account — you're the sole owner of an organization with other members. Transfer ownership first.",
+    legal: "Legal & support",
+    privacyPolicy: "Privacy Policy",
+    termsOfUse: "Terms of Use",
+    accountData: "Account & data",
+    contactSupport: "Contact support",
+    appVersion: "App version",
+    licenses: "Open-source licenses",
   },
   admin: {
     title: "Content Studio",
@@ -804,6 +819,15 @@ export const en: Dictionary = {
   subscriptionEnded: {
     title: "Your subscription has ended",
     body: "Paid content isn't accessible right now. Your progress and data are fully preserved, and you'll regain access as soon as your subscription is renewed.",
+  },
+  mobile: {
+    pressBackAgainToExit: "Press back again to exit",
+    notificationsTitle: "Notifications",
+    notificationsBody: "Enable notifications to get reminders to keep learning and your evaluation results — you can turn them off again at any time.",
+    notificationsEnable: "Enable notifications",
+    notificationsEnabled: "Notifications are on.",
+    notificationsDenied: "Notification permission was denied. You can enable it from system settings.",
+    notificationsUnsupported: "Notifications aren't supported in this environment.",
   },
   errors: {
     notFound: "We couldn't find that page",

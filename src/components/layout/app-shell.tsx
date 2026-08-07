@@ -9,6 +9,7 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { BrandMark } from "@/components/layout/brand-mark";
 import { BrandWordmark } from "@/components/layout/brand-wordmark";
 import { signOutAction } from "@/lib/actions/auth";
+import { teardownPushOnSignOut } from "@/lib/platform/push";
 import { IconButton } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import {
@@ -56,7 +57,7 @@ export function BottomNav({ showStudio }: { showStudio: boolean }) {
   return (
     <nav
       aria-label={dict.nav.home}
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border)] bg-[var(--surface)]/95 backdrop-blur safe-bottom"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border)] bg-[var(--surface)]/95 backdrop-blur safe-bottom safe-x"
     >
       <ul className="mx-auto flex max-w-lg items-stretch">
         {items.map(({ href, label, Icon }) => {
@@ -153,7 +154,7 @@ export function AppHeader({
         viewport, breaking the full-screen overlay (caught by actually
         screenshotting it, not by reading the JSX).
       */}
-      <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/92 backdrop-blur safe-top">
+      <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/92 backdrop-blur safe-top safe-x">
         <div className="mx-auto flex max-w-lg items-center gap-2.5 px-4 py-2.5">
           {back &&
             ("href" in back ? (
@@ -245,7 +246,7 @@ export function AppHeader({
                 type="button"
                 onClick={() => {
                   setMenuOpen(false);
-                  void signOutAction(locale);
+                  void teardownPushOnSignOut().finally(() => void signOutAction(locale));
                 }}
                 className="flex min-h-11 w-full items-center gap-3 rounded-[var(--radius-control)] px-3 py-2.5 text-start text-[0.9375rem] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-muted)]"
               >

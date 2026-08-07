@@ -56,17 +56,27 @@ export function useLocalized() {
 
 const OnlineContext = React.createContext(true);
 
+/**
+ * Reads connectivity through `@/lib/platform/network` (real device
+ * Wi-Fi/cellular status on native, `navigator.onLine` on web) instead of
+ * raw browser events directly -- the one place this app answers "are we
+ * online," used everywhere via `useOnline()` rather than each consumer
+ * reaching for `navigator.onLine` itself. Dynamically imported so this
+ * client component never pulls `@capacitor/network` into a server bundle.
+ */
 export function ConnectivityProvider({ children }: { children: React.ReactNode }) {
   const [online, setOnline] = React.useState(true);
 
   React.useEffect(() => {
-    const update = () => setOnline(navigator.onLine);
-    update();
-    window.addEventListener("online", update);
-    window.addEventListener("offline", update);
+    let unwatch: (() => void) | undefined;
+    let cancelled = false;
+    void import("@/lib/platform/network").then(({ watchNetworkStatus }) => {
+      if (cancelled) return;
+      unwatch = watchNetworkStatus(setOnline);
+    });
     return () => {
-      window.removeEventListener("online", update);
-      window.removeEventListener("offline", update);
+      cancelled = true;
+      unwatch?.();
     };
   }, []);
 

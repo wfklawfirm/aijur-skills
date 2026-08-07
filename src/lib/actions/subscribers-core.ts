@@ -87,8 +87,11 @@ async function countActiveSuperAdmins(excludingUserId?: string): Promise<number>
 
 /** Spec §16: "ensure at least one Super Admin always exists" / "prevent an
  *  admin from cutting off admin access entirely". Called before any action
- *  that would remove a user's super-admin standing (demote, suspend, delete). */
-async function assertSuperAdminSurvives(targetUserId: string): Promise<void> {
+ *  that would remove a user's super-admin standing (demote, suspend, delete).
+ *  Exported for reuse by the self-service account-deletion flow
+ *  (`src/lib/actions/profile.ts`) -- the same invariant applies whether the
+ *  removal is admin-initiated or the user's own request. */
+export async function assertSuperAdminSurvives(targetUserId: string): Promise<void> {
   const remaining = await countActiveSuperAdmins(targetUserId);
   if (remaining < 1) throw new Error("last_super_admin");
 }
