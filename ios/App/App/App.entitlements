@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:REPLACE_WITH_PRODUCTION_DOMAIN</string>
+		<string>applinks:aijur-skills-mu.vercel.app</string>
 	</array>
 </dict>
 </plist>
